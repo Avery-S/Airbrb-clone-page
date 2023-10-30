@@ -262,21 +262,22 @@ You can use methods discussed in lectures for component testing, or you can use 
 
 For **ui testing**, you must:
  * Write a test for the "happy path" of an admin that is described as:
-   1. Registers successfully
-   2. Creates a new game successfully
-   3. (Not required) Updates the thumbnail and name of the game successfully (yes, it will have no questions)
-   4. Starts a game successfully
-   5. Ends a game successfully (yes, no one will have played it)
-   6. Loads the results page successfully
-   7. Logs out of the application successfully
-   8. Logs back into the application successfully
+  1. Registers successfully
+	2. Creates a new listing successfully
+	3. Updates the thumbnail and title of the listing successfully
+	4. Publish a listing successfully
+	5. Unpublish a listing successfully
+	6. Make a booking successfully
+	7. Logs out of the application successfully
+	8. Logs back into the application successfully
  * (If working in a pair) also required to write a test for another path through the program, describing the steps and the rationale behind this choice in `TESTING.md`
+ * (If working solo) include a short rationale of the testing you have undertaken within `TESTING.md`
 
 #### Advice for Component Testing
  * Find a simple primitive component you've written, and if you don't have one, write one. This could include a common button you use, or a popup, or a box, or an input. Often examples of these are just MUI or other library components you might have wrapped slightly and includes some props you've passed in
  * Simply write some unit tests that check that for a given prop input, the component behaves in a certain way (e.g. action or visual display), etc etc
  * E.G. Creating a `MyButton` that wraps a MUI `Button`.
- * E.G. A simple example is the list of answers for a question. It takes in the answers list we've defined and renders a bunch of MUI ListItems, Checkboxes, TextFields and IconButtons
+ * E.G. A simple example is the list of bookings. It takes in booking informed we've defined and renders a bunch of MUI ListItems, Checkboxes, TextFields and IconButtons
  * Your app is going to be a set of pages, and those pages are made up of primitive components. But if you don't have layers of components between that it means your code is not well modularised. Another example could be if we said to you - no component should be longer than 50 lines of code. You'd probably go refactor to group common sets of primitives together into a new component.
 
 #### Advice for UI Testing
