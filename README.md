@@ -12,7 +12,7 @@
 
 ## 0. Change Log
 
-N/A
+31/10/21 - Removed leftovers from previous Assignment (removed "custom.js" and other minor details)
 
 ## 1. Before you start
 
@@ -344,8 +344,6 @@ Your backend is persistent in terms of data storage. That means the data will re
 Once the backend has started, you can view the API documentation by navigating to `http://localhost:[port]` in a web browser.
 
 The port that the backend runs on (and that the frontend can use) is specified in `frontend/src/config.js`. You can change the port in this file. This file exists so that your frontend knows what port to use when talking to the backend.
-
-Becuase the data structure relating to the main object is defined by you, you will need to make an adjustment to the backend by modifying 3 wrapper functions defined in `backend/src/custom.js`. The backend uses this to extract meaning from your custom data structure. <b>You will have to implement these as you build out the later parts of your frontend</b>b>.
 
 Please note: You CAN modify the backend for bonus marks. But you cannot modify the backend to make the core requirements of the assignment easier (e.g. by adding routes to make the other feature building easier). You are required to seek approval bonus backend changes via the forum. You are also proibhited from writing your own backend outright.
 
