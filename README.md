@@ -12,7 +12,7 @@
 
 ## 0. Change Log
 
-31/10/21 - Removed leftovers from previous Assignment (removed "custom.js" and other minor details)
+31/10/23 - Removed leftovers from previous Assignment (removed "custom.js" and other minor details)
 
 ## 1. Before you start
 
