@@ -13,6 +13,7 @@
 ## 0. Change Log
 
 31/10/23 - Removed leftovers from previous Assignment (removed "custom.js" and other minor details)
+04/11/23 - Clarified what the dashboard is for 2.2.2.
 
 ## 1. Before you start
 
@@ -116,7 +117,7 @@ For logged in users, they are able to create their own listings (as a host) that
 	- Number of bathrooms on the property
 	- Property bedrooms (e.g. each bedroom could include number of beds and their type)
 	- Property amenities
-* Using a button, a new listing on the server is created and visibly added to the dashboard once all of the required fields have been filled out correctly.
+* Using a button, a new listing on the server is created and visibly added to the dashboard (the Hosted Listings Screen) once all of the required fields have been filled out correctly.
 
 #### 2.2.3. Edit AirBrB Listing
 * A unique route must exist for this screen that is parameterised on the listing ID.
