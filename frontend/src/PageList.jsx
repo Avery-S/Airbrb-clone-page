@@ -38,8 +38,8 @@ export default function PageList () {
         <Routes>
           <Route path="/" element={<LandingPage token={token} setToken={setToken} />}></Route>
           <Route path="/register" element={<Register token={token} setToken={setToken} />}></Route>
-          <Route path="/Login" element={<Login token={token} setToken={setToken} />}></Route>
-          <Route path="/myHostedListings" element={<HostedListings token={token} setToken={setToken} />}></Route>
+          <Route path="/login" element={<Login token={token} setToken={setToken} />}></Route>
+          <Route path="/my-hosted-listings" element={<HostedListings token={token} setToken={setToken} />}></Route>
           <Route path="/*" element={<LandingPage token={token} setToken={setToken} />}></Route>
         </Routes>
       </Box>

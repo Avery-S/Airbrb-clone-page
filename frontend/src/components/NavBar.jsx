@@ -56,7 +56,7 @@ export default function ResponsiveAppBar (props) {
         navigate('/');
         break;
       case 'My Hosted Listings':
-        navigate('/myHostedListings');
+        navigate('/my-hosted-listings');
     }
     handleCloseNavMenu();
   };
@@ -72,6 +72,7 @@ export default function ResponsiveAppBar (props) {
     } else {
       localStorage.removeItem('token');
       props.setToken(null);
+      navigate('/');
       setMsgObject({
         msgType: 'success',
         msgContent: 'You have successfully logout out!'
@@ -89,6 +90,9 @@ export default function ResponsiveAppBar (props) {
         break;
       case 'Logout':
         logout();
+        break;
+      case 'Login':
+        navigate('/login');
         break;
     }
 
