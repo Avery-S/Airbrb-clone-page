@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import checkToken from '../helper/checkToken';
 
 // Landing page as "All listings page"
 export default function LandingPage (props) {
@@ -8,6 +9,8 @@ export default function LandingPage (props) {
   React.useEffect(() => {
     navigate('/')
   }, [])
+
+  checkToken(props.setToken);
 
   return (
   <>

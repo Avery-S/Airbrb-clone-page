@@ -14,13 +14,22 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 
 import { useNavigate } from 'react-router-dom';
-
-const pages = ['All Listings'];
+import MessageAlert from './MessageAlert';
+import { DEFAULT_USER_PROFILE_IMG, BACKEND_URL } from '../helper/getLinks';
+import fetchObject from '../helper/fetchObject';
+import ErrorModal from './ErrorModal';
 
 // Nav bar as header
 export default function ResponsiveAppBar (props) {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [showMsgAlert, setShowMsgAlert] = React.useState(false);
+  const [msgObject, setMsgObject] = React.useState(null);
+  const [userProfileImg, setUserProfileImg] = React.useState('./styles/defaultImg.jpg');
+  const [errorModalShow, setErrorModalShow] = React.useState(false);
+  const [errorModalMsg, setErrorModalMsg] = React.useState('');
+  const [settings, setSettings] = React.useState([]);
+  const [pages, setPages] = React.useState([]);
 
   const navigate = useNavigate();
 
@@ -46,27 +55,65 @@ export default function ResponsiveAppBar (props) {
       case 'All Listings':
         navigate('/');
         break;
+      case 'My Hosted Listings':
+        navigate('/myHostedListings');
     }
     handleCloseNavMenu();
   };
 
+  const logout = async () => {
+    const logoutResponse = await fetch(`${BACKEND_URL}/user/auth/logout`, fetchObject(
+      'POST', {}, true
+    ));
+    const data = await logoutResponse.json();
+    if (data.error) {
+      setErrorModalMsg(data.error);
+      setErrorModalShow(true);
+    } else {
+      localStorage.removeItem('token');
+      props.setToken(null);
+      setMsgObject({
+        msgType: 'success',
+        msgContent: 'You have successfully logout out!'
+      });
+      setShowMsgAlert(true);
+      setUserProfileImg(DEFAULT_USER_PROFILE_IMG);
+    }
+  }
+
   // navigate to responding pages in user menu
   const handleUserMenuElements = (setting) => {
-    navigate(`/${setting.toLowerCase()}`)
+    switch (setting) {
+      case 'Register':
+        navigate('/register');
+        break;
+      case 'Logout':
+        logout();
+        break;
+    }
+
     handleCloseUserMenu();
   }
 
-  const settings = props.token
-    ? ['Profile', 'Account', 'Dashboard', 'Logout']
-    : ['Login', 'Register'];
-
-  // get user profile image source
-  const userImgSrc = props.token === null
-    ? './styles/defaultImg.jpg'
-    : '/static/images/avatar/2.jpg';
+  React.useEffect(() => {
+    console.log(props.token);
+    if (props.token !== null && props.token !== '') {
+      setSettings(['Profile', 'Account', 'Dashboard', 'Logout']);
+      setPages(['All Listings', 'My Hosted Listings']);
+    } else {
+      setSettings(['Login', 'Register']);
+      setPages(['All Listings']);
+    }
+  }, [props.token])
 
   return (
     <AppBar position="static" sx={{ margin: '0' }}>
+      {showMsgAlert && <MessageAlert msgType={msgObject.msgType} msgContent={msgObject.msgContent} />}
+      <ErrorModal
+        show={errorModalShow}
+        onHide={() => setErrorModalShow(false)}
+        msg={errorModalMsg}
+      />
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}/>
@@ -160,7 +207,7 @@ export default function ResponsiveAppBar (props) {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar src={userImgSrc} />
+                <Avatar src={userProfileImg} />
               </IconButton>
             </Tooltip>
             <Menu

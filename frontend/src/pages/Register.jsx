@@ -13,7 +13,8 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 
 import { useNavigate } from 'react-router-dom';
-import BACKEND_URL from '../helper/getBackendUrl';
+import { BACKEND_URL } from '../helper/getLinks';
+import fetchObject from '../helper/fetchObject';
 import ErrorModal from '../components/ErrorModal';
 
 // Register Page
@@ -24,8 +25,8 @@ export default function Register (props) {
   const [name, setName] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [passwordConfirm, setPasswordConfirm] = React.useState('');
-  const [modalShow, setModalShow] = React.useState(false);
-  const [modalMsg, setModalMsg] = React.useState('');
+  const [errorModalShow, setErrorModalShow] = React.useState(false);
+  const [errorModalMsg, setErrorModalMsg] = React.useState('');
 
   const navigate = useNavigate();
 
@@ -45,24 +46,17 @@ export default function Register (props) {
   const handleRegister = async () => {
     // Check if password matches passwordConfirm
     if (password !== passwordConfirm) {
-      console.log('clicked');
-      setModalMsg('Password must match with confirmed password!');
-      setModalShow(true);
+      setErrorModalMsg('Password must match with confirmed password!');
+      setErrorModalShow(true);
     } else {
-      const registerResponse = await fetch(`${BACKEND_URL}/user/auth/register`, {
-        method: 'POST',
-        body: JSON.stringify({
-          email, password, name
-        }),
-        headers: {
-          'Content-type': 'application/json',
-        }
-      });
+      const registerResponse = await fetch(`${BACKEND_URL}/user/auth/register`, fetchObject(
+        'POST', { email, password, name }, false
+      ));
       // Throw error & store token
       const data = await registerResponse.json();
       if (data.error) {
-        setModalMsg(data.error);
-        setModalShow(true);
+        setErrorModalMsg(data.error);
+        setErrorModalShow(true);
       } else if (data.token) {
         localStorage.setItem('token', data.token);
         props.setToken(data.token);
@@ -87,9 +81,9 @@ export default function Register (props) {
       autoComplete="off"
     >
       <ErrorModal
-        show={modalShow}
-        onHide={() => setModalShow(false)}
-        msg={modalMsg}
+        show={errorModalShow}
+        onHide={() => setErrorModalShow(false)}
+        msg={errorModalMsg}
       />
       <Typography variant='h4' sx={{ textAlign: 'center' }}>Register Form</Typography>
       {/* Register inputs */}
