@@ -6,10 +6,14 @@ import styled from '@emotion/styled';
 import Register from './pages/Register';
 import LandingPage from './pages/LandingPage';
 import ResponsiveAppBar from './components/NavBar';
+import checkToken from './helper/checkToken';
+import HostedListings from './pages/HostedListingPage';
 
 // Main structure of the page: header, page, footer
 export default function PageList () {
-  const [token, setToken] = React.useState(null);
+  const [token, setToken] = React.useState('');
+
+  checkToken(setToken);
 
   const StyledFooter = styled('div')({
     display: 'flex',
@@ -33,6 +37,7 @@ export default function PageList () {
         <Routes>
           <Route path="/" element={<LandingPage token={token} setToken={setToken} />}></Route>
           <Route path="/register" element={<Register token={token} setToken={setToken} />}></Route>
+          <Route path="/myHostedListings" element={<HostedListings token={token} setToken={setToken} />}></Route>
           <Route path="/*" element={<LandingPage token={token} setToken={setToken} />}></Route>
         </Routes>
       </Box>
