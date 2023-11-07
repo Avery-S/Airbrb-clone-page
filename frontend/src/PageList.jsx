@@ -8,6 +8,7 @@ import LandingPage from './pages/LandingPage';
 import ResponsiveAppBar from './components/NavBar';
 import checkToken from './helper/checkToken';
 import Login from './pages/Login';
+import HostedListings from './pages/HostedListingPage';
 
 // Main structure of the page: header, page, footer
 export default function PageList () {
