@@ -7,7 +7,7 @@ import Register from './pages/Register';
 import LandingPage from './pages/LandingPage';
 import ResponsiveAppBar from './components/NavBar';
 import checkToken from './helper/checkToken';
-import HostedListings from './pages/HostedListingPage';
+import Login from './pages/Login';
 
 // Main structure of the page: header, page, footer
 export default function PageList () {
@@ -37,6 +37,7 @@ export default function PageList () {
         <Routes>
           <Route path="/" element={<LandingPage token={token} setToken={setToken} />}></Route>
           <Route path="/register" element={<Register token={token} setToken={setToken} />}></Route>
+          <Route path="/Login" element={<Login token={token} setToken={setToken} />}></Route>
           <Route path="/myHostedListings" element={<HostedListings token={token} setToken={setToken} />}></Route>
           <Route path="/*" element={<LandingPage token={token} setToken={setToken} />}></Route>
         </Routes>
