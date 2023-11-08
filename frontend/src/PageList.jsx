@@ -9,10 +9,15 @@ import ResponsiveAppBar from './components/NavBar';
 import checkToken from './helper/checkToken';
 import Login from './pages/Login';
 import HostedListings from './pages/HostedListingPage';
+import ErrorModal from './components/ErrorModal';
 
 // Main structure of the page: header, page, footer
 export default function PageList () {
   const [token, setToken] = React.useState('');
+  const [errorModalShow, setErrorModalShow] = React.useState(false);
+  const [errorModalMsg, setErrorModalMsg] = React.useState('');
+
+  const commonProps = { errorModalShow, setErrorModalShow, errorModalMsg, setErrorModalMsg, token, setToken };
 
   checkToken(setToken);
 
@@ -31,16 +36,21 @@ export default function PageList () {
       {/* Header */}
       <ResponsiveAppBar token={token} setToken={setToken} />
       {/* Page */}
+      <ErrorModal
+        show={errorModalShow}
+        onHide={() => setErrorModalShow(false)}
+        msg={errorModalMsg}
+      />
       <Box sx={{
         flexGrow: 1,
         height: '100%'
       }}>
         <Routes>
-          <Route path="/" element={<LandingPage token={token} setToken={setToken} />}></Route>
-          <Route path="/register" element={<Register token={token} setToken={setToken} />}></Route>
-          <Route path="/login" element={<Login token={token} setToken={setToken} />}></Route>
-          <Route path="/my-hosted-listings" element={<HostedListings token={token} setToken={setToken} />}></Route>
-          <Route path="/*" element={<LandingPage token={token} setToken={setToken} />}></Route>
+          <Route path="/" element={<LandingPage {...commonProps} />}></Route>
+          <Route path="/register" element={<Register {...commonProps} />}></Route>
+          <Route path="/login" element={<Login {...commonProps} />}></Route>
+          <Route path="/my-hosted-listings" element={<HostedListings {...commonProps} />}></Route>
+          <Route path="/*" element={<LandingPage {...commonProps} />}></Route>
         </Routes>
       </Box>
       {/* Footer */}

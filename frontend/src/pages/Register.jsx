@@ -15,7 +15,6 @@ import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
-import ErrorModal from '../components/ErrorModal';
 
 // Register Page
 export default function Register (props) {
@@ -25,8 +24,6 @@ export default function Register (props) {
   const [name, setName] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [passwordConfirm, setPasswordConfirm] = React.useState('');
-  const [errorModalShow, setErrorModalShow] = React.useState(false);
-  const [errorModalMsg, setErrorModalMsg] = React.useState('');
 
   const navigate = useNavigate();
 
@@ -46,8 +43,8 @@ export default function Register (props) {
   const handleRegister = async () => {
     // Check if password matches passwordConfirm
     if (password !== passwordConfirm) {
-      setErrorModalMsg('Password must match with confirmed password!');
-      setErrorModalShow(true);
+      props.setErrorModalMsg('Password must match with confirmed password!');
+      props.setErrorModalShow(true);
     } else {
       const registerResponse = await fetch(`${BACKEND_URL}/user/auth/register`, fetchObject(
         'POST', { email, password, name }, false
@@ -55,10 +52,11 @@ export default function Register (props) {
       // Throw error & store token
       const data = await registerResponse.json();
       if (data.error) {
-        setErrorModalMsg(data.error);
-        setErrorModalShow(true);
+        props.setErrorModalMsg(data.error);
+        props.setErrorModalShow(true);
       } else if (data.token) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('userEmail', email);
         props.setToken(data.token);
         navigate('/');
         console.log(`token: ${data.token}`);
@@ -80,11 +78,6 @@ export default function Register (props) {
       noValidate
       autoComplete="off"
     >
-      <ErrorModal
-        show={errorModalShow}
-        onHide={() => setErrorModalShow(false)}
-        msg={errorModalMsg}
-      />
       <Typography variant='h4' sx={{ textAlign: 'center' }}>Register Form</Typography>
       {/* Register inputs */}
       <Box sx={{

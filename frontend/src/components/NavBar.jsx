@@ -72,6 +72,7 @@ export default function ResponsiveAppBar (props) {
     } else {
       localStorage.removeItem('token');
       props.setToken(null);
+      localStorage.clear();
       navigate('/');
       setMsgObject({
         msgType: 'success',
