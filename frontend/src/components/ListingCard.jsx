@@ -1,9 +1,13 @@
 import * as React from 'react';
 import Card from '@mui/material/Card';
-import { Box, CardContent, CardMedia, IconButton, Typography } from '@mui/material';
+import { Box, CardMedia, IconButton, Typography } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { red, blue } from '@mui/material/colors';
+import Rating from '@mui/material/Rating';
+import MapsHomeWorkOutlinedIcon from '@mui/icons-material/MapsHomeWorkOutlined';
+// import BedOutlinedIcon from '@mui/icons-material/BedOutlined';
+// import BathtubOutlinedIcon from '@mui/icons-material/BathtubOutlined';
 
 import userProfileImg from '../styles/userProfile1.png';
 import ConfirmModal from './ConfirmModal';
@@ -19,10 +23,22 @@ export default function ListingCard (props) {
     setShowConfirmModal(true);
   }
 
+  const getUserRating = () => {
+    const reviews = props.reviews;
+    let userRating = 0;
+    const reviewLength = reviews.length;
+    for (const review of reviews) {
+      userRating += parseFloat(review.rating);
+    }
+    userRating /= reviewLength;
+    return [userRating, reviewLength]
+  }
+
+  const [userRating, reviewLength] = getUserRating();
+
   // delete the listing API
   const deleteListing = async () => {
     const listingId = props.listingId;
-    // const listingInfo = props.dct.listing;
     console.log(props);
     console.log(`delete: ${listingId}`);
     const response = await fetch(`${BACKEND_URL}/listings/${listingId}`, fetchObject(
@@ -66,6 +82,7 @@ export default function ListingCard (props) {
           display: 'flex',
           flexDirection: 'column',
         }}>
+          {/* Edit Btns for owners, or status for users */}
           {props.owner
             ? (
                 <>
@@ -100,9 +117,64 @@ export default function ListingCard (props) {
             objectFit: 'cover'
           }}
         />
-        <CardContent sx={{ width: '100%', height: '100%' }}>
-          <Typography variant='h6'>Hello</Typography>
-        </CardContent>
+        <Box sx={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '0',
+          paddingBottom: '1vw',
+        }}>
+          <Box sx={{
+            display: 'flex',
+            alignSelf: 'center',
+          }}>
+            <Typography variant='h6' fontWeight='bold'>{ props.title }</Typography>
+          </Box>
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+          }}>
+            <Box sx={{
+              display: 'flex',
+              justifySelf: 'flex-start',
+              flexDirection: 'column',
+            }}>
+              <Typography variant='subtitle2'>
+                <MapsHomeWorkOutlinedIcon fontSize='small'/>
+                { props.metadata.propertyType }
+              </Typography>
+              <Typography variant='subtitle2' color='grey'>
+                { props.metadata.numberOfBeds } bed ·
+                { props.metadata.numberOfBathrooms } bathroom
+              </Typography>
+              <Typography variant='subtitle2' fontWeight='bold' sx={{
+                display: 'flex',
+                alignSelf: 'flex-start',
+                textDecoration: 'underline',
+              }}>
+                ${props.price}&nbsp;
+                <Typography variant='subtitle2' color='grey'sx={{ textDecoration: 'none' }}>
+                  (per night)
+                </Typography>
+              </Typography>
+            </Box>
+            <Box sx={{
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+              {
+                reviewLength === 0
+                  ? (<Typography variant='subtitle2'> No Reviews </Typography>)
+                  : (<>
+                      <Rating name="user-rating" defaultValue={userRating} precision={0.1} readOnly />
+                    <Typography variant='subtitle2'>{ reviewLength } reviews</Typography>
+                    </>)
+              }
+            </Box>
+          </Box>
+        </Box>
       </Card>
     </>
   );
