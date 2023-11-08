@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Card from '@mui/material/Card';
 import { CardContent, CardMedia, Typography } from '@mui/material';
-// import Image from 'react-bootstrap/Image';
 import userProfileImg from '../styles/userProfile1.png';
 
 export default function ListingCard (props) {
@@ -16,12 +15,12 @@ export default function ListingCard (props) {
     }}>
        <CardMedia
         component="img"
-        image={userProfileImg} // Use the imported image
+        image={userProfileImg}
         alt="Thumbnail"
         sx={{
           height: '100%',
           aspectRatio: 1,
-          objectFit: 'cover' // This will cover the card, cropping as necessary
+          objectFit: 'cover'
         }}
       />
       <CardContent sx={{ width: '100%', height: '100%' }}>
