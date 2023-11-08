@@ -15,10 +15,7 @@ import userProfileImg from '../styles/userProfile1.png';
 
 // User Hosted Listings Page
 export default function HostedListings (props) {
-  // const [allListings, setAllListings] = React.useState([]);
   const [hostedListings, setHostedListings] = React.useState([]);
-  // const [listingInfo, setListingInfo] = React.useState({});
-  // const [listingAction, setListingAction] = React.useState('');
 
   checkToken(props.setToken);
 
@@ -32,7 +29,7 @@ export default function HostedListings (props) {
     const response = await fetch(`${BACKEND_URL}/listings/new`, fetchObject(
       'POST',
       {
-        title: 'listing 3',
+        title: 'listing 34',
         address: {},
         price: 350,
         thumbnail: userProfileImg,
@@ -55,7 +52,8 @@ export default function HostedListings (props) {
       const listingInfo = await getListingInfo(data.listingId);
       const newHostedListings = [...hostedListings];
       if (listingInfo) {
-        newHostedListings.push(listingInfo)
+        listingInfo.listingId = data.listingId;
+        newHostedListings.push(listingInfo);
         setHostedListings(newHostedListings);
       }
     }
@@ -71,7 +69,7 @@ export default function HostedListings (props) {
       props.setErrorModalMsg(data.error);
       props.setErrorModalShow(true);
     } else {
-      return data;
+      return data.listing;
     }
   }
 
@@ -92,7 +90,6 @@ export default function HostedListings (props) {
 
   // get the hosted listings
   const getHostedListings = async (getListing) => {
-    // TODO: get the listing information
     const userHostedListings = [];
     const allListings = await getListing();
 
@@ -102,14 +99,15 @@ export default function HostedListings (props) {
     } else {
       for (const listing of allListings) {
         if (listing.owner === localStorage.getItem('userEmail')) {
-          const listingInfo = await getListingInfo(String(listing.id));
+          const listingInfo = await getListingInfo(listing.id);
           if (listingInfo) {
-            userHostedListings.push(listingInfo);
+            listingInfo.listingId = listing.id;
+            userHostedListings.push(listingInfo); // TODO cannot store two at the same time
           }
         }
       }
       setHostedListings(userHostedListings);
-      // setHostedListings(['', '', '', '', '', '']);
+      console.log(`getHostedListings: ${userHostedListings}`);
     }
   }
 
@@ -157,10 +155,10 @@ export default function HostedListings (props) {
                     onClick={createListing}
                     aria-label="Create new listing"
                   >
-                      <AddCircleOutlineOutlinedIcon
-                        color="primary"
-                        fontSize='large'
-                      />
+                    <AddCircleOutlineOutlinedIcon
+                      color="primary"
+                      fontSize='large'
+                    />
                   </IconButton >
                 </Tooltip>
                 <Box sx={{
@@ -176,8 +174,15 @@ export default function HostedListings (props) {
                   gap: { gap },
                   rowGap: '1%',
                 }}>
-                  {hostedListings.map((hostedListing, index) =>
-                    <ListingCard key={index} {...hostedListing} cardWidth={cardWidth}
+                  {hostedListings.map(listing =>
+                    <ListingCard
+                      {...listing}
+                      key={listing.listingId}
+                      {...props}
+                      cardWidth={cardWidth}
+                      owner={listing.owner === localStorage.getItem('userEmail')}
+                      setHostedListings={setHostedListings}
+                      hostedListings={hostedListings}
                   />)}
                 </Box>
               </Box>
@@ -194,7 +199,7 @@ export default function HostedListings (props) {
                 </Typography> <br/>
                 <Button
                   variant="contained"
-                  sx={{ width: 'contentWidth' }} // TODO: onClick -> openCreateModal
+                  sx={{ width: 'contentWidth' }}
                   onClick={createListing}
                 >
                   Create My Listing
