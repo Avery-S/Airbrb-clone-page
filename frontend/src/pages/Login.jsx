@@ -39,6 +39,7 @@ export default function Login (props) {
         localStorage.setItem('token', data.token);
         props.setToken(data.token);
         navigate('/');
+        localStorage.setItem('userEmail', email);
       } else {
         setModalMsg(data.error || 'An error occurred during login.');
         setModalShow(true);
