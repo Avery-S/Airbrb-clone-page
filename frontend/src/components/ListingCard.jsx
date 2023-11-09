@@ -9,7 +9,6 @@ import MapsHomeWorkOutlinedIcon from '@mui/icons-material/MapsHomeWorkOutlined';
 // import BedOutlinedIcon from '@mui/icons-material/BedOutlined';
 // import BathtubOutlinedIcon from '@mui/icons-material/BathtubOutlined';
 
-import userProfileImg from '../styles/userProfile1.png';
 import ConfirmModal from './ConfirmModal';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
@@ -120,7 +119,7 @@ export default function ListingCard (props) {
         </Box>
          <CardMedia
           component="img"
-          image={userProfileImg}
+          image={props.thumbnail}
           alt="Thumbnail"
           sx={{
             height: '100%',
