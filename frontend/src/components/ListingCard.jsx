@@ -18,6 +18,13 @@ export default function ListingCard (props) {
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
   console.log(props);
 
+  const isMounted = React.useRef(false);
+
+  React.useEffect(() => {
+    isMounted.current = true;
+    return () => { isMounted.current = false; }
+  }, [])
+
   // handle delete listing
   const handleDeleteListing = () => {
     setShowConfirmModal(true);
@@ -52,9 +59,13 @@ export default function ListingCard (props) {
       let newHostedListings = props.hostedListings;
       console.log(props.hostedListings);
       newHostedListings = newHostedListings.filter((listingInfo) => String(listingInfo.listingId) !== String(listingId));
-      props.setHostedListings(newHostedListings);
-      console.log(newHostedListings);
-      setShowConfirmModal(false);
+      const newAllListings = props.allListings.filter((listingInfo) => String(listingInfo.listingId) !== String(listingId));
+      if (isMounted.current) {
+        props.setHostedListings(newHostedListings);
+        props.setAllListings(newAllListings);
+        console.log(newHostedListings);
+        setShowConfirmModal(false);
+      }
     }
   }
 
@@ -154,11 +165,11 @@ export default function ListingCard (props) {
                 alignSelf: 'flex-start',
                 textDecoration: 'underline',
               }}>
-                ${props.price}&nbsp;
-                <Typography variant='subtitle2' color='grey'sx={{ textDecoration: 'none' }}>
-                  (per night)
-                </Typography>
+                ${props.price}&nbsp;/ night
               </Typography>
+              {/* <Typography variant='subtitle2' color='grey'sx={{ display: 'inline', textDecoration: 'none' }}>
+                (per night)
+              </Typography> */}
             </Box>
             <Box sx={{
               display: 'flex',

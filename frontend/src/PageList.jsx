@@ -16,8 +16,10 @@ export default function PageList () {
   const [token, setToken] = React.useState('');
   const [errorModalShow, setErrorModalShow] = React.useState(false);
   const [errorModalMsg, setErrorModalMsg] = React.useState('');
+  const [allListings, setAllListings] = React.useState([]);
 
   const commonProps = { errorModalShow, setErrorModalShow, errorModalMsg, setErrorModalMsg, token, setToken };
+  const listingProps = { allListings, setAllListings };
 
   checkToken(setToken);
 
@@ -49,7 +51,7 @@ export default function PageList () {
           <Route path="/" element={<LandingPage {...commonProps} />}></Route>
           <Route path="/register" element={<Register {...commonProps} />}></Route>
           <Route path="/login" element={<Login {...commonProps} />}></Route>
-          <Route path="/my-hosted-listings" element={<HostedListings {...commonProps} />}></Route>
+          <Route path="/my-hosted-listings" element={<HostedListings {...commonProps} { ...listingProps } />}></Route>
           <Route path="/*" element={<LandingPage {...commonProps} />}></Route>
         </Routes>
       </Box>

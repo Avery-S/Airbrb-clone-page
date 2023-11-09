@@ -29,7 +29,7 @@ export default function HostedListings (props) {
     const response = await fetch(`${BACKEND_URL}/listings/new`, fetchObject(
       'POST',
       {
-        title: 'listing 34',
+        title: 'House at sea 2',
         address: {},
         price: 350,
         thumbnail: userProfileImg,
@@ -51,10 +51,13 @@ export default function HostedListings (props) {
       // add to hosted listings
       const listingInfo = await getListingInfo(data.listingId);
       const newHostedListings = [...hostedListings];
+      const newAllListings = [...props.allListings];
       if (listingInfo) {
         listingInfo.listingId = data.listingId;
         newHostedListings.push(listingInfo);
         setHostedListings(newHostedListings);
+        newAllListings.push(listingInfo);
+        props.setAllListings(newAllListings);
       }
     }
   }
