@@ -3,7 +3,9 @@ import { useTheme } from '@mui/material/styles';
 import { useMediaQuery, Box } from '@mui/material';
 import ListingCard from './ListingCard';
 
+// Box takes in a list of listings and display using ListingCard
 export default function ListingCardBox (props) {
+  // set gap and card width based on screen size
   const theme = useTheme();
   const matchesSM = useMediaQuery(theme.breakpoints.down('sm'));
   const matchesMD = useMediaQuery(theme.breakpoints.down('md'));
@@ -41,13 +43,14 @@ export default function ListingCardBox (props) {
       gap: { gap },
       rowGap: '1vw',
     }}>
+      {/* Display listing card for each listing */}
       {props.listings.map(listing =>
         <ListingCard
           {...listing}
           key={listing.listingId}
           {...props}
           cardWidth={cardWidth}
-          owner={listing.owner === localStorage.getItem('userEmail')}
+          ifOwner={listing.owner === localStorage.getItem('userEmail')}
       />)}
     </Box>)
 }
