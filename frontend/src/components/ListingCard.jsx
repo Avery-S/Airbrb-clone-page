@@ -3,19 +3,24 @@ import Card from '@mui/material/Card';
 import { Box, CardMedia, IconButton, Typography } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { red, blue } from '@mui/material/colors';
+import { red, blue, green } from '@mui/material/colors';
 import Rating from '@mui/material/Rating';
 import MapsHomeWorkOutlinedIcon from '@mui/icons-material/MapsHomeWorkOutlined';
+import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 // import BedOutlinedIcon from '@mui/icons-material/BedOutlined';
 // import BathtubOutlinedIcon from '@mui/icons-material/BathtubOutlined';
 
 import ConfirmModal from './ConfirmModal';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
+import AvailabilityModal from './AvailabilityModal';
 
 export default function ListingCard (props) {
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
-  console.log(props);
+  const [showAvailabilityModal, setShowAvailabilityModal] = React.useState(false);
+  const [availabilities, setAvailabilities] = React.useState([]);
+  const [published, setPublished] = React.useState(props.published);
+  // console.log(props);
 
   const isMounted = React.useRef(false);
 
@@ -41,7 +46,12 @@ export default function ListingCard (props) {
   }
 
   const [userRating, reviewLength] = getUserRating();
-
+  const boxShadow = published && props.ifOwner
+    ? '0.5vw 0.5vw 0.5vw rgba(0, 128, 0, 0.5)'
+    : '0.1vw 0.1vw 0.1vw grey';
+  const publishedIconColor = published && props.ifOwner
+    ? green[700]
+    : '';
   // delete the listing API
   const deleteListing = async () => {
     const listingId = props.listingId;
@@ -56,13 +66,13 @@ export default function ListingCard (props) {
       props.setErrorModalShow(true);
     } else {
       let newHostedListings = props.hostedListings;
-      console.log(props.hostedListings);
+      // console.log(props.hostedListings);
       newHostedListings = newHostedListings.filter((listingInfo) => String(listingInfo.listingId) !== String(listingId));
       const newAllListings = props.allListings.filter((listingInfo) => String(listingInfo.listingId) !== String(listingId));
       if (isMounted.current) {
         props.setHostedListings(newHostedListings);
         props.setAllListings(newAllListings);
-        console.log(newHostedListings);
+        // console.log(newHostedListings);
         setShowConfirmModal(false);
       }
     }
@@ -84,8 +94,31 @@ export default function ListingCard (props) {
         minWidth: '200px',
         margin: '0.5vw',
         position: 'relative',
-        boxShadow: '2px 2px 10px rgba(0, 128, 0, 0.5)',
+        boxShadow: { boxShadow },
       }}>
+        <IconButton
+          sx={{
+            position: 'absolute',
+            bottom: '0.5vw',
+            right: '0.5vw',
+          }}
+          aria-label='If published'
+          onClick={() => setShowAvailabilityModal(true)}
+        >
+          <PublishedWithChangesIcon
+            fontSize='medium'
+            sx={{ color: publishedIconColor }}
+          />
+        </IconButton>
+        <AvailabilityModal
+          show={showAvailabilityModal}
+          onHide={() => setShowAvailabilityModal(false)}
+          availabilities={availabilities}
+          setAvailabilities={setAvailabilities}
+          published={published}
+          setPublished={setPublished}
+          {...props}
+        />
         <Box sx={{
           position: 'absolute',
           right: '0',
