@@ -24,11 +24,18 @@ export default function HostedListings (props) {
   React.useEffect(() => {
     getHostedListings(getListings);
   }, []);
+  // get hosted listings every 5 seconds
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      getHostedListings(getListings);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleShowCreateModal = () => setShowCreateModal(true);
   const handleCloseCreateModal = () => setShowCreateModal(false)
 
-  // TODO: test create, to delete
   const createListing = async (body) => {
     const response = await fetch(`${BACKEND_URL}/listings/new`, fetchObject(
       'POST', body, true
