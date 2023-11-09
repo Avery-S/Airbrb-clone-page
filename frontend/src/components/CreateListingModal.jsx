@@ -41,7 +41,6 @@ export default function CreateListingModal (props) {
   // submit create list
   const handleSubmit = (event) => {
     event.preventDefault();
-    // handleCreateListing(event);
     const body = {
       title,
       address,
@@ -50,6 +49,7 @@ export default function CreateListingModal (props) {
       metadata
     }
     props.createListing(body);
+    handleClose();
   };
 
   // 上传图片的处理函数
