@@ -11,11 +11,12 @@ import ListingCard from '../components/ListingCard';
 import checkToken from '../helper/checkToken';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
-import userProfileImg from '../styles/userProfile1.png';
+import CreateListingModal from '../components/CreateListingModal';
 
 // User Hosted Listings Page
 export default function HostedListings (props) {
   const [hostedListings, setHostedListings] = React.useState([]);
+  const [showCreateModal, setShowCreateModal] = React.useState(false);
 
   checkToken(props.setToken);
 
@@ -24,24 +25,13 @@ export default function HostedListings (props) {
     getHostedListings(getListings);
   }, []);
 
+  const handleShowCreateModal = () => setShowCreateModal(true);
+  const handleCloseCreateModal = () => setShowCreateModal(false)
+
   // TODO: test create, to delete
-  const createListing = async () => {
+  const createListing = async (body) => {
     const response = await fetch(`${BACKEND_URL}/listings/new`, fetchObject(
-      'POST',
-      {
-        title: 'House at sea 2',
-        address: {},
-        price: 350,
-        thumbnail: userProfileImg,
-        metadata: {
-          propertyType: 'House',
-          numberOfBathrooms: 1,
-          numberOfBeds: 1,
-          amenities: [],
-          houseRules: ''
-        }
-      },
-      true
+      'POST', body, true
     ));
     const data = await response.json();
     if (data.error) {
@@ -148,6 +138,12 @@ export default function HostedListings (props) {
 
   return (
     <Box>
+      {/* Create Listing Modal */}
+      <CreateListingModal
+        show={showCreateModal}
+        onHide={handleCloseCreateModal}
+        createListing={createListing}
+      />
       {
         hostedListings.length !== 0
           ? (
@@ -155,7 +151,7 @@ export default function HostedListings (props) {
                 <Tooltip title="Create new listing" arrow>
                   <IconButton
                     sx={{ marginRight: '4vw', paddingTop: '1vw', alignSelf: 'flex-end' }}
-                    onClick={createListing}
+                    onClick={handleShowCreateModal}
                     aria-label="Create new listing"
                   >
                     <AddCircleOutlineOutlinedIcon
@@ -203,7 +199,7 @@ export default function HostedListings (props) {
                 <Button
                   variant="contained"
                   sx={{ width: 'contentWidth' }}
-                  onClick={createListing}
+                  onClick={handleShowCreateModal}
                 >
                   Create My Listing
                 </Button>

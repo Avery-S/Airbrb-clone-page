@@ -1,3 +1,4 @@
 - [ ] 'Cancel' button takes the user back to the same position they were viewing before
 - [ ] Error page when user attempts to go to an undefined Route (show error then direct back to LandingPage)
 - [ ] Allow users to upload multiple images
+- [ ] Dollar sign
