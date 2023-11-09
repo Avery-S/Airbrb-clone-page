@@ -23,13 +23,13 @@ export default function HostedListings (props) {
     getHostedListings(getListings);
   }, []);
   // get hosted listings every 5 seconds
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      getHostedListings(getListings);
-    }, 5000);
+  // React.useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     getHostedListings(getListings);
+  //   }, 5000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const handleShowCreateModal = () => setShowCreateModal(true);
   const handleCloseCreateModal = () => setShowCreateModal(false)
@@ -100,7 +100,7 @@ export default function HostedListings (props) {
           const listingInfo = await getListingInfo(listing.id);
           if (listingInfo) {
             listingInfo.listingId = listing.id;
-            userHostedListings.push(listingInfo); // TODO cannot store two at the same time
+            userHostedListings.push(listingInfo);
           }
         }
       }
@@ -136,7 +136,7 @@ export default function HostedListings (props) {
                 <ListingCardBox
                   listings={hostedListings}
                   {...props}
-                  hostedListing={hostedListings}
+                  hostedListings={hostedListings}
                   setHostedListings={setHostedListings}
                 />
               </Box>
