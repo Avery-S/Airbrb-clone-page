@@ -3,7 +3,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Box, TextField, Button, Typography, FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import BACKEND_URL from '../helper/getBackendUrl';
+import { BACKEND_URL } from '../helper/getLinks';
 
 import ErrorModal from '../components/ErrorModal';
 
