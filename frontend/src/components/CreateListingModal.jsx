@@ -1,12 +1,17 @@
-import React, { useState } from 'react'; // 修正了多余空格
+import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-// import { useNavigate } from 'react-router-dom'; // 确保你已经导入useNavigate
+// import { useNavigate } from 'react-router-dom';
 import { fileToDataUrl } from '../helper/fileToDataUrl.jsx';
 import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import Grid from '@mui/material/Unstable_Grid2';
+import TextField from '@mui/material/TextField';
 
 // import checkToken from '../helper/checkToken';
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
+import CountrySelect from './CountrySelect.jsx';
+import AmenitiesTags from './AmenitiesTags.jsx';
+import PropertyTypeComboBox from './PropertyTypeComboBox'; // 确保路径正确
 
 export default function CreateListingModal (props) {
   const initialMetadata = {
@@ -48,25 +53,24 @@ export default function CreateListingModal (props) {
       thumbnail,
       metadata
     }
+    console.log(address);
     props.createListing(body);
     handleClose();
   };
 
-  // 上传图片的处理函数
   const handleImageChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
       try {
         const dataUrl = await fileToDataUrl(file);
-        setUploadedImg(dataUrl); // 将上传的图片设置为预览
+        setUploadedImg(dataUrl);
         setThumbnail(dataUrl);
       } catch (error) {
         console.error(error);
-        // 这里可以添加错误处理逻辑
       }
     }
   };
-  // 用于清除已上传的图片
+
   const handleClearImage = () => {
     setUploadedImg('');
     setThumbnail(DEFAULT_THUMBNAIL_URL);
@@ -80,13 +84,10 @@ export default function CreateListingModal (props) {
     }));
   };
 
-  const handleAmenitiesChange = (e) => {
-    const { value, checked } = e.target;
+  const handleAmenitiesChange = (newValue) => {
     setMetadata((prevMetadata) => ({
       ...prevMetadata,
-      amenities: checked
-        ? [...prevMetadata.amenities, value]
-        : prevMetadata.amenities.filter((amenity) => amenity !== value)
+      amenities: newValue
     }));
   };
 
@@ -102,176 +103,175 @@ export default function CreateListingModal (props) {
           <Modal.Title>Create New Listing</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>
-            <label htmlFor="title">Title:</label>
-            <input
-              id="title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </div>
-          {/* Address Section */}
-          <div>
-            <label htmlFor="street">Street:</label>
-            <input
-              id="street"
-              type="text"
-              value={address.street}
-              onChange={(e) => setAddress({ ...address, street: e.target.value })}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="city">City:</label>
-            <input
-              id="city"
-              type="text"
-              value={address.city}
-              onChange={(e) => setAddress({ ...address, city: e.target.value })}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="state">State:</label>
-            <input
-              id="state"
-              type="text"
-              value={address.state}
-              onChange={(e) => setAddress({ ...address, state: e.target.value })}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="postCode">PostCode:</label>
-            <input
-              id="postCode"
-              type="text"
-              value={address.postCode}
-              onChange={(e) => setAddress({ ...address, postCode: e.target.value })}
-              required
-            />
-          </div>
-          <div>
-            <label htmlFor="country">Country:</label>
-            <input
-              id="country"
-              type="text"
-              value={address.country}
-              onChange={(e) => setAddress({ ...address, country: e.target.value })}
-            />
-          </div>
-          {/* ...添加其他地址字段 */}
-          {/* Price Input */}
-          <div>
-            <label htmlFor="price">Price:</label>
-            <input
-              id="price"
-              type="text"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              required
-            />
-          </div>
-
-          {/* Thumbnail Input */}
-        <div>
-          <label htmlFor="thumbnail">Thumbnail URL:</label>
+        <Grid container spacing={2}>
+        <Grid xs={4}> {/* image container */}
+          <label htmlFor="thumbnail">Select an Image to Post:</label>
           <input
             id="thumbnail"
             type="text"
             value={thumbnail}
             onChange={(e) => setThumbnail(e.target.value)}
             required
-            style={{ display: 'none' }} // 隐藏文本输入，因为我们会使用图片上传
+            style={{ display: 'none' }}
           />
-          <div>
-            <img src={uploadedImg || DEFAULT_THUMBNAIL_URL} alt="Thumbnail" style={{ width: '100px', height: '100px' }} />
-            <input accept="image/*" id="icon-button-file" type="file" style={{ display: 'none' }} onChange={handleImageChange} />
-            <label htmlFor="icon-button-file">
-              <IconButton color="primary" aria-label="upload picture" component="span">
-                <PhotoCamera />
-              </IconButton>
-            </label>
-            {uploadedImg && (
-              <Button variant="secondary" onClick={handleClearImage}>Clear Image</Button>
-            )}
+            <div>
+              <img src={uploadedImg || DEFAULT_THUMBNAIL_URL} alt="Thumbnail" style={{ width: '85%', height: '85%' }} />
+              <input accept="image/*" id="icon-button-file" type="file" style={{ display: 'none' }} onChange={handleImageChange} />
+              <label htmlFor="icon-button-file">
+                <IconButton color="primary" aria-label="upload picture" component="span">
+                  <PhotoCamera />
+                </IconButton>
+              </label>
+              {uploadedImg && (
+                <Button variant="secondary" onClick={handleClearImage}>Clear Image</Button>
+              )}
           </div>
-        </div>
-
-          {/* Metadata Inputs */}
-          <div>
-            <label htmlFor="propertyType">Property Type:</label>
-            <select
-                id="propertyType"
-                value={metadata.propertyType}
-                onChange={handleMetadataChange}
+            </Grid>
+            <Grid item xs={8} container spacing={2} > {/* 这里是2/3的容器 */}
+              {/* 把要占2/3宽度的Form元素放在这个Grid里 */}
+              <Grid item xs={7}>
+              <TextField
+                fullWidth
+                id="title"
+                label="Title"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 required
-            >
-                <option value="">Select a property type</option>
-                <option value="apartment">Apartment</option>
-                <option value="house">House</option>
-                <option value="villa">Villa</option>
-                <option value="condominium">Condominium</option>
-                {/* 在这里添加其他房产类型选项 */}
-            </select>
-            </div>
-          <div>
-            <label htmlFor="numberOfBathrooms">Number Of Bathrooms:</label>
-            <input
+              />
+            </Grid>
+          {/* Address Section */}
+          <Grid container spacing={2}>
+          <Grid item xs={6}>
+              <TextField
+                fullWidth
+                id="street"
+                label="Street"
+                type="text"
+                value={address.street}
+                onChange={(e) => setAddress({ ...address, street: e.target.value })}
+                required
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                id="city"
+                label="City"
+                type="text"
+                value={address.city}
+                onChange={(e) => setAddress({ ...address, city: e.target.value })}
+                required
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                id="state"
+                label="State"
+                type="text"
+                value={address.state}
+                onChange={(e) => setAddress({ ...address, state: e.target.value })}
+                required
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                id="postCode"
+                label="PostCode"
+                type="text"
+                value={address.postCode}
+                onChange={(e) => setAddress({ ...address, postCode: e.target.value })}
+                required
+              />
+            </Grid>
+
+            <Grid item xs={6}>
+              <CountrySelect
+                value={address.country}
+                onChange={(event, newValue) => {
+                  setAddress({ ...address, country: newValue ? newValue.label : '' });
+                }}
+              />
+            </Grid>
+          </Grid>
+          {/* Price Input */}
+          <Grid item xs={6}>
+              <TextField
+                fullWidth
+                id="price"
+                label="Price"
+                type="text"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                required
+              />
+            </Grid>
+          {/* Metadata Inputs */}
+          <Grid item xs={7}>
+            <PropertyTypeComboBox
+              value={metadata.propertyType}
+              onChange={handleMetadataChange}
+            />
+          </Grid>
+
+          <Grid item xs={6}>
+              <TextField
+                fullWidth
                 id="numberOfBathrooms"
+                label="Number Of Bathrooms"
                 type="number"
                 value={metadata.numberOfBathrooms}
                 onChange={handleMetadataChange}
                 required
-            />
-            </div>
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                inputProps = {{ 
+                  min: "0" 
+                }}
+              />
+            </Grid>
 
-          <div>
-            <label htmlFor="numberOfBeds">Number Of Beds:</label>
-            <input
-              id="numberOfBeds"
-              type="number"
-              value={metadata.numberOfBeds}
-              onChange={handleMetadataChange}
-              required
-            />
-          </div>
-          <div>
-            <label>
-                <input
-                type="checkbox"
-                name="amenities"
-                value="Wi-Fi"
-                checked={metadata.amenities.includes('Wi-Fi')}
-                onChange={handleAmenitiesChange}
-                />
-                Wi-Fi
-            </label>
-            <label>
-                <input
-                type="checkbox"
-                name="amenities"
-                value="Parking"
-                checked={metadata.amenities.includes('Parking')}
-                onChange={handleAmenitiesChange}
-                />
-                Parking
-            </label>
-            {/* 更多设施复选框... */}
-            </div>
-        <div>
-            <label htmlFor="houseRules">House Rules:</label>
-            <input
-              id="houseRules"
-              type="text"
-              value={metadata.street}
-              onChange={handleMetadataChange}
-            />
-          </div>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                id="numberOfBeds"
+                label="Number Of Beds"
+                type="number"
+                value={metadata.numberOfBeds}
+                onChange={handleMetadataChange}
+                required
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                inputProps={{ 
+                  min: "1" 
+                }}
+              />
+            </Grid>
 
-          {/* ...添加其他元数据字段 */}
+            <Grid item xs={10}>
+              <AmenitiesTags 
+            selectedAmenities={metadata.amenities} 
+            onChange={handleAmenitiesChange} 
+          />
+          </Grid>
+          
+        <Grid item xs={10}>
+              <TextField
+                fullWidth
+                id="houseRules"
+                label="House Rules"
+                type="text"
+                value={metadata.houseRules}
+                onChange={handleMetadataChange}
+              />
+            </Grid>
+            </Grid>
+          </Grid>
+          
         </Modal.Body>
 
         <Modal.Footer>
