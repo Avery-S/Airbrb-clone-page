@@ -19,7 +19,7 @@ export default function ListingCard (props) {
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
   const [showAvailabilityModal, setShowAvailabilityModal] = React.useState(false);
   const [availabilities, setAvailabilities] = React.useState([]);
-  const [published, setPublished] = React.useState(props.published);
+  const [ifPublished, setIfPublished] = React.useState(props.published);
   // console.log(props);
 
   const isMounted = React.useRef(false);
@@ -46,10 +46,10 @@ export default function ListingCard (props) {
   }
 
   const [userRating, reviewLength] = getUserRating();
-  const boxShadow = published && props.ifOwner
+  const boxShadow = ifPublished && props.ifOwner
     ? '0.5vw 0.5vw 0.5vw rgba(0, 128, 0, 0.5)'
     : '0.1vw 0.1vw 0.1vw grey';
-  const publishedIconColor = published && props.ifOwner
+  const publishedIconColor = ifPublished && props.ifOwner
     ? green[700]
     : '';
   // delete the listing API
@@ -115,8 +115,8 @@ export default function ListingCard (props) {
           onHide={() => setShowAvailabilityModal(false)}
           availabilities={availabilities}
           setAvailabilities={setAvailabilities}
-          published={published}
-          setPublished={setPublished}
+          ifPublished={ifPublished}
+          setIfPublished={setIfPublished}
           {...props}
         />
         <Box sx={{

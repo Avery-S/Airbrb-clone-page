@@ -17,7 +17,7 @@ export default function AvailabilityModal (props) {
   const [startDate, setStartDate] = React.useState(dayjs());
   const [endDate, setEndDate] = React.useState(dayjs());
   const [chipData, setChipData] = React.useState(props.availability);
-  // console.log(props.availabilities);
+  console.log(props);
   const ListItem = styled('li')(({ theme }) => ({
     margin: theme.spacing(0.5),
   }));
@@ -62,9 +62,28 @@ export default function AvailabilityModal (props) {
         props.setErrorModalShow(true);
       } else {
         props.setAvailabilities(chipData);
-        props.setPublished(true);
+        props.setIfPublished(true);
         props.onHide();
       }
+    }
+  }
+
+  // unpulish the listing
+  const handleUnpublish = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/listings/unpublish/${props.listingId}`, fetchObject('PUT', {}));
+      const data = await response.json();
+      if (data.error) {
+        props.setErrorModalMsg(data.error);
+        props.setErrorModalShow(true);
+      } else {
+        props.setIfPublished(false);
+        props.setAvailabilities([]);
+        setChipData([]);
+      }
+    } catch (error) {
+      props.setErrorModalMsg(error);
+      props.setErrorModalShow(true);
     }
   }
 
@@ -104,60 +123,70 @@ export default function AvailabilityModal (props) {
             {chipData.map((data) => {
               return (
                 <ListItem key={data.key}>
-                  <Chip
-                    label={data.label}
-                    onDelete={data.label === 'React' ? undefined : handleDelete(data)}
-                  />
+                  {
+                    !props.ifPublished
+                      ? (<Chip
+                        label={data.label}
+                        onDelete={data.label === 'React' ? undefined : handleDelete(data)}
+                      />)
+                      : (<Chip label={data.label} />)
+                  }
                 </ListItem>
               );
             })}
           </Box>
-          <Box sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-evenly',
-          }}>
+          { !props.ifPublished &&
             <Box sx={{
               display: 'flex',
               flexDirection: 'row',
               justifyContent: 'space-evenly',
-              flexWrap: 'wrap',
-              flex: '2',
             }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DatePicker', 'DatePicker']}>
-                    <DatePicker
-                      label="Start date picker"
-                      value={startDate}
-                      onChange={(value) => setStartDate(value)}
-                    />
-                </DemoContainer>
-              </LocalizationProvider>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DatePicker', 'DatePicker']}>
-                    <DatePicker
-                      label="End date picker"
-                      value={endDate}
-                      onChange={(value) => setEndDate(value)}
-                    />
-                </DemoContainer>
-              </LocalizationProvider>
-            </Box>
-            <Button variant="contained"
-              sx={{
-                alignSelf: 'center',
-                justifySelf: 'center',
+              <Box sx={{
                 display: 'flex',
-                flex: '0.5',
-                padding: '1vw',
-              }}
-              onClick={handdleSet}
-            >Set</Button>
-          </Box>
+                flexDirection: 'row',
+                justifyContent: 'space-evenly',
+                flexWrap: 'wrap',
+                flex: '2',
+              }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={['DatePicker', 'DatePicker']}>
+                      <DatePicker
+                        label="Start date picker"
+                        value={startDate}
+                        onChange={(value) => setStartDate(value)}
+                      />
+                  </DemoContainer>
+                </LocalizationProvider>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DemoContainer components={['DatePicker', 'DatePicker']}>
+                      <DatePicker
+                        label="End date picker"
+                        value={endDate}
+                        onChange={(value) => setEndDate(value)}
+                      />
+                  </DemoContainer>
+                </LocalizationProvider>
+              </Box>
+              <Button variant="contained"
+                sx={{
+                  alignSelf: 'center',
+                  justifySelf: 'center',
+                  display: 'flex',
+                  flex: '0.5',
+                  padding: '1vw',
+                }}
+                onClick={handdleSet}
+              >Set</Button>
+            </Box>
+          }
         </Box>
       </Modal.Body>
       <Modal.Footer>
-        <ReactBtn variant='primary' onClick={handlePublish}>Publish</ReactBtn>
+        {
+          !props.ifPublished
+            ? <ReactBtn variant='primary' onClick={handlePublish}>Publish</ReactBtn>
+            : <ReactBtn variant='primary' onClick={handleUnpublish}>Unpublish</ReactBtn>
+        }
         <ReactBtn variant='outline-secondary' onClick={props.onHide}>Cancel</ReactBtn>
       </Modal.Footer>
     </Modal>
