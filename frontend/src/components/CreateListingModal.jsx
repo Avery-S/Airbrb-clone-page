@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
 import CountrySelect from './CountrySelect.jsx';
 import AmenitiesTags from './AmenitiesTags.jsx';
-import PropertyTypeComboBox from './PropertyTypeComboBox'; // 确保路径正确
+import PropertyTypeComboBox from './PropertyTypeComboBox';
 
 export default function CreateListingModal (props) {
   const initialMetadata = {
@@ -127,8 +127,7 @@ export default function CreateListingModal (props) {
               )}
           </div>
             </Grid>
-            <Grid item xs={8} container spacing={2} > {/* 这里是2/3的容器 */}
-              {/* 把要占2/3宽度的Form元素放在这个Grid里 */}
+            <Grid item xs={8} container spacing={3}>
               <Grid item xs={7}>
               <TextField
                 fullWidth
@@ -228,8 +227,8 @@ export default function CreateListingModal (props) {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                inputProps = {{ 
-                  min: "0" 
+                inputProps = {{
+                  min: '0'
                 }}
               />
             </Grid>
@@ -246,19 +245,18 @@ export default function CreateListingModal (props) {
                 InputLabelProps={{
                   shrink: true,
                 }}
-                inputProps={{ 
-                  min: "1" 
+                inputProps={{
+                  min: '1'
                 }}
               />
             </Grid>
 
             <Grid item xs={10}>
-              <AmenitiesTags 
-            selectedAmenities={metadata.amenities} 
-            onChange={handleAmenitiesChange} 
+              <AmenitiesTags
+            selectedAmenities={metadata.amenities}
+            onChange={handleAmenitiesChange}
           />
           </Grid>
-          
         <Grid item xs={10}>
               <TextField
                 fullWidth
@@ -271,7 +269,6 @@ export default function CreateListingModal (props) {
             </Grid>
             </Grid>
           </Grid>
-          
         </Modal.Body>
 
         <Modal.Footer>
