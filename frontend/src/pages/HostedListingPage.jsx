@@ -138,6 +138,7 @@ export default function HostedListings (props) {
                   {...props}
                   hostedListings={hostedListings}
                   setHostedListings={setHostedListings}
+                  page='hosted'
                 />
               </Box>
             )

@@ -9,6 +9,7 @@ import ListingCardBox from '../components/ListingCardBox';
 // User Hosted Listings Page
 export default function LandingPage (props) {
   const [publishedListings, setPublishedListings] = React.useState([]);
+  const [bookings, setBookings] = React.useState([]);
 
   checkToken(props.setToken);
 
@@ -26,6 +27,10 @@ export default function LandingPage (props) {
   // }, []);
 
   // get the listing info based on the listing id
+  // React.useEffect(() => {
+  //   setPublishedListings(sortPublishedListings());
+  // }, [publishedListings, bookings]);
+
   const getListingInfo = async (listingId) => {
     const response = await fetch(`${BACKEND_URL}/listings/${listingId}`, fetchObject(
       'GET', null
@@ -53,17 +58,58 @@ export default function LandingPage (props) {
       return listings;
     }
   }
+
+  const getBookings = async () => {
+    const response = await fetch(`${BACKEND_URL}/bookings`, fetchObject('GET'));
+    const data = await response.json();
+    if (data.error) {
+      props.setErrorModalMsg(data.error);
+      props.setErrorModalShow(true);
+    } else {
+      return data.bookings;
+    }
+  }
+
+  const sortPublishedListings = (newPublishedListings, newBookings) => {
+    const bookingIds = new Set(newBookings.map(booking => booking.listingId));
+
+    const sortedListings = [...newPublishedListings].sort((a, b) => {
+      const aInBookings = bookingIds.has(a.id);
+      const bInBookings = bookingIds.has(b.id);
+
+      if (aInBookings && !bInBookings) {
+        return -1;
+      } else if (!aInBookings && bInBookings) {
+        return 1;
+      } else {
+        // If both are in bookings or both are not, sort alphabetically by title
+        return a.title.localeCompare(b.title);
+      }
+    });
+
+    return sortedListings;
+  }
+
   // TODO: sort listing, check booking status, display status
   const fetchPublishedListings = async () => {
     const allListings = await getListings();
-    const newPublishedListings = [];
+    const bookings = await getBookings();
+    let newPublishedListings = [];
+    const newBookings = [];
 
-    if (!allListings) {
-      props.setErrorModalMsg(allListings.error);
+    if (!allListings || !bookings) {
+      props.setErrorModalMsg(allListings.error || bookings.error);
       props.setErrorModalShow(true);
     } else {
       for (const listing of allListings) {
         if (listing) {
+          for (const booking of bookings) {
+            if (booking) {
+              if (booking.owner === localStorage.getItem('userEmail')) {
+                newBookings.push(booking);
+              }
+            }
+          }
           const listingInfo = await getListingInfo(listing.id);
           if (listingInfo.published) {
             listingInfo.listingId = listing.id;
@@ -71,8 +117,10 @@ export default function LandingPage (props) {
           }
         }
       }
+      newPublishedListings = sortPublishedListings(newPublishedListings, newBookings);
+      setBookings(bookings);
       setPublishedListings(newPublishedListings);
-      console.log(`getHostedListings: ${publishedListings}`);
+      console.log(`newBookings: ${newBookings}`);
     }
   }
 
@@ -84,7 +132,9 @@ export default function LandingPage (props) {
               <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
                 <ListingCardBox
                   listings={publishedListings}
+                  bookings={bookings}
                   {...props}
+                  page='landing'
                 />
               </Box>
             )

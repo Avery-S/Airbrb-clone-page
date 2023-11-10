@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Card from '@mui/material/Card';
-import { Box, CardMedia, IconButton, Typography } from '@mui/material';
+import { Box, CardMedia, IconButton, Typography, Chip } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { red, blue, green } from '@mui/material/colors';
@@ -20,14 +20,24 @@ export default function ListingCard (props) {
   const [showAvailabilityModal, setShowAvailabilityModal] = React.useState(false);
   const [availabilities, setAvailabilities] = React.useState([]);
   const [ifPublished, setIfPublished] = React.useState(props.published);
+  const [bookingInfo, setBookingInfo] = React.useState(null);
   // console.log(props);
 
   const isMounted = React.useRef(false);
 
   React.useEffect(() => {
+    if (props.bookings) {
+      setBookingInfo(props.bookings.find(booking => booking.id === props.listingId));
+    }
     isMounted.current = true;
     return () => { isMounted.current = false; }
   }, [])
+
+  React.useEffect(() => {
+    if (props.bookings) {
+      setBookingInfo(props.bookings.find(booking => booking.id === props.listingId));
+    }
+  }, [props.bookings])
 
   // handle delete listing
   const handleDeleteListing = () => {
@@ -96,20 +106,34 @@ export default function ListingCard (props) {
         position: 'relative',
         boxShadow: { boxShadow },
       }}>
-        {props.ifOwner && <IconButton
-          sx={{
-            position: 'absolute',
-            bottom: '0.5vw',
-            right: '0.5vw',
-          }}
-          aria-label='If published'
-          onClick={() => setShowAvailabilityModal(true)}
-        >
-          <PublishedWithChangesIcon
-            fontSize='medium'
-            sx={{ color: publishedIconColor }}
-          />
-        </IconButton>}
+        {
+          props.ifOwner && props.page === 'hosted'
+            ? (
+              <IconButton
+                sx={{
+                  position: 'absolute',
+                  bottom: '0.5vw',
+                  right: '0.5vw',
+                }}
+                aria-label='If published'
+                onClick={() => setShowAvailabilityModal(true)}
+              >
+                <PublishedWithChangesIcon
+                  fontSize='medium'
+                  sx={{ color: publishedIconColor }}
+                />
+              </IconButton>
+              )
+            : (
+                bookingInfo
+                  ? (
+                      bookingInfo.status === 'accepted'
+                        ? <Chip label="Accepted" color="success" />
+                        : <Chip label="Pending" color="warning" /> // Assuming you want a different label/color for non-accepted status
+                    )
+                  : null // Or any other fallback JSX for when bookingInfo is not available
+              )
+        }
         <AvailabilityModal
           show={showAvailabilityModal}
           onHide={() => setShowAvailabilityModal(false)}

@@ -3,3 +3,4 @@
 - [ ] Allow users to upload multiple images
 - [ ] Dollar sign
 - [ ] Detect overlayed availabilities
+- [ ] Real time rendering
