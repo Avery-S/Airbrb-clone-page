@@ -96,7 +96,7 @@ export default function ListingCard (props) {
         position: 'relative',
         boxShadow: { boxShadow },
       }}>
-        <IconButton
+        {props.ifOwner && <IconButton
           sx={{
             position: 'absolute',
             bottom: '0.5vw',
@@ -109,7 +109,7 @@ export default function ListingCard (props) {
             fontSize='medium'
             sx={{ color: publishedIconColor }}
           />
-        </IconButton>
+        </IconButton>}
         <AvailabilityModal
           show={showAvailabilityModal}
           onHide={() => setShowAvailabilityModal(false)}
@@ -127,7 +127,7 @@ export default function ListingCard (props) {
           flexDirection: 'column',
         }}>
           {/* Edit Btns for owners, or status for users */}
-          {props.owner
+          {props.ifOwner
             ? (
                 <>
                   <IconButton

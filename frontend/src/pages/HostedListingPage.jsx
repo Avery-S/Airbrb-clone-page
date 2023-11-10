@@ -20,7 +20,7 @@ export default function HostedListings (props) {
 
   // get all listings when first enter this page
   React.useEffect(() => {
-    getHostedListings(getListings);
+    getHostedListings();
   }, []);
   // get hosted listings every 5 seconds
   // React.useEffect(() => {
@@ -87,9 +87,9 @@ export default function HostedListings (props) {
   }
 
   // get the hosted listings
-  const getHostedListings = async (getListing) => {
+  const getHostedListings = async () => {
     const userHostedListings = [];
-    const allListings = await getListing();
+    const allListings = await getListings();
 
     if (!allListings) {
       props.setErrorModalMsg(allListings.error);
