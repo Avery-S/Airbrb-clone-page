@@ -13,6 +13,7 @@ import { styled } from '@mui/material/styles';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 
+// Availability modal for adjusting publish date
 export default function AvailabilityModal (props) {
   const [startDate, setStartDate] = React.useState(dayjs());
   const [endDate, setEndDate] = React.useState(dayjs());
@@ -26,6 +27,7 @@ export default function AvailabilityModal (props) {
     setChipData((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
   };
 
+  // set chip data
   const handdleSet = () => {
     console.log(`start/end date: ${startDate} ${endDate}`);
     if (startDate.isAfter(endDate)) {
@@ -45,7 +47,7 @@ export default function AvailabilityModal (props) {
     }
   };
 
-  // TODO: unpublish if published, also disable other buttons and add unpublish button
+  // Publish the set chip data
   const handlePublish = async () => {
     if (chipData.length === 0) {
       props.setErrorModalMsg('Set at least one start & end date');
@@ -105,6 +107,7 @@ export default function AvailabilityModal (props) {
           display: 'flex',
           flexDirection: 'column',
         }}>
+          {/* Display chip data */}
           <Box
             sx={{
               display: 'flex',
