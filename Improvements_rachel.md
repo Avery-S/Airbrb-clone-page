@@ -5,3 +5,4 @@
 - [ ] Detect overlayed availabilities
 - [ ] Real time rendering
 - [ ] Add instruction to publish btn
+- [ ] show loading when loading the pages
