@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField';
 
 // import checkToken from '../helper/checkToken';
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
-import CountrySelect,{countries} from './CountrySelect.jsx';
+import CountrySelect from './CountrySelect.jsx';
 import AmenitiesTags from './AmenitiesTags.jsx';
 import PropertyTypeComboBox from './PropertyTypeComboBox';
 
@@ -95,7 +95,7 @@ export default function CreateListingModal (props) {
   const handleCountryChange = (event, newValue) => {
     setAddress({ ...address, country: newValue ? newValue.label : '' });
     setSelectedCountry(newValue);
-  };  
+  };
 
   return (
     <Modal

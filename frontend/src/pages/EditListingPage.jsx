@@ -1,11 +1,8 @@
-// 排版
 import React, { useEffect, useState } from 'react';
-import { TextField, Grid, Box, } from '@mui/material';
-import { useParams, useLocation } from 'react-router-dom';
-import { IconButton } from '@mui/material';
+import { TextField, Grid, Box, IconButton } from '@mui/material';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 
 import { fileToDataUrl } from '../helper/fileToDataUrl.jsx';
 import { BACKEND_URL } from '../helper/getLinks';
@@ -32,8 +29,7 @@ export default function EditListingPage () {
     postCode: '',
     country: ''
   };
-  const { listingId } = useParams(); 
-  // const [listingData, setListingData] = useState(null);
+  const { listingId } = useParams();
   const location = useLocation();
   const token = location.state?.token;
   const navigate = useNavigate();
@@ -45,9 +41,9 @@ export default function EditListingPage () {
   const [metadata, setMetadata] = useState(initialMetadata);
   const [uploadedImg, setUploadedImg] = useState('');
   const [showAlert, setShowAlert] = useState(false);
-const [alertContent, setAlertContent] = useState('');
-const [alertType, setAlertType] = useState('success'); // 可以是 'success', 'danger' 等
-const [selectedCountry, setSelectedCountry] = useState(null);
+  const [alertContent, setAlertContent] = useState('');
+  const [alertType, setAlertType] = useState('success');
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   // get all listings API
   const getListing = async () => {
@@ -58,7 +54,6 @@ const [selectedCountry, setSelectedCountry] = useState(null);
     if (data.error) {
       console.error('Error fetching listings:', data.error);
     } else {
-      // 更新状态变量setListingData(data);
       const { address, metadata, price, title, thumbnail } = data.listing;
       setTitle(title);
       setPrice(price);
@@ -67,40 +62,39 @@ const [selectedCountry, setSelectedCountry] = useState(null);
       setThumbnail(thumbnail);
       setUploadedImg(thumbnail);
       const fetchedCountry = countries.find(c => c.label === data.listing.address.country);
-      setSelectedCountry(fetchedCountry); // 设置选中的国家对象
+      setSelectedCountry(fetchedCountry);
       setMetadata(data.listing.metadata);
       // console.log(metadata.propertyType);
     }
   };
     // publish new list
-    const updateListing = async (body) => {
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
-      };
-      const response = await fetch(`${BACKEND_URL}/listings/${listingId}`, fetchObject(
-        'PUT', body, true, headers
-      ));
-      let listings = await response.json();
-      if (listings.error) {
-        console.error('Error fetching listings:', listings.error);
-        setAlertContent('Error updating listing: ' + listings.error);
-        setAlertType('danger');
-        setShowAlert(true);
-      } else {
-        // console.log(listings)
-        setAlertContent('Listing updated successfully!');
-    setAlertType('success');
-    setShowAlert(true);
-    setTimeout(() => {
-      navigate('/my-hosted-listings');
-    }, 3000); // 3 seconds later navigate
-      }
+  const updateListing = async (body) => {
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     };
+    const response = await fetch(`${BACKEND_URL}/listings/${listingId}`, fetchObject(
+      'PUT', body, true, headers
+    ));
+    const listings = await response.json();
+    if (listings.error) {
+      console.error('Error fetching listings:', listings.error);
+      setAlertContent('Error updating listing: ' + listings.error);
+      setAlertType('danger');
+      setShowAlert(true);
+    } else {
+      setAlertContent('Listing updated successfully!');
+      setAlertType('success');
+      setShowAlert(true);
+      setTimeout(() => {
+        navigate('/my-hosted-listings');
+      }, 3000); // 3 seconds later navigate
+    }
+  };
 
   useEffect(() => {
     getListing();
-  }, [listingId]); // 当listingId改变时，useEffect将重新运行
+  }, [listingId]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -131,7 +125,7 @@ const [selectedCountry, setSelectedCountry] = useState(null);
     setUploadedImg('');
     setThumbnail(DEFAULT_THUMBNAIL_URL);
   };
-  
+
   const handleMetadataChange = (e) => {
     const { id, value } = e.target;
     setMetadata((prevMetadata) => ({
@@ -149,7 +143,7 @@ const [selectedCountry, setSelectedCountry] = useState(null);
 
   const handleCountryChange = (event, newValue) => {
     setAddress({ ...address, country: newValue ? newValue.label : '' });
-    setSelectedCountry(newValue); // 更新 selectedCountry 状态
+    setSelectedCountry(newValue);
   };
 
   return (
@@ -165,7 +159,8 @@ const [selectedCountry, setSelectedCountry] = useState(null);
     <Grid container spacing={2}>
     <Grid item xs={4} > {/* image container */}
     <Box padding={2}>
-    <Box padding={1}><label htmlFor="thumbnail">Select an Image to Post:</label></Box>
+    <Box padding={1}>
+      <h5 htmlFor="thumbnail">Select an Image to Post</h5></Box>
       <Box padding={1}>
         <input
         id="thumbnail"
@@ -177,7 +172,7 @@ const [selectedCountry, setSelectedCountry] = useState(null);
       />
       </Box>
       <Box padding={1}>
-              <div>
+          <div>
           <img src={uploadedImg || DEFAULT_THUMBNAIL_URL} alt="Thumbnail" style={{ width: '85%', height: '85%' }} />
           <input accept="image/*" id="icon-button-file" type="file" style={{ display: 'none' }} onChange={handleImageChange} />
           <label htmlFor="icon-button-file">
@@ -188,15 +183,14 @@ const [selectedCountry, setSelectedCountry] = useState(null);
           <Box padding={1}>
             {uploadedImg && (
             <Button variant="secondary" onClick={handleClearImage}>Clear Image</Button>
-          )}
+            )}
           </Box>
-      </div>
+          </div>
       </Box>
-    </Box>
-
-        </Grid>
-        <Grid item xs={8} >
-          <Grid item xs={7} md={4} lg={3}>
+      </Box>
+    </Grid>
+        <Grid item xs={8} paddingTop={2}>
+          <Grid item xs={7} md={4} lg={3} paddingTop={3} paddingBottom={2} paddingRight={1}>
              <TextField
             fullWidth
             id="title"
@@ -208,8 +202,8 @@ const [selectedCountry, setSelectedCountry] = useState(null);
           />
         </Grid>
       {/* Address Section */}
-      <Grid container spacing={2}>
-      <Grid item xs={6} md={3} lg={2}>
+      <Grid container spacing={2} >
+      <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="street"
@@ -220,7 +214,7 @@ const [selectedCountry, setSelectedCountry] = useState(null);
             required
           />
         </Grid>
-        <Grid item xs={6} md={3} lg={2}>
+        <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="city"
@@ -231,7 +225,7 @@ const [selectedCountry, setSelectedCountry] = useState(null);
             required
           />
         </Grid>
-        <Grid item xs={6} md={3} lg={2}>
+        <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="state"
@@ -242,7 +236,7 @@ const [selectedCountry, setSelectedCountry] = useState(null);
             required
           />
         </Grid>
-        <Grid item xs={6} md={3} lg={2}>
+        <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="postCode"
@@ -254,7 +248,7 @@ const [selectedCountry, setSelectedCountry] = useState(null);
           />
         </Grid>
 
-        <Grid item xs={7} md={4} lg={3}>
+        <Grid item xs={7} md={4} lg={3} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <CountrySelect
             value={selectedCountry}
             onChange={handleCountryChange}
@@ -262,7 +256,7 @@ const [selectedCountry, setSelectedCountry] = useState(null);
         </Grid>
       </Grid>
       {/* Price Input */}
-      <Grid item xs={6} md={3} lg={2}>
+      <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="price"
@@ -274,14 +268,14 @@ const [selectedCountry, setSelectedCountry] = useState(null);
           />
         </Grid>
       {/* Metadata Inputs */}
-      <Grid item xs={7} md={4} lg={3}>
+      <Grid item xs={7} md={4} lg={3} paddingTop={2} paddingBottom={2} paddingRight={1}>
         <PropertyTypeComboBox
           value={metadata.propertyType}
           onChange={handleMetadataChange}
         />
       </Grid>
 
-      <Grid item xs={6} md={3} lg={2}>
+      <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="numberOfBathrooms"
@@ -299,7 +293,7 @@ const [selectedCountry, setSelectedCountry] = useState(null);
           />
         </Grid>
 
-        <Grid item xs={6} md={3} lg={2}>
+        <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="numberOfBeds"
@@ -317,13 +311,13 @@ const [selectedCountry, setSelectedCountry] = useState(null);
           />
         </Grid>
 
-        <Grid item xs={10} md={7} lg={6}>
+        <Grid item xs={10} md={8} lg={7} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <AmenitiesTags
         selectedAmenities={metadata.amenities}
         onChange={handleAmenitiesChange}
       />
       </Grid>
-    <Grid item xs={10} md={7} lg={6}>
+    <Grid item xs={10} md={8} lg={7} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="houseRules"
@@ -333,10 +327,10 @@ const [selectedCountry, setSelectedCountry] = useState(null);
             onChange={handleMetadataChange}
           />
         </Grid>
+        <Button paddingTop={2} paddingBottom={2} onClick={handleSubmit}>Update Listing</Button>
         </Grid>
       </Grid>
-      <Button onClick={handleSubmit}>Update Listing</Button>
-      </Box>
+    </Box>
   </form>
   </>
   )
