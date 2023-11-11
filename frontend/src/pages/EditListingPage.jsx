@@ -158,10 +158,10 @@ export default function EditListingPage () {
       <Box>
     <Grid container spacing={2}>
     <Grid item xs={4} > {/* image container */}
-    <Box padding={2}>
+    <Box >
     <Box padding={1}>
-      <h5 htmlFor="thumbnail">Select an Image to Post</h5></Box>
-      <Box padding={1}>
+      <label htmlFor="thumbnail">Select an Image to Post</label></Box>
+      <Box paddingTop={1}>
         <input
         id="thumbnail"
         type="text"
@@ -190,7 +190,7 @@ export default function EditListingPage () {
       </Box>
     </Grid>
         <Grid item xs={8} paddingTop={2}>
-          <Grid item xs={7} md={4} lg={3} paddingTop={3} paddingBottom={2} paddingRight={1}>
+          <Grid item xs={8} md={4} lg={3} paddingTop={3} paddingBottom={2} paddingRight={1}>
              <TextField
             fullWidth
             id="title"
@@ -203,7 +203,7 @@ export default function EditListingPage () {
         </Grid>
       {/* Address Section */}
       <Grid container spacing={2} >
-      <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
+      <Grid item xs={8} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="street"
@@ -214,7 +214,7 @@ export default function EditListingPage () {
             required
           />
         </Grid>
-        <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
+        <Grid item xs={8} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="city"
@@ -225,7 +225,7 @@ export default function EditListingPage () {
             required
           />
         </Grid>
-        <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
+        <Grid item xs={8} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="state"
@@ -236,7 +236,7 @@ export default function EditListingPage () {
             required
           />
         </Grid>
-        <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
+        <Grid item xs={8} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="postCode"
@@ -248,7 +248,7 @@ export default function EditListingPage () {
           />
         </Grid>
 
-        <Grid item xs={7} md={4} lg={3} paddingTop={2} paddingBottom={2} paddingRight={1}>
+        <Grid item xs={10} md={4} lg={3} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <CountrySelect
             value={selectedCountry}
             onChange={handleCountryChange}
@@ -256,7 +256,7 @@ export default function EditListingPage () {
         </Grid>
       </Grid>
       {/* Price Input */}
-      <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
+      <Grid item xs={8} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="price"
@@ -268,14 +268,14 @@ export default function EditListingPage () {
           />
         </Grid>
       {/* Metadata Inputs */}
-      <Grid item xs={7} md={4} lg={3} paddingTop={2} paddingBottom={2} paddingRight={1}>
+      <Grid item xs={10} md={4} lg={3} paddingTop={2} paddingBottom={2} paddingRight={1}>
         <PropertyTypeComboBox
           value={metadata.propertyType}
           onChange={handleMetadataChange}
         />
       </Grid>
 
-      <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
+      <Grid item xs={8} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="numberOfBathrooms"
@@ -293,7 +293,7 @@ export default function EditListingPage () {
           />
         </Grid>
 
-        <Grid item xs={6} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
+        <Grid item xs={8} md={3} lg={2} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="numberOfBeds"
@@ -311,13 +311,13 @@ export default function EditListingPage () {
           />
         </Grid>
 
-        <Grid item xs={10} md={8} lg={7} paddingTop={2} paddingBottom={2} paddingRight={1}>
+        <Grid item xs={11} md={8} lg={7} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <AmenitiesTags
         selectedAmenities={metadata.amenities}
         onChange={handleAmenitiesChange}
       />
       </Grid>
-    <Grid item xs={10} md={8} lg={7} paddingTop={2} paddingBottom={2} paddingRight={1}>
+    <Grid item xs={11} md={8} lg={7} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <TextField
             fullWidth
             id="houseRules"

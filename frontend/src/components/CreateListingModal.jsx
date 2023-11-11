@@ -111,7 +111,7 @@ export default function CreateListingModal (props) {
         <Modal.Body>
         <Grid container spacing={2}>
         <Grid xs={4}> {/* image container */}
-          <label htmlFor="thumbnail">Select an Image to Post:</label>
+          <label htmlFor="thumbnail">Select an Image to Post</label >
           <input
             id="thumbnail"
             type="text"
@@ -133,8 +133,8 @@ export default function CreateListingModal (props) {
               )}
           </div>
             </Grid>
-            <Grid item xs={8} container spacing={3}>
-              <Grid item xs={7}>
+            <Grid item xs={8} container spacing={2}>
+              <Grid item xs={9} md={7} lg={6}>
               <TextField
                 fullWidth
                 id="title"
@@ -147,7 +147,7 @@ export default function CreateListingModal (props) {
             </Grid>
           {/* Address Section */}
           <Grid container spacing={2}>
-          <Grid item xs={6}>
+          <Grid item xs={9} md={7} lg={6}>
               <TextField
                 fullWidth
                 id="street"
@@ -158,7 +158,7 @@ export default function CreateListingModal (props) {
                 required
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={9} md={7} lg={6}>
               <TextField
                 fullWidth
                 id="city"
@@ -169,7 +169,7 @@ export default function CreateListingModal (props) {
                 required
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={9} md={7} lg={6}>
               <TextField
                 fullWidth
                 id="state"
@@ -180,7 +180,7 @@ export default function CreateListingModal (props) {
                 required
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={9} md={7} lg={6}>
               <TextField
                 fullWidth
                 id="postCode"
@@ -192,7 +192,7 @@ export default function CreateListingModal (props) {
               />
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={9} md={7} lg={6}>
               <CountrySelect
                 value={selectedCountry}
                 onChange={handleCountryChange}
@@ -200,7 +200,7 @@ export default function CreateListingModal (props) {
             </Grid>
           </Grid>
           {/* Price Input */}
-          <Grid item xs={6}>
+          <Grid item xs={8} md={7} lg={6}>
               <TextField
                 fullWidth
                 id="price"
@@ -212,14 +212,14 @@ export default function CreateListingModal (props) {
               />
             </Grid>
           {/* Metadata Inputs */}
-          <Grid item xs={7}>
+          <Grid item xs={11} md={7} lg={6}>
             <PropertyTypeComboBox
               value={metadata.propertyType}
               onChange={handleMetadataChange}
             />
           </Grid>
 
-          <Grid item xs={6}>
+          <Grid item xs={10} md={7} lg={6}>
               <TextField
                 fullWidth
                 id="numberOfBathrooms"
@@ -237,7 +237,7 @@ export default function CreateListingModal (props) {
               />
             </Grid>
 
-            <Grid item xs={6}>
+            <Grid item xs={10} md={7} lg={6}>
               <TextField
                 fullWidth
                 id="numberOfBeds"
@@ -255,13 +255,13 @@ export default function CreateListingModal (props) {
               />
             </Grid>
 
-            <Grid item xs={10}>
+            <Grid item xs={12} md={9} lg={8}>
               <AmenitiesTags
             selectedAmenities={metadata.amenities}
             onChange={handleAmenitiesChange}
           />
           </Grid>
-        <Grid item xs={10}>
+        <Grid item xs={12} md={9} lg={8}>
               <TextField
                 fullWidth
                 id="houseRules"
