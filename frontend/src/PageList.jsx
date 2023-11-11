@@ -17,8 +17,9 @@ export default function PageList () {
   const [errorModalShow, setErrorModalShow] = React.useState(false);
   const [errorModalMsg, setErrorModalMsg] = React.useState('');
   const [allListings, setAllListings] = React.useState([]);
+  const [currentPage, setCurrentPage] = React.useState('landing')
 
-  const commonProps = { errorModalShow, setErrorModalShow, errorModalMsg, setErrorModalMsg, token, setToken };
+  const commonProps = { errorModalShow, setErrorModalShow, errorModalMsg, setErrorModalMsg, token, setToken, currentPage, setCurrentPage };
   const listingProps = { allListings, setAllListings };
 
   checkToken(setToken);

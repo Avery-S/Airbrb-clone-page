@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Card from '@mui/material/Card';
-import { Box, CardMedia, IconButton, Typography, Chip } from '@mui/material';
+import { Box, CardMedia, IconButton, Typography, Chip, Tooltip } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { red, blue, green } from '@mui/material/colors';
@@ -107,7 +107,7 @@ export default function ListingCard (props) {
         boxShadow: { boxShadow },
       }}>
         {
-          props.ifOwner && props.page === 'hosted'
+          props.ifOwner && props.currentPage === 'hosted'
             ? (
               <IconButton
                 sx={{
@@ -118,10 +118,12 @@ export default function ListingCard (props) {
                 aria-label='If published'
                 onClick={() => setShowAvailabilityModal(true)}
               >
-                <PublishedWithChangesIcon
-                  fontSize='medium'
-                  sx={{ color: publishedIconColor }}
-                />
+                <Tooltip title={ !ifPublished ? 'Publish' : 'Unpublish' } placement='right-start'>
+                  <PublishedWithChangesIcon
+                    fontSize='medium'
+                    sx={{ color: publishedIconColor }}
+                  />
+                </Tooltip>
               </IconButton>
               )
             : (
@@ -151,26 +153,30 @@ export default function ListingCard (props) {
           flexDirection: 'column',
         }}>
           {/* Edit Btns for owners, or status for users */}
-          {props.ifOwner
+          {props.ifOwner && props.currentPage === 'hosted'
             ? (
                 <>
-                  <IconButton
-                    aria-label="Edit Listing"
-                  >
-                    <EditOutlinedIcon
-                      sx={{ color: blue[900] }}
-                      fontSize='medium'
-                    />
-                  </IconButton >
-                  <IconButton
-                    aria-label="Delete Listing"
-                    onClick={handleDeleteListing}
-                  >
-                    <DeleteForeverIcon
-                      sx={{ color: red[500] }}
-                      fontSize='medium'
-                    />
-                  </IconButton >
+                  <Tooltip title="Edit" placement='right-start'>
+                    <IconButton
+                      aria-label="Edit Listing"
+                    >
+                      <EditOutlinedIcon
+                        sx={{ color: blue[900] }}
+                        fontSize='medium'
+                      />
+                    </IconButton >
+                  </Tooltip>
+                  <Tooltip title="Delete" placement='right-start'>
+                    <IconButton
+                      aria-label="Delete Listing"
+                      onClick={handleDeleteListing}
+                    >
+                      <DeleteForeverIcon
+                        sx={{ color: red[500] }}
+                        fontSize='medium'
+                      />
+                    </IconButton >
+                  </Tooltip>
                 </>
               )
             : (<></>)}

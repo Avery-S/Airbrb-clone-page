@@ -12,12 +12,14 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-
+import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
+
 import MessageAlert from './MessageAlert';
 import { DEFAULT_USER_PROFILE_IMG, BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import ErrorModal from './ErrorModal';
+import SearchDrawer from './SearchDrawer';
 
 // Nav bar as header
 export default function ResponsiveAppBar (props) {
@@ -30,6 +32,7 @@ export default function ResponsiveAppBar (props) {
   const [errorModalMsg, setErrorModalMsg] = React.useState('');
   const [settings, setSettings] = React.useState([]);
   const [pages, setPages] = React.useState([]);
+  const [searchDrawerShow, setSearchDrawerShow] = React.useState(false);
 
   const navigate = useNavigate();
 
@@ -39,6 +42,14 @@ export default function ResponsiveAppBar (props) {
   };
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+  // show/hide search drawer
+  const toggleDrawer = (action) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+
+    setSearchDrawerShow(action);
   };
 
   // Handle user menu close/open button
@@ -207,6 +218,18 @@ export default function ResponsiveAppBar (props) {
                 {page}
               </Button>
             ))}
+          </Box>
+          <SearchDrawer
+            {...props}
+            toggleDrawer={toggleDrawer}
+            searchDrawerShow={searchDrawerShow}
+          />
+          <Box sx={{ flexGrow: 0.1, display: { md: 'flex' } }}>
+            <Tooltip title="Search">
+              <IconButton onClick={() => setSearchDrawerShow(true)} sx={{ p: 0, color: 'inherit', }} >
+                <SearchIcon fontSize='large' />
+              </IconButton>
+            </Tooltip>
           </Box>
           {/* User Menu */}
           <Box sx={{ flexGrow: 0 }}>

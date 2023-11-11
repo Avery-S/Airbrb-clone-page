@@ -20,6 +20,7 @@ export default function HostedListings (props) {
 
   // get all listings when first enter this page
   React.useEffect(() => {
+    props.setCurrentPage('hosted')
     getHostedListings();
   }, []);
   // get hosted listings every 5 seconds
@@ -121,7 +122,7 @@ export default function HostedListings (props) {
         hostedListings.length !== 0
           ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
-                <Tooltip title="Create new listing" arrow>
+                <Tooltip title="Create new listing">
                   <IconButton
                     sx={{ marginRight: '4vw', paddingTop: '1vw', alignSelf: 'flex-end' }}
                     onClick={handleShowCreateModal}
@@ -138,7 +139,6 @@ export default function HostedListings (props) {
                   {...props}
                   hostedListings={hostedListings}
                   setHostedListings={setHostedListings}
-                  page='hosted'
                 />
               </Box>
             )

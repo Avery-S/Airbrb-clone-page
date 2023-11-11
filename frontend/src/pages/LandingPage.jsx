@@ -15,6 +15,7 @@ export default function LandingPage (props) {
 
   // get all listings when first enter this page
   React.useEffect(() => {
+    props.setCurrentPage('landing')
     fetchPublishedListings();
   }, []);
   // get hosted listings every 5 seconds
@@ -134,7 +135,6 @@ export default function LandingPage (props) {
                   listings={publishedListings}
                   bookings={bookings}
                   {...props}
-                  page='landing'
                 />
               </Box>
             )

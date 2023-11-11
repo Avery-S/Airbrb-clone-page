@@ -4,3 +4,4 @@
 - [ ] Dollar sign
 - [ ] Detect overlayed availabilities
 - [ ] Real time rendering
+- [ ] Add instruction to publish btn
