@@ -3,12 +3,13 @@ import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
 export default function PropertyTypeComboBox ({ value, onChange }) {
+  const selectedValue = value ? propertyType.find(option => option.label === value) : null;
   return (
     <Autocomplete
       disablePortal
       id="propertyType"
       options={propertyType}
-      value={propertyType.find(option => option.label === value)}
+      value={selectedValue}
       onChange={(event, newValue) => {
         onChange({ target: { id: 'propertyType', value: newValue?.label || '' } });
       }}

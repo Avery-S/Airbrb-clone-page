@@ -9,7 +9,7 @@ import TextField from '@mui/material/TextField';
 
 // import checkToken from '../helper/checkToken';
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
-import CountrySelect from './CountrySelect.jsx';
+import CountrySelect,{countries} from './CountrySelect.jsx';
 import AmenitiesTags from './AmenitiesTags.jsx';
 import PropertyTypeComboBox from './PropertyTypeComboBox';
 
@@ -37,6 +37,7 @@ export default function CreateListingModal (props) {
   const [metadata, setMetadata] = useState(initialMetadata);
   // const navigate = useNavigate();
   const [uploadedImg, setUploadedImg] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState(null);
 
   // Modal close
   const handleClose = () => {
@@ -48,7 +49,7 @@ export default function CreateListingModal (props) {
     event.preventDefault();
     const body = {
       title,
-      address,
+      address: { ...address, country: selectedCountry ? selectedCountry.label : '' },
       price,
       thumbnail,
       metadata
@@ -90,6 +91,11 @@ export default function CreateListingModal (props) {
       amenities: newValue
     }));
   };
+
+  const handleCountryChange = (event, newValue) => {
+    setAddress({ ...address, country: newValue ? newValue.label : '' });
+    setSelectedCountry(newValue);
+  };  
 
   return (
     <Modal
@@ -188,10 +194,8 @@ export default function CreateListingModal (props) {
 
             <Grid item xs={6}>
               <CountrySelect
-                value={address.country}
-                onChange={(event, newValue) => {
-                  setAddress({ ...address, country: newValue ? newValue.label : '' });
-                }}
+                value={selectedCountry}
+                onChange={handleCountryChange}
               />
             </Grid>
           </Grid>
@@ -269,6 +273,7 @@ export default function CreateListingModal (props) {
             </Grid>
             </Grid>
           </Grid>
+
         </Modal.Body>
 
         <Modal.Footer>

@@ -6,6 +6,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { red, blue } from '@mui/material/colors';
 import Rating from '@mui/material/Rating';
 import MapsHomeWorkOutlinedIcon from '@mui/icons-material/MapsHomeWorkOutlined';
+import { useNavigate } from 'react-router-dom';
 // import BedOutlinedIcon from '@mui/icons-material/BedOutlined';
 // import BathtubOutlinedIcon from '@mui/icons-material/BathtubOutlined';
 
@@ -15,7 +16,8 @@ import fetchObject from '../helper/fetchObject';
 
 export default function ListingCard (props) {
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
-  console.log(props);
+  const navigate = useNavigate();
+  // console.log(props);
 
   const isMounted = React.useRef(false);
 
@@ -41,6 +43,12 @@ export default function ListingCard (props) {
   }
 
   const [userRating, reviewLength] = getUserRating();
+
+  // handle edit listing
+  const handleEditListing = () => {
+    const listingId = props.listingId;
+    navigate(`/edit-listing/${listingId}`, { state: { token: props.token } });
+  }
 
   // delete the listing API
   const deleteListing = async () => {
@@ -98,6 +106,7 @@ export default function ListingCard (props) {
                 <>
                   <IconButton
                     aria-label="Edit Listing"
+                    onClick={handleEditListing}
                   >
                     <EditOutlinedIcon
                       sx={{ color: blue[900] }}

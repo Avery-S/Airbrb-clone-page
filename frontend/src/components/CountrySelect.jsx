@@ -10,6 +10,7 @@ export default function CountrySelect ({ value, onChange }) {
       // sx={{ width: 300 }}
       options={countries}
       autoHighlight
+      value={value || null}
       onChange={onChange}
       getOptionLabel={(option) => option.label}
       renderOption={(props, option) => (
@@ -39,7 +40,7 @@ export default function CountrySelect ({ value, onChange }) {
 }
 
 // From https://bitbucket.org/atlassian/atlaskit-mk-2/raw/4ad0e56649c3e6c973e226b7efaeb28cb240ccb0/packages/core/select/src/data/countries.js
-const countries = [
+export const countries = [
   { code: 'AD', label: 'Andorra', phone: '376' },
   {
     code: 'AE',
