@@ -1,0 +1,1 @@
+- Hosted listing cards show green if published, otherwise grey for easy distinction

@@ -3,7 +3,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Box, TextField, Button, Typography, FormControl, InputLabel, OutlinedInput, InputAdornment, IconButton, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import BACKEND_URL from '../helper/getBackendUrl';
+import { BACKEND_URL } from '../helper/getLinks';
+
 import ErrorModal from '../components/ErrorModal';
 
 // Landing page as "All listings page"
@@ -37,8 +38,10 @@ export default function Login (props) {
 
       if (loginResponse.ok) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('userEmail', email);
         props.setToken(data.token);
         navigate('/');
+        localStorage.setItem('userEmail', email);
       } else {
         setModalMsg(data.error || 'An error occurred during login.');
         setModalShow(true);

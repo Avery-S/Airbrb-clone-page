@@ -9,38 +9,53 @@ import ResponsiveAppBar from './components/NavBar';
 import checkToken from './helper/checkToken';
 import Login from './pages/Login';
 import HostedListings from './pages/HostedListingPage';
+import ErrorModal from './components/ErrorModal';
+import EditListingPage from './pages/EditListingPage'
 
 // Main structure of the page: header, page, footer
 export default function PageList () {
   const [token, setToken] = React.useState('');
+  const [errorModalShow, setErrorModalShow] = React.useState(false);
+  const [errorModalMsg, setErrorModalMsg] = React.useState('');
+  const [allListings, setAllListings] = React.useState([]);
+
+  const commonProps = { errorModalShow, setErrorModalShow, errorModalMsg, setErrorModalMsg, token, setToken };
+  const listingProps = { allListings, setAllListings };
 
   checkToken(setToken);
 
   const StyledFooter = styled('div')({
-    display: 'flex',
+    // display: 'flex',
     position: 'relative',
     bottom: '0',
+    width: '100%',
   });
 
   return (
     <Box sx={{
-      height: '100vh',
+      height: 'min-content',
       display: 'flex',
       flexDirection: 'column'
     }}>
       {/* Header */}
       <ResponsiveAppBar token={token} setToken={setToken} />
       {/* Page */}
+      <ErrorModal
+        show={errorModalShow}
+        onHide={() => setErrorModalShow(false)}
+        msg={errorModalMsg}
+      />
       <Box sx={{
         flexGrow: 1,
         height: '100%'
       }}>
         <Routes>
-          <Route path="/" element={<LandingPage token={token} setToken={setToken} />}></Route>
-          <Route path="/register" element={<Register token={token} setToken={setToken} />}></Route>
-          <Route path="/login" element={<Login token={token} setToken={setToken} />}></Route>
-          <Route path="/my-hosted-listings" element={<HostedListings token={token} setToken={setToken} />}></Route>
-          <Route path="/*" element={<LandingPage token={token} setToken={setToken} />}></Route>
+          <Route path="/" element={<LandingPage {...commonProps} />}></Route>
+          <Route path="/register" element={<Register {...commonProps} />}></Route>
+          <Route path="/login" element={<Login {...commonProps} />}></Route>
+          <Route path="/my-hosted-listings" element={<HostedListings {...commonProps} { ...listingProps } />}></Route>
+          <Route path="/edit-listing/:listingId" element={<EditListingPage {...commonProps} />}> </Route>
+          <Route path="/*" element={<LandingPage />}></Route>
         </Routes>
       </Box>
       {/* Footer */}
