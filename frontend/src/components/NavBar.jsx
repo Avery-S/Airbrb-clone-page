@@ -12,12 +12,14 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-
+import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
+
 import MessageAlert from './MessageAlert';
 import { DEFAULT_USER_PROFILE_IMG, BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import ErrorModal from './ErrorModal';
+import SearchDrawer from './SearchDrawer';
 
 // Nav bar as header
 export default function ResponsiveAppBar (props) {
@@ -30,6 +32,7 @@ export default function ResponsiveAppBar (props) {
   const [errorModalMsg, setErrorModalMsg] = React.useState('');
   const [settings, setSettings] = React.useState([]);
   const [pages, setPages] = React.useState([]);
+  const [searchDrawerShow, setSearchDrawerShow] = React.useState(false);
 
   const navigate = useNavigate();
 
@@ -39,6 +42,14 @@ export default function ResponsiveAppBar (props) {
   };
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+  // show/hide search drawer
+  const toggleDrawer = (action) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+
+    setSearchDrawerShow(action);
   };
 
   // Handle user menu close/open button
@@ -54,9 +65,11 @@ export default function ResponsiveAppBar (props) {
     switch (page) {
       case 'All Listings':
         navigate('/');
+        props.setCurrentPage('landing');
         break;
       case 'My Hosted Listings':
         navigate('/my-hosted-listings');
+        props.setCurrentPage('hosted');
     }
     handleCloseNavMenu();
   };
@@ -101,7 +114,6 @@ export default function ResponsiveAppBar (props) {
   }
 
   React.useEffect(() => {
-    console.log(props.token);
     if (props.token !== null && props.token !== '') {
       setSettings(['Profile', 'Account', 'Dashboard', 'Logout']);
       setPages(['All Listings', 'My Hosted Listings']);
@@ -208,6 +220,23 @@ export default function ResponsiveAppBar (props) {
               </Button>
             ))}
           </Box>
+          {(props.currentPage === 'landing' || props.currentPage === 'search') &&
+            <>
+              <SearchDrawer
+                {...props}
+                toggleDrawer={toggleDrawer}
+                searchDrawerShow={searchDrawerShow}
+                setSearchDrawerShow={setSearchDrawerShow}
+              />
+              <Box sx={{ flexGrow: 0.1, display: { md: 'flex' } }}>
+                <Tooltip title="Search">
+                  <IconButton onClick={() => setSearchDrawerShow(true)} sx={{ p: 0, color: 'inherit', }} >
+                    <SearchIcon fontSize='large' />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </>
+          }
           {/* User Menu */}
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">

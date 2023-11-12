@@ -10,6 +10,7 @@ import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import CreateListingModal from '../components/CreateListingModal';
 import ListingCardBox from '../components/ListingCardBox';
+import { getUserRating } from '../helper/helperFuncs';
 
 // User Hosted Listings Page
 export default function HostedListings (props) {
@@ -20,7 +21,8 @@ export default function HostedListings (props) {
 
   // get all listings when first enter this page
   React.useEffect(() => {
-    getHostedListings(getListings);
+    props.setCurrentPage('hosted');
+    getHostedListings();
   }, []);
   // get hosted listings every 5 seconds
   // React.useEffect(() => {
@@ -48,7 +50,10 @@ export default function HostedListings (props) {
       const newHostedListings = [...hostedListings];
       const newAllListings = [...props.allListings];
       if (listingInfo) {
+        const [userRating, reviewLength] = getUserRating(listingInfo.reviews);
         listingInfo.listingId = data.listingId;
+        listingInfo.reviewLength = reviewLength;
+        listingInfo.userRating = userRating;
         newHostedListings.push(listingInfo);
         setHostedListings(newHostedListings);
         newAllListings.push(listingInfo);
@@ -87,9 +92,9 @@ export default function HostedListings (props) {
   }
 
   // get the hosted listings
-  const getHostedListings = async (getListing) => {
+  const getHostedListings = async () => {
     const userHostedListings = [];
-    const allListings = await getListing();
+    const allListings = await getListings();
 
     if (!allListings) {
       props.setErrorModalMsg(allListings.error);
@@ -121,7 +126,7 @@ export default function HostedListings (props) {
         hostedListings.length !== 0
           ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
-                <Tooltip title="Create new listing" arrow>
+                <Tooltip title="Create new listing">
                   <IconButton
                     sx={{ marginRight: '4vw', paddingTop: '1vw', alignSelf: 'flex-end' }}
                     onClick={handleShowCreateModal}

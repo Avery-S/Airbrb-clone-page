@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Card from '@mui/material/Card';
-import { Box, CardMedia, IconButton, Typography } from '@mui/material';
+import { Box, CardMedia, IconButton, Typography, Chip, Tooltip } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { red, blue, green } from '@mui/material/colors';
@@ -15,6 +15,7 @@ import ConfirmModal from './ConfirmModal';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import AvailabilityModal from './AvailabilityModal';
+import { getUserRating } from '../helper/helperFuncs';
 
 export default function ListingCard (props) {
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
@@ -22,14 +23,23 @@ export default function ListingCard (props) {
   const [showAvailabilityModal, setShowAvailabilityModal] = React.useState(false);
   const [availabilities, setAvailabilities] = React.useState([]);
   const [ifPublished, setIfPublished] = React.useState(props.published);
-  // console.log(props);
+  const [bookingInfo, setBookingInfo] = React.useState(null);
 
   const isMounted = React.useRef(false);
-
+  // find the booking status
   React.useEffect(() => {
+    if (props.bookings) {
+      setBookingInfo(props.bookings.find(booking => booking.id === props.listingId));
+    }
     isMounted.current = true;
     return () => { isMounted.current = false; }
   }, [])
+
+  React.useEffect(() => {
+    if (props.bookings) {
+      setBookingInfo(props.bookings.find(booking => booking.id === props.listingId));
+    }
+  }, [props.bookings])
 
   // handle delete listing
   const handleDeleteListing = () => {
@@ -47,14 +57,13 @@ export default function ListingCard (props) {
     return [userRating, reviewLength]
   }
 
-  const [userRating, reviewLength] = getUserRating();
-
   // handle edit listing
   const handleEditListing = () => {
     const listingId = props.listingId;
     navigate(`/edit-listing/${listingId}`, { state: { token: props.token } });
   }
 
+  const [userRating, reviewLength] = getUserRating(props.reviews);
   const boxShadow = ifPublished && props.ifOwner
     ? '0.5vw 0.5vw 0.5vw rgba(0, 128, 0, 0.5)'
     : '0.1vw 0.1vw 0.1vw grey';
@@ -64,8 +73,6 @@ export default function ListingCard (props) {
   // delete the listing API
   const deleteListing = async () => {
     const listingId = props.listingId;
-    console.log(props);
-    console.log(`delete: ${listingId}`);
     const response = await fetch(`${BACKEND_URL}/listings/${listingId}`, fetchObject(
       'DELETE', {}, true
     ));
@@ -75,13 +82,11 @@ export default function ListingCard (props) {
       props.setErrorModalShow(true);
     } else {
       let newHostedListings = props.hostedListings;
-      // console.log(props.hostedListings);
       newHostedListings = newHostedListings.filter((listingInfo) => String(listingInfo.listingId) !== String(listingId));
       const newAllListings = props.allListings.filter((listingInfo) => String(listingInfo.listingId) !== String(listingId));
       if (isMounted.current) {
         props.setHostedListings(newHostedListings);
         props.setAllListings(newAllListings);
-        // console.log(newHostedListings);
         setShowConfirmModal(false);
       }
     }
@@ -105,20 +110,36 @@ export default function ListingCard (props) {
         position: 'relative',
         boxShadow: { boxShadow },
       }}>
-        <IconButton
-          sx={{
-            position: 'absolute',
-            bottom: '0.5vw',
-            right: '0.5vw',
-          }}
-          aria-label='If published'
-          onClick={() => setShowAvailabilityModal(true)}
-        >
-          <PublishedWithChangesIcon
-            fontSize='medium'
-            sx={{ color: publishedIconColor }}
-          />
-        </IconButton>
+        {
+          props.ifOwner && props.currentPage === 'hosted'
+            ? (
+              <IconButton
+                sx={{
+                  position: 'absolute',
+                  bottom: '0.5vw',
+                  right: '0.5vw',
+                }}
+                aria-label='If published'
+                onClick={() => setShowAvailabilityModal(true)}
+              >
+                <Tooltip title={ !ifPublished ? 'Publish' : 'Unpublish' } placement='right-start'>
+                  <PublishedWithChangesIcon
+                    fontSize='medium'
+                    sx={{ color: publishedIconColor }}
+                  />
+                </Tooltip>
+              </IconButton>
+              )
+            : (
+                bookingInfo
+                  ? (
+                      bookingInfo.status === 'accepted'
+                        ? <Chip label="Accepted" color="success" />
+                        : <Chip label="Pending" color="warning" /> // Assuming you want a different label/color for non-accepted status
+                    )
+                  : null // Or any other fallback JSX for when bookingInfo is not available
+              )
+        }
         <AvailabilityModal
           show={showAvailabilityModal}
           onHide={() => setShowAvailabilityModal(false)}
@@ -136,7 +157,7 @@ export default function ListingCard (props) {
           flexDirection: 'column',
         }}>
           {/* Edit Btns for owners, or status for users */}
-          {props.owner
+          {props.ifOwner && props.currentPage === 'hosted'
             ? (
                 <>
                   <IconButton
@@ -157,6 +178,27 @@ export default function ListingCard (props) {
                       fontSize='medium'
                     />
                   </IconButton >
+                  <Tooltip title="Edit" placement='right-start'>
+                    <IconButton
+                      aria-label="Edit Listing"
+                    >
+                      <EditOutlinedIcon
+                        sx={{ color: blue[900] }}
+                        fontSize='medium'
+                      />
+                    </IconButton >
+                  </Tooltip>
+                  <Tooltip title="Delete" placement='right-start'>
+                    <IconButton
+                      aria-label="Delete Listing"
+                      onClick={handleDeleteListing}
+                    >
+                      <DeleteForeverIcon
+                        sx={{ color: red[500] }}
+                        fontSize='medium'
+                      />
+                    </IconButton >
+                  </Tooltip>
                 </>
               )
             : (<></>)}
@@ -202,6 +244,10 @@ export default function ListingCard (props) {
               <Typography variant='subtitle2' color='grey'>
                 { props.metadata.numberOfBeds } bed ·
                 { props.metadata.numberOfBathrooms } bathroom
+              </Typography>
+              <Typography variant='subtitle2' color='grey'>
+                { props.address.city } ·
+                { props.address.country }
               </Typography>
               <Typography variant='subtitle2' fontWeight='bold' sx={{
                 display: 'flex',
