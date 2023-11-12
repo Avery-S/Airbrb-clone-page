@@ -25,14 +25,15 @@ export default function PageList () {
   checkToken(setToken);
 
   const StyledFooter = styled('div')({
-    display: 'flex',
+    // display: 'flex',
     position: 'relative',
     bottom: '0',
+    width: '100%',
   });
 
   return (
     <Box sx={{
-      height: '100vh',
+      height: 'min-content',
       display: 'flex',
       flexDirection: 'column'
     }}>

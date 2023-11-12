@@ -1,17 +1,15 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 
-import ListingCard from '../components/ListingCard';
 import checkToken from '../helper/checkToken';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import CreateListingModal from '../components/CreateListingModal';
+import ListingCardBox from '../components/ListingCardBox';
 
 // User Hosted Listings Page
 export default function HostedListings (props) {
@@ -24,11 +22,18 @@ export default function HostedListings (props) {
   React.useEffect(() => {
     getHostedListings(getListings);
   }, []);
+  // get hosted listings every 5 seconds
+  // React.useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     getHostedListings(getListings);
+  //   }, 5000);
+
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const handleShowCreateModal = () => setShowCreateModal(true);
   const handleCloseCreateModal = () => setShowCreateModal(false)
 
-  // TODO: test create, to delete
   const createListing = async (body) => {
     const response = await fetch(`${BACKEND_URL}/listings/new`, fetchObject(
       'POST', body, true
@@ -95,45 +100,13 @@ export default function HostedListings (props) {
           const listingInfo = await getListingInfo(listing.id);
           if (listingInfo) {
             listingInfo.listingId = listing.id;
-            userHostedListings.push(listingInfo); // TODO cannot store two at the same time
+            userHostedListings.push(listingInfo);
           }
         }
       }
       setHostedListings(userHostedListings);
       console.log(`getHostedListings: ${userHostedListings}`);
     }
-  }
-
-  // Check the screen size
-  const theme = useTheme();
-  const matchesSM = useMediaQuery(theme.breakpoints.down('sm'));
-  const matchesMD = useMediaQuery(theme.breakpoints.down('md'));
-  const matchesLG = useMediaQuery(theme.breakpoints.down('lg'));
-  const matchesXL = useMediaQuery(theme.breakpoints.down('xl'));
-  // Adjust the card width accordingly
-  // values: {
-  //   xs: 0,
-  //   sm: 600,
-  //   md: 900,
-  //   lg: 1200,
-  //   xl: 1536,
-  // },
-  let cardWidth;
-  let gap;
-  if (matchesSM) {
-    cardWidth = '100%';
-  } else if (matchesMD) {
-    cardWidth = '31%';
-    gap = '1%';
-  } else if (matchesLG) {
-    cardWidth = '31%';
-    gap = '1%';
-  } else if (matchesXL) {
-    cardWidth = '23.4%';
-    gap = '0.5%';
-  } else {
-    cardWidth = '22%';
-    gap = '0.5%';
   }
 
   return (
@@ -160,30 +133,12 @@ export default function HostedListings (props) {
                     />
                   </IconButton >
                 </Tooltip>
-                <Box sx={{
-                  display: 'flex',
-                  justifyContent: 'flex-start',
-                  width: '100%',
-                  height: '100%',
-                  paddingLeft: '4vw',
-                  paddingRight: '4vw',
-                  flexDirection: 'row',
-                  flexWrap: 'wrap',
-                  margin: '0',
-                  gap: { gap },
-                  rowGap: '1%',
-                }}>
-                  {hostedListings.map(listing =>
-                    <ListingCard
-                      {...listing}
-                      key={listing.listingId}
-                      {...props}
-                      cardWidth={cardWidth}
-                      owner={listing.owner === localStorage.getItem('userEmail')}
-                      setHostedListings={setHostedListings}
-                      hostedListings={hostedListings}
-                  />)}
-                </Box>
+                <ListingCardBox
+                  listings={hostedListings}
+                  {...props}
+                  hostedListings={hostedListings}
+                  setHostedListings={setHostedListings}
+                />
               </Box>
             )
           : (
