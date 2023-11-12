@@ -14,6 +14,7 @@ import ConfirmModal from './ConfirmModal';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import AvailabilityModal from './AvailabilityModal';
+import { getUserRating } from '../helper/helperFuncs';
 
 export default function ListingCard (props) {
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
@@ -44,18 +45,7 @@ export default function ListingCard (props) {
     setShowConfirmModal(true);
   }
 
-  const getUserRating = () => {
-    const reviews = props.reviews;
-    let userRating = 0;
-    const reviewLength = reviews.length;
-    for (const review of reviews) {
-      userRating += parseFloat(review.rating);
-    }
-    userRating /= reviewLength;
-    return [userRating, reviewLength]
-  }
-
-  const [userRating, reviewLength] = getUserRating();
+  const [userRating, reviewLength] = getUserRating(props.reviews);
   const boxShadow = ifPublished && props.ifOwner
     ? '0.5vw 0.5vw 0.5vw rgba(0, 128, 0, 0.5)'
     : '0.1vw 0.1vw 0.1vw grey';

@@ -10,6 +10,7 @@ import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import CreateListingModal from '../components/CreateListingModal';
 import ListingCardBox from '../components/ListingCardBox';
+import { getUserRating } from '../helper/helperFuncs';
 
 // User Hosted Listings Page
 export default function HostedListings (props) {
@@ -49,7 +50,10 @@ export default function HostedListings (props) {
       const newHostedListings = [...hostedListings];
       const newAllListings = [...props.allListings];
       if (listingInfo) {
+        const [userRating, reviewLength] = getUserRating(listingInfo.reviews);
         listingInfo.listingId = data.listingId;
+        listingInfo.reviewLength = reviewLength;
+        listingInfo.userRating = userRating;
         newHostedListings.push(listingInfo);
         setHostedListings(newHostedListings);
         newAllListings.push(listingInfo);

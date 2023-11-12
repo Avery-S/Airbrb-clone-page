@@ -5,6 +5,7 @@ import checkToken from '../helper/checkToken';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import ListingCardBox from '../components/ListingCardBox';
+import { getUserRating } from '../helper/helperFuncs';
 
 // User Hosted Listings Page
 export default function LandingPage (props) {
@@ -124,9 +125,14 @@ export default function LandingPage (props) {
             }
           }
           const listingInfo = await getListingInfo(listing.id);
-          if (listingInfo.published) {
-            listingInfo.listingId = listing.id;
-            newPublishedListings.push(listingInfo);
+          if (listingInfo) {
+            if (listingInfo.published) {
+              const [userRating, reviewLength] = getUserRating(listingInfo.reviews);
+              listingInfo.listingId = listing.id;
+              listingInfo.reviewLength = reviewLength;
+              listingInfo.userRating = userRating;
+              newPublishedListings.push(listingInfo);
+            }
           }
         }
       }

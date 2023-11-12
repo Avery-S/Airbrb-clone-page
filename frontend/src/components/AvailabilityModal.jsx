@@ -30,7 +30,7 @@ export default function AvailabilityModal (props) {
   // set chip data
   const handdleSet = () => {
     console.log(`start/end date: ${startDate} ${endDate}`);
-    if (startDate.isAfter(endDate)) {
+    if (startDate.isAfter(endDate, 'date')) {
       props.setErrorModalMsg('Invalid start / end date');
       props.setErrorModalShow(true);
     } else {
@@ -156,7 +156,7 @@ export default function AvailabilityModal (props) {
                       <DatePicker
                         label="Start date picker"
                         value={startDate}
-                        onChange={(value) => setStartDate(value.date())}
+                        onChange={(value) => setStartDate(value)}
                       />
                   </DemoContainer>
                 </LocalizationProvider>
@@ -165,7 +165,7 @@ export default function AvailabilityModal (props) {
                       <DatePicker
                         label="End date picker"
                         value={endDate}
-                        onChange={(value) => setEndDate(value.date())}
+                        onChange={(value) => setEndDate(value)}
                       />
                   </DemoContainer>
                 </LocalizationProvider>

@@ -14,12 +14,13 @@ import RangeSlider from './RangeSlider';
 import { dateToString } from '../helper/helperFuncs';
 import dayjs from 'dayjs';
 import { blue } from '@mui/material/colors';
+import ReviewSortToggle from './ReviewSortToggle';
 
 export default function SearchDrawer (props) {
   const [searchTitle, setSearchTitle] = React.useState('');
   const [searchCity, setSearchCity] = React.useState('');
-  const [searchCountry, setSearchCountry] = React.useState('AU');
-  const [searchBedNumRange, setSearchBedNumRange] = React.useState([0, 2]);
+  const [searchCountry, setSearchCountry] = React.useState('');
+  const [searchBedNumRange, setSearchBedNumRange] = React.useState([1, 2]);
   const [searchStartDate, setSearchStartDate] = React.useState(dayjs());
   const [searchEndDate, setSearchEndDate] = React.useState(dayjs().add(2, 'day'));
   const [searchPriceRange, setSearchPriceRange] = React.useState([100, 200]);
@@ -29,6 +30,7 @@ export default function SearchDrawer (props) {
   const [priceFilter, setPriceFilter] = React.useState(false);
   const [reviewFilter, setReviewFilter] = React.useState(false);
   const [selectCountryDisabled, setSelectCountryDisabled] = React.useState(true);
+  const [reviewSort, setReviewSort] = React.useState('Alphabetical');
 
   React.useEffect(() => {
     if (searchCity !== '') {
@@ -39,14 +41,13 @@ export default function SearchDrawer (props) {
   }, [searchCity])
 
   // Check if the required date range falls within the availability range
-  // TODO: date comparie
   const filterListingsByDate = (listings, requiredStartDate, requiredEndDate) => {
-    console.log(requiredStartDate);
+    console.log(dayjs(requiredStartDate));
     return listings.filter(listing => {
       return listing.availability.some(availability => {
         console.log('here')
         console.log(dayjs(availability.startDate));
-        return !requiredStartDate.isBefore(dayjs(availability.startDate).date()) && !requiredEndDate.isAfter(dayjs(availability.endDate).date());
+        return !requiredStartDate.isBefore(dayjs(availability.startDate), 'date') && !requiredEndDate.isAfter(dayjs(availability.endDate), 'date');
       });
     });
   }
@@ -56,16 +57,16 @@ export default function SearchDrawer (props) {
     console.log(`props.publishedListings: ${props.publishedListings}`);
     console.log(`props.resultListings: ${newResultListings}`);
     if (searchTitle !== '') {
-      newResultListings = newResultListings.filter(listing => listing.title === searchTitle);
+      newResultListings = newResultListings.filter(listing => listing.title.toLowerCase() === searchTitle.toLowerCase().trim());
     }
     if (searchCity !== '') {
-      newResultListings = newResultListings.filter(listing => listing.address.city === searchCity);
+      newResultListings = newResultListings.filter(listing => listing.address.city.toLowerCase() === searchCity.toLowerCase().trim());
       if (searchCountry !== '') {
         newResultListings = newResultListings.filter(listing => listing.address.country === searchCountry);
       }
     }
     if (dateFilter) {
-      if (searchStartDate.isAfter(searchEndDate)) {
+      if (searchStartDate.isAfter(searchEndDate, 'date')) {
         console.log(searchStartDate.isAfter(searchEndDate));
         props.setErrorModalMsg('Please enter a valid start/end date!');
         props.setErrorModalShow(true);
@@ -73,6 +74,35 @@ export default function SearchDrawer (props) {
       } else {
         newResultListings = filterListingsByDate(newResultListings, searchStartDate, searchEndDate);
       }
+    }
+    if (bedNumFilter) {
+      newResultListings = newResultListings.filter(listing => {
+        return parseInt(listing.metadata.numberOfBeds) >= searchBedNumRange[0] &&
+          parseInt(listing.metadata.numberOfBeds) <= searchBedNumRange[1]
+      })
+    }
+    if (priceFilter) {
+      newResultListings = newResultListings.filter(listing => {
+        return parseInt(listing.price) >= searchPriceRange[0] &&
+          parseInt(listing.price) <= searchPriceRange[1]
+      })
+    }
+    if (reviewFilter) {
+      newResultListings = newResultListings.filter(listing => {
+        return parseFloat(listing.userRating) >= searchReviewRatingRange[0] &&
+          parseInt(listing.userRating) <= searchReviewRatingRange[1]
+      })
+    }
+    switch (reviewSort) {
+      case 'Alphabetical':
+        newResultListings = newResultListings.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 'Ascending':
+        newResultListings = newResultListings.sort((a, b) => a.userRating - b.userRating);
+        break;
+      case 'Descending':
+        newResultListings = newResultListings.sort((a, b) => b.userRating - a.userRating);
+        break;
     }
     props.setResultListings(newResultListings);
     props.setCurrentPage('search');
@@ -140,8 +170,8 @@ export default function SearchDrawer (props) {
             <RangeSlider
               value={searchBedNumRange}
               setValue={setSearchBedNumRange}
-              min={0}
-              max={20}
+              min={1}
+              max={10}
             />
             <Switch
               checked={bedNumFilter}
@@ -163,8 +193,8 @@ export default function SearchDrawer (props) {
                 <DemoContainer components={['DatePicker', 'DatePicker']}>
                     <DatePicker
                       label="Start date picker"
-                      value={searchStartDate}
-                      onChange={(value) => setSearchStartDate(value.date())}
+                      value={dayjs(searchStartDate)}
+                      onChange={(value) => setSearchStartDate(value)}
                     />
                 </DemoContainer>
               </LocalizationProvider>
@@ -172,8 +202,8 @@ export default function SearchDrawer (props) {
                 <DemoContainer components={['DatePicker', 'DatePicker']}>
                     <DatePicker
                       label="End date picker"
-                      value={searchEndDate}
-                      onChange={(value) => setSearchEndDate(value.date())}
+                      value={dayjs(searchEndDate)}
+                      onChange={(value) => setSearchEndDate(value)}
                     />
                 </DemoContainer>
               </LocalizationProvider>
@@ -192,7 +222,7 @@ export default function SearchDrawer (props) {
               value={searchPriceRange}
               setValue={setSearchPriceRange}
               min={0}
-              max={5000}
+              max={2000}
             />
             <Switch
               checked={priceFilter}
@@ -217,6 +247,10 @@ export default function SearchDrawer (props) {
             />
             <Typography color={blue[800]} variant='h7'>Review</Typography>
           </Box>
+        </Box>
+        <Typography variant='h6'>Sort Review By</Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <ReviewSortToggle setReviewSort={setReviewSort} reviewSort={reviewSort} />
         </Box>
         <Button
          variant="contained"

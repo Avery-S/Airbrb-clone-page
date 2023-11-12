@@ -17,3 +17,13 @@ export function fileToDataUrl (file) {
 export function dateToString (date) {
   return date.format('DD/MM/YYYY').toString()
 }
+
+export function getUserRating (reviews) {
+  let userRating = 0;
+  const reviewLength = reviews.length;
+  for (const review of reviews) {
+    userRating += parseFloat(review.rating);
+  }
+  userRating /= reviewLength;
+  return [userRating, reviewLength]
+}
