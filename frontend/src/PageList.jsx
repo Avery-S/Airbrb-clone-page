@@ -10,6 +10,7 @@ import checkToken from './helper/checkToken';
 import Login from './pages/Login';
 import HostedListings from './pages/HostedListingPage';
 import ErrorModal from './components/ErrorModal';
+import EditListingPage from './pages/EditListingPage'
 
 // Main structure of the page: header, page, footer
 export default function PageList () {
@@ -56,7 +57,8 @@ export default function PageList () {
           <Route path="/register" element={<Register {...commonProps} />}></Route>
           <Route path="/login" element={<Login {...commonProps} />}></Route>
           <Route path="/my-hosted-listings" element={<HostedListings {...commonProps} { ...listingProps } />}></Route>
-          <Route path="/*" element={<LandingPage {...commonProps} />}></Route>
+          <Route path="/edit-listing/:listingId" element={<EditListingPage {...commonProps} />}> </Route>
+          <Route path="/*" element={<LandingPage />}></Route>
         </Routes>
       </Box>
       {/* Footer */}

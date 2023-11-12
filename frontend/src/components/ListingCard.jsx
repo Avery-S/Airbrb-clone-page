@@ -6,6 +6,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { red, blue, green } from '@mui/material/colors';
 import Rating from '@mui/material/Rating';
 import MapsHomeWorkOutlinedIcon from '@mui/icons-material/MapsHomeWorkOutlined';
+import { useNavigate } from 'react-router-dom';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 // import BedOutlinedIcon from '@mui/icons-material/BedOutlined';
 // import BathtubOutlinedIcon from '@mui/icons-material/BathtubOutlined';
@@ -18,6 +19,7 @@ import { getUserRating } from '../helper/helperFuncs';
 
 export default function ListingCard (props) {
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
+  const navigate = useNavigate();
   const [showAvailabilityModal, setShowAvailabilityModal] = React.useState(false);
   const [availabilities, setAvailabilities] = React.useState([]);
   const [ifPublished, setIfPublished] = React.useState(props.published);
@@ -42,6 +44,23 @@ export default function ListingCard (props) {
   // handle delete listing
   const handleDeleteListing = () => {
     setShowConfirmModal(true);
+  }
+
+  const getUserRating = () => {
+    const reviews = props.reviews;
+    let userRating = 0;
+    const reviewLength = reviews.length;
+    for (const review of reviews) {
+      userRating += parseFloat(review.rating);
+    }
+    userRating /= reviewLength;
+    return [userRating, reviewLength]
+  }
+
+  // handle edit listing
+  const handleEditListing = () => {
+    const listingId = props.listingId;
+    navigate(`/edit-listing/${listingId}`, { state: { token: props.token } });
   }
 
   const [userRating, reviewLength] = getUserRating(props.reviews);
@@ -141,6 +160,24 @@ export default function ListingCard (props) {
           {props.ifOwner && props.currentPage === 'hosted'
             ? (
                 <>
+                  <IconButton
+                    aria-label="Edit Listing"
+                    onClick={handleEditListing}
+                  >
+                    <EditOutlinedIcon
+                      sx={{ color: blue[900] }}
+                      fontSize='medium'
+                    />
+                  </IconButton >
+                  <IconButton
+                    aria-label="Delete Listing"
+                    onClick={handleDeleteListing}
+                  >
+                    <DeleteForeverIcon
+                      sx={{ color: red[500] }}
+                      fontSize='medium'
+                    />
+                  </IconButton >
                   <Tooltip title="Edit" placement='right-start'>
                     <IconButton
                       aria-label="Edit Listing"
