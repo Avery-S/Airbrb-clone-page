@@ -6,6 +6,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { red, blue, green } from '@mui/material/colors';
 import Rating from '@mui/material/Rating';
 import MapsHomeWorkOutlinedIcon from '@mui/icons-material/MapsHomeWorkOutlined';
+import { useNavigate } from 'react-router-dom';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
 // import BedOutlinedIcon from '@mui/icons-material/BedOutlined';
 // import BathtubOutlinedIcon from '@mui/icons-material/BathtubOutlined';
@@ -17,6 +18,7 @@ import AvailabilityModal from './AvailabilityModal';
 
 export default function ListingCard (props) {
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
+  const navigate = useNavigate();
   const [showAvailabilityModal, setShowAvailabilityModal] = React.useState(false);
   const [availabilities, setAvailabilities] = React.useState([]);
   const [ifPublished, setIfPublished] = React.useState(props.published);
@@ -46,6 +48,13 @@ export default function ListingCard (props) {
   }
 
   const [userRating, reviewLength] = getUserRating();
+
+  // handle edit listing
+  const handleEditListing = () => {
+    const listingId = props.listingId;
+    navigate(`/edit-listing/${listingId}`, { state: { token: props.token } });
+  }
+
   const boxShadow = ifPublished && props.ifOwner
     ? '0.5vw 0.5vw 0.5vw rgba(0, 128, 0, 0.5)'
     : '0.1vw 0.1vw 0.1vw grey';
@@ -132,6 +141,7 @@ export default function ListingCard (props) {
                 <>
                   <IconButton
                     aria-label="Edit Listing"
+                    onClick={handleEditListing}
                   >
                     <EditOutlinedIcon
                       sx={{ color: blue[900] }}
