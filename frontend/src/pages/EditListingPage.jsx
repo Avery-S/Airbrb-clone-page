@@ -3,6 +3,7 @@ import { TextField, Grid, Box, IconButton } from '@mui/material';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { Button } from 'react-bootstrap';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import { fileToDataUrl } from '../helper/fileToDataUrl.jsx';
 import { BACKEND_URL } from '../helper/getLinks';
@@ -83,12 +84,12 @@ export default function EditListingPage () {
       setAlertType('danger');
       setShowAlert(true);
     } else {
+      setTimeout(() => {
+        navigate('/my-hosted-listings');
+      }, 2000); // 3 seconds later navigate
       setAlertContent('Listing updated successfully!');
       setAlertType('success');
       setShowAlert(true);
-      setTimeout(() => {
-        navigate('/my-hosted-listings');
-      }, 3000); // 3 seconds later navigate
     }
   };
 
@@ -98,10 +99,19 @@ export default function EditListingPage () {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const trimmedTitle = title.trim();
+    const trimmedAddress = {
+      street: address.street.trim(),
+      city: address.city.trim(),
+      state: address.state.trim(),
+      postCode: address.postCode.trim(),
+      country: address.country,
+    };
+    const trimmedPrice = price.trim();
     const body = {
-      title,
-      address,
-      price,
+      title: trimmedTitle,
+      address: trimmedAddress,
+      price: trimmedPrice,
       thumbnail,
       metadata
     };
@@ -146,6 +156,10 @@ export default function EditListingPage () {
     setSelectedCountry(newValue);
   };
 
+  const handleBack = () => {
+    navigate('/my-hosted-listings');
+  }
+
   return (
     <>
     {showAlert && (
@@ -157,8 +171,11 @@ export default function EditListingPage () {
     <form onSubmit={handleSubmit}>
       <Box>
     <Grid container spacing={2}>
-    <Grid item xs={4} > {/* image container */}
+    <Grid item xs={12} lg={4}> {/* image container */}
     <Box >
+    <IconButton onClick={handleBack} aria-label="back">
+      <ArrowBackIcon />
+    </IconButton>
     <Box padding={1}>
       <label htmlFor="thumbnail">Select an Image to Post</label></Box>
       <Box paddingTop={1}>
@@ -177,7 +194,7 @@ export default function EditListingPage () {
           <input accept="image/*" id="icon-button-file" type="file" style={{ display: 'none' }} onChange={handleImageChange} />
           <label htmlFor="icon-button-file">
             <IconButton color="primary" aria-label="upload picture" component="span">
-              <PhotoCamera />
+            <PhotoCamera />
             </IconButton>
           </label>
           <Box padding={1}>
@@ -189,7 +206,7 @@ export default function EditListingPage () {
       </Box>
       </Box>
     </Grid>
-        <Grid item xs={8} paddingTop={2}>
+        <Grid item xs={12} lg={8} paddingTop={2}>
           <Grid item xs={8} md={4} lg={3} paddingTop={3} paddingBottom={2} paddingRight={1}>
              <TextField
             fullWidth

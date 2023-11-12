@@ -47,14 +47,23 @@ export default function CreateListingModal (props) {
   // submit create list
   const handleSubmit = (event) => {
     event.preventDefault();
+    const trimmedTitle = title.trim();
+    const trimmedAddress = {
+      street: address.street.trim(),
+      city: address.city.trim(),
+      state: address.state.trim(),
+      postCode: address.postCode.trim(),
+      country: selectedCountry ? selectedCountry.label : '',
+    };
+    const trimmedPrice = price.trim();
     const body = {
-      title,
-      address: { ...address, country: selectedCountry ? selectedCountry.label : '' },
-      price,
+      title: trimmedTitle,
+      address: trimmedAddress,
+      price: trimmedPrice,
       thumbnail,
       metadata
     }
-    console.log(address);
+    console.log(body);
     props.createListing(body);
     handleClose();
   };
@@ -110,7 +119,7 @@ export default function CreateListingModal (props) {
         </Modal.Header>
         <Modal.Body>
         <Grid container spacing={2}>
-        <Grid xs={4}> {/* image container */}
+        <Grid xs={12} lg={4}> {/* image container */}
           <label htmlFor="thumbnail">Select an Image to Post</label >
           <input
             id="thumbnail"
@@ -133,7 +142,7 @@ export default function CreateListingModal (props) {
               )}
           </div>
             </Grid>
-            <Grid item xs={8} container spacing={2}>
+            <Grid item xs={12} lg={8} container spacing={2}>
               <Grid item xs={9} md={7} lg={6}>
               <TextField
                 fullWidth
