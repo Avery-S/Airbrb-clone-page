@@ -8,7 +8,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Modal from 'react-bootstrap/Modal';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button as ReactBtn } from 'react-bootstrap';
-// import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
@@ -18,7 +17,6 @@ export default function AvailabilityModal (props) {
   const [startDate, setStartDate] = React.useState(dayjs());
   const [endDate, setEndDate] = React.useState(dayjs());
   const [chipData, setChipData] = React.useState(props.availability);
-  console.log(props);
   const ListItem = styled('li')(({ theme }) => ({
     margin: theme.spacing(0.5),
   }));
@@ -29,12 +27,10 @@ export default function AvailabilityModal (props) {
 
   // set chip data
   const handdleSet = () => {
-    console.log(`start/end date: ${startDate} ${endDate}`);
     if (startDate.isAfter(endDate, 'date')) {
       props.setErrorModalMsg('Invalid start / end date');
       props.setErrorModalShow(true);
     } else {
-      console.log(`start/end date: ${startDate} ${endDate}`);
       const newChipList = [...chipData];
       const dateString = `${startDate.format('DD/MM/YYYY').toString()}-${endDate.format('DD/MM/YYYY').toString()}`;
       newChipList.push({

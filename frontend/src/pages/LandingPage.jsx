@@ -17,7 +17,6 @@ export default function LandingPage (props) {
   // get all listings when first enter this page
   React.useEffect(() => {
     props.setCurrentPage('landing');
-    console.log(props.currentPage);
     fetchPublishedListings();
   }, []);
   // display the search/landing listings
@@ -73,6 +72,7 @@ export default function LandingPage (props) {
     }
   }
 
+  // get booking information API
   const getBookings = async () => {
     const response = await fetch(`${BACKEND_URL}/bookings`, fetchObject('GET'));
     const data = await response.json();
@@ -84,6 +84,7 @@ export default function LandingPage (props) {
     }
   }
 
+  // sort the published listings, put booked listings in front
   const sortPublishedListings = (newPublishedListings, newBookings) => {
     const bookingIds = new Set(newBookings.map(booking => booking.listingId));
 
@@ -96,7 +97,6 @@ export default function LandingPage (props) {
       } else if (!aInBookings && bInBookings) {
         return 1;
       } else {
-        // If both are in bookings or both are not, sort alphabetically by title
         return a.title.localeCompare(b.title);
       }
     });
@@ -104,7 +104,7 @@ export default function LandingPage (props) {
     return sortedListings;
   }
 
-  // TODO: sort listing, check booking status, display status
+  // get the published listings
   const fetchPublishedListings = async () => {
     const allListings = await getListings();
     const bookings = await getBookings();

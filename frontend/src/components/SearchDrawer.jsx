@@ -11,7 +11,6 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 
 import CountrySelect from './SelectCountry';
 import RangeSlider from './RangeSlider';
-import { dateToString } from '../helper/helperFuncs';
 import dayjs from 'dayjs';
 import { blue } from '@mui/material/colors';
 import ReviewSortToggle from './ReviewSortToggle';
@@ -32,6 +31,7 @@ export default function SearchDrawer (props) {
   const [selectCountryDisabled, setSelectCountryDisabled] = React.useState(true);
   const [reviewSort, setReviewSort] = React.useState('Alphabetical');
 
+  // enable/disable city search area based on city value
   React.useEffect(() => {
     if (searchCity !== '') {
       setSelectCountryDisabled(false);
@@ -42,20 +42,16 @@ export default function SearchDrawer (props) {
 
   // Check if the required date range falls within the availability range
   const filterListingsByDate = (listings, requiredStartDate, requiredEndDate) => {
-    console.log(dayjs(requiredStartDate));
     return listings.filter(listing => {
       return listing.availability.some(availability => {
-        console.log('here')
-        console.log(dayjs(availability.startDate));
         return !requiredStartDate.isBefore(dayjs(availability.startDate), 'date') && !requiredEndDate.isAfter(dayjs(availability.endDate), 'date');
       });
     });
   }
 
+  // filter the result listings
   const searchBy = () => {
     let newResultListings = [...props.publishedListings];
-    console.log(`props.publishedListings: ${props.publishedListings}`);
-    console.log(`props.resultListings: ${newResultListings}`);
     if (searchTitle !== '') {
       newResultListings = newResultListings.filter(listing => listing.title.toLowerCase() === searchTitle.toLowerCase().trim());
     }
@@ -67,7 +63,6 @@ export default function SearchDrawer (props) {
     }
     if (dateFilter) {
       if (searchStartDate.isAfter(searchEndDate, 'date')) {
-        console.log(searchStartDate.isAfter(searchEndDate));
         props.setErrorModalMsg('Please enter a valid start/end date!');
         props.setErrorModalShow(true);
         return;
@@ -108,10 +103,8 @@ export default function SearchDrawer (props) {
     props.setCurrentPage('search');
   }
 
+  // set the search result listings
   const fetchSearchResult = () => {
-    console.log(searchTitle, searchCity, searchCountry);
-    console.log(searchBedNumRange, dateToString(searchStartDate), dateToString(searchEndDate), searchPriceRange, searchReviewRatingRange);
-    console.log(bedNumFilter, dateFilter, priceFilter, reviewFilter);
     if (searchTitle === '' && searchCity === '' && !dateFilter && !reviewFilter && !priceFilter && !bedNumFilter) {
       props.setErrorModalMsg('Please choose at least one field to search!');
       props.setErrorModalShow(true);
@@ -122,6 +115,7 @@ export default function SearchDrawer (props) {
     props.setSearchDrawerShow(false);
   }
 
+  // drawer for choose search/filter options
   const list = (anchor) => (
     <Box
       sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}

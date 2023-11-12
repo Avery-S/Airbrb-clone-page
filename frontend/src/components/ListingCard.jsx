@@ -22,10 +22,9 @@ export default function ListingCard (props) {
   const [availabilities, setAvailabilities] = React.useState([]);
   const [ifPublished, setIfPublished] = React.useState(props.published);
   const [bookingInfo, setBookingInfo] = React.useState(null);
-  // console.log(props);
 
   const isMounted = React.useRef(false);
-
+  // find the booking status
   React.useEffect(() => {
     if (props.bookings) {
       setBookingInfo(props.bookings.find(booking => booking.id === props.listingId));
@@ -55,8 +54,6 @@ export default function ListingCard (props) {
   // delete the listing API
   const deleteListing = async () => {
     const listingId = props.listingId;
-    console.log(props);
-    console.log(`delete: ${listingId}`);
     const response = await fetch(`${BACKEND_URL}/listings/${listingId}`, fetchObject(
       'DELETE', {}, true
     ));
@@ -66,13 +63,11 @@ export default function ListingCard (props) {
       props.setErrorModalShow(true);
     } else {
       let newHostedListings = props.hostedListings;
-      // console.log(props.hostedListings);
       newHostedListings = newHostedListings.filter((listingInfo) => String(listingInfo.listingId) !== String(listingId));
       const newAllListings = props.allListings.filter((listingInfo) => String(listingInfo.listingId) !== String(listingId));
       if (isMounted.current) {
         props.setHostedListings(newHostedListings);
         props.setAllListings(newAllListings);
-        // console.log(newHostedListings);
         setShowConfirmModal(false);
       }
     }

@@ -59,7 +59,6 @@ export default function Register (props) {
         localStorage.setItem('userEmail', email);
         props.setToken(data.token);
         navigate('/');
-        console.log(`token: ${data.token}`);
       }
     }
   }
