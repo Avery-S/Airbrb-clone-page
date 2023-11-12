@@ -84,9 +84,7 @@ export default function EditListingPage () {
       setAlertType('danger');
       setShowAlert(true);
     } else {
-      setTimeout(() => {
-        navigate('/my-hosted-listings');
-      }, 2000); // 3 seconds later navigate
+      navigate('/my-hosted-listings');
       setAlertContent('Listing updated successfully!');
       setAlertType('success');
       setShowAlert(true);
