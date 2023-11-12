@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { fileToDataUrl } from '../helper/fileToDataUrl.jsx';
 import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import Grid from '@mui/material/Unstable_Grid2';

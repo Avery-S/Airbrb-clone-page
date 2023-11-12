@@ -5,7 +5,7 @@ import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { Button } from 'react-bootstrap';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-import { fileToDataUrl } from '../helper/fileToDataUrl.jsx';
+import { fileToDataUrl } from '../helper/helperFuncs.jsx';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';

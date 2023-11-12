@@ -9,7 +9,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 
-import CountrySelect from './SelectCountry';
+import CountrySelect from './CountrySelect';
 import RangeSlider from './RangeSlider';
 import dayjs from 'dayjs';
 import { blue } from '@mui/material/colors';
@@ -39,6 +39,10 @@ export default function SearchDrawer (props) {
       setSelectCountryDisabled(true);
     }
   }, [searchCity])
+
+  const handleCountryChange = (event, newValue) => {
+    setSearchCountry(newValue);
+  };
 
   // Check if the required date range falls within the availability range
   const filterListingsByDate = (listings, requiredStartDate, requiredEndDate) => {
@@ -144,8 +148,9 @@ export default function SearchDrawer (props) {
             onChange={event => setSearchCity(event.target.value)}
           />
           <CountrySelect
-            setSearchCountry={setSearchCountry}
             disabled={selectCountryDisabled}
+            value={searchCountry}
+            onChange={handleCountryChange}
           />
         </Box>
       </Box>
