@@ -65,9 +65,11 @@ export default function ResponsiveAppBar (props) {
     switch (page) {
       case 'All Listings':
         navigate('/');
+        props.setCurrentPage('landing');
         break;
       case 'My Hosted Listings':
         navigate('/my-hosted-listings');
+        props.setCurrentPage('hosted');
     }
     handleCloseNavMenu();
   };
@@ -223,6 +225,7 @@ export default function ResponsiveAppBar (props) {
             {...props}
             toggleDrawer={toggleDrawer}
             searchDrawerShow={searchDrawerShow}
+            setSearchDrawerShow={setSearchDrawerShow}
           />
           <Box sx={{ flexGrow: 0.1, display: { md: 'flex' } }}>
             <Tooltip title="Search">

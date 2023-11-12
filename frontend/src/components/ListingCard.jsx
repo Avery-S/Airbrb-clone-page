@@ -223,6 +223,10 @@ export default function ListingCard (props) {
                 { props.metadata.numberOfBeds } bed ·
                 { props.metadata.numberOfBathrooms } bathroom
               </Typography>
+              <Typography variant='subtitle2' color='grey'>
+                { props.address.city } ·
+                { props.address.country }
+              </Typography>
               <Typography variant='subtitle2' fontWeight='bold' sx={{
                 display: 'flex',
                 alignSelf: 'flex-start',

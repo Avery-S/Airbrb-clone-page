@@ -28,19 +28,74 @@ export default function SearchDrawer (props) {
   const [dateFilter, setDateFilter] = React.useState(false);
   const [priceFilter, setPriceFilter] = React.useState(false);
   const [reviewFilter, setReviewFilter] = React.useState(false);
+  const [selectCountryDisabled, setSelectCountryDisabled] = React.useState(true);
+
+  React.useEffect(() => {
+    if (searchCity !== '') {
+      setSelectCountryDisabled(false);
+    } else {
+      setSelectCountryDisabled(true);
+    }
+  }, [searchCity])
+
+  // Check if the required date range falls within the availability range
+  // TODO: date comparie
+  const filterListingsByDate = (listings, requiredStartDate, requiredEndDate) => {
+    console.log(requiredStartDate);
+    return listings.filter(listing => {
+      return listing.availability.some(availability => {
+        console.log('here')
+        console.log(dayjs(availability.startDate));
+        return !requiredStartDate.isBefore(dayjs(availability.startDate).date()) && !requiredEndDate.isAfter(dayjs(availability.endDate).date());
+      });
+    });
+  }
+
+  const searchBy = () => {
+    let newResultListings = [...props.publishedListings];
+    console.log(`props.publishedListings: ${props.publishedListings}`);
+    console.log(`props.resultListings: ${newResultListings}`);
+    if (searchTitle !== '') {
+      newResultListings = newResultListings.filter(listing => listing.title === searchTitle);
+    }
+    if (searchCity !== '') {
+      newResultListings = newResultListings.filter(listing => listing.address.city === searchCity);
+      if (searchCountry !== '') {
+        newResultListings = newResultListings.filter(listing => listing.address.country === searchCountry);
+      }
+    }
+    if (dateFilter) {
+      if (searchStartDate.isAfter(searchEndDate)) {
+        console.log(searchStartDate.isAfter(searchEndDate));
+        props.setErrorModalMsg('Please enter a valid start/end date!');
+        props.setErrorModalShow(true);
+        return;
+      } else {
+        newResultListings = filterListingsByDate(newResultListings, searchStartDate, searchEndDate);
+      }
+    }
+    props.setResultListings(newResultListings);
+    props.setCurrentPage('search');
+  }
 
   const fetchSearchResult = () => {
     console.log(searchTitle, searchCity, searchCountry);
     console.log(searchBedNumRange, dateToString(searchStartDate), dateToString(searchEndDate), searchPriceRange, searchReviewRatingRange);
     console.log(bedNumFilter, dateFilter, priceFilter, reviewFilter);
+    if (searchTitle === '' && searchCity === '' && !dateFilter && !reviewFilter && !priceFilter && !bedNumFilter) {
+      props.setErrorModalMsg('Please choose at least one field to search!');
+      props.setErrorModalShow(true);
+    } else {
+      searchBy();
+      props.setCurrentPage('search');
+    }
+    props.setSearchDrawerShow(false);
   }
 
   const list = (anchor) => (
     <Box
       sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
       role="presentation"
-      // onClick={props.toggleDrawer(false)}
-      // onKeyDown={props.toggleDrawer(false)}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <Typography variant='h6'>Search By</Typography>
@@ -66,6 +121,7 @@ export default function SearchDrawer (props) {
           />
           <CountrySelect
             setSearchCountry={setSearchCountry}
+            disabled={selectCountryDisabled}
           />
         </Box>
       </Box>
@@ -108,7 +164,7 @@ export default function SearchDrawer (props) {
                     <DatePicker
                       label="Start date picker"
                       value={searchStartDate}
-                      onChange={(value) => setSearchStartDate(value)}
+                      onChange={(value) => setSearchStartDate(value.date())}
                     />
                 </DemoContainer>
               </LocalizationProvider>
@@ -117,7 +173,7 @@ export default function SearchDrawer (props) {
                     <DatePicker
                       label="End date picker"
                       value={searchEndDate}
-                      onChange={(value) => setSearchEndDate(value)}
+                      onChange={(value) => setSearchEndDate(value.date())}
                     />
                 </DemoContainer>
               </LocalizationProvider>

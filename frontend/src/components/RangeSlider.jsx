@@ -9,7 +9,7 @@ export default function RangeSlider (props) {
         getAriaLabel={() => 'Range'}
         value={props.value}
         onChange={(_, value) => props.setValue(value)}
-        valueLabelDisplay="on"
+        valueLabelDisplay="auto"
         getAriaValueText={props.range}
         min={props.min}
         max={props.max}

@@ -7,6 +7,8 @@ export default function CountrySelect (props) {
   const handleChange = (_, option) => {
     if (option) {
       props.setSearchCountry(option.label);
+    } else {
+      props.setSearchCountry('');
     }
   }
   return (
@@ -16,6 +18,7 @@ export default function CountrySelect (props) {
       options={countries}
       autoHighlight
       getOptionLabel={(option) => option.label}
+      disabled={props.disabled}
       onChange={handleChange}
       renderOption={(props, option) => (
         <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>

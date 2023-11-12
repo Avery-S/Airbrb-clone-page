@@ -40,8 +40,8 @@ export default function AvailabilityModal (props) {
       newChipList.push({
         label: dateString,
         key: dateString,
-        startDate: startDate.format('DD/MM/YYYY').toString(),
-        endDate: endDate.format('DD/MM/YYYY').toString(),
+        startDate,
+        endDate,
       });
       setChipData(newChipList);
     }
@@ -156,7 +156,7 @@ export default function AvailabilityModal (props) {
                       <DatePicker
                         label="Start date picker"
                         value={startDate}
-                        onChange={(value) => setStartDate(value)}
+                        onChange={(value) => setStartDate(value.date())}
                       />
                   </DemoContainer>
                 </LocalizationProvider>
@@ -165,7 +165,7 @@ export default function AvailabilityModal (props) {
                       <DatePicker
                         label="End date picker"
                         value={endDate}
-                        onChange={(value) => setEndDate(value)}
+                        onChange={(value) => setEndDate(value.date())}
                       />
                   </DemoContainer>
                 </LocalizationProvider>

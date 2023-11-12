@@ -8,16 +8,28 @@ import ListingCardBox from '../components/ListingCardBox';
 
 // User Hosted Listings Page
 export default function LandingPage (props) {
-  const [publishedListings, setPublishedListings] = React.useState([]);
   const [bookings, setBookings] = React.useState([]);
+  const [displayListings, setDisplayListings] = React.useState([...props.publishedListings]);
 
   checkToken(props.setToken);
 
   // get all listings when first enter this page
   React.useEffect(() => {
-    props.setCurrentPage('landing')
+    props.setCurrentPage('landing');
+    console.log(props.currentPage);
     fetchPublishedListings();
   }, []);
+  // display the search/landing listings
+  React.useEffect(() => {
+    switch (props.currentPage) {
+      case 'landing':
+        setDisplayListings([...props.publishedListings]);
+        break;
+      case 'search':
+        setDisplayListings([...props.resultListings]);
+        break;
+    }
+  }, [props.currentPage, props.publishedListings, props.resultListings])
   // get hosted listings every 5 seconds
   // React.useEffect(() => {
   //   const interval = setInterval(() => {
@@ -120,7 +132,7 @@ export default function LandingPage (props) {
       }
       newPublishedListings = sortPublishedListings(newPublishedListings, newBookings);
       setBookings(bookings);
-      setPublishedListings(newPublishedListings);
+      props.setPublishedListings(newPublishedListings);
       console.log(`newBookings: ${newBookings}`);
     }
   }
@@ -128,11 +140,11 @@ export default function LandingPage (props) {
   return (
     <Box>
       {
-        publishedListings.length !== 0
+        displayListings.length !== 0
           ? (
               <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
                 <ListingCardBox
-                  listings={publishedListings}
+                  listings={displayListings}
                   bookings={bookings}
                   {...props}
                 />
