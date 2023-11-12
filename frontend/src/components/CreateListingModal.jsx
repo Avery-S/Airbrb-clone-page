@@ -119,7 +119,7 @@ export default function CreateListingModal (props) {
         </Modal.Header>
         <Modal.Body>
         <Grid container spacing={2}>
-        <Grid xs={12} lg={4}> {/* image container */}
+        <Grid xs={12} md={8} lg={4}> {/* image container */}
           <label htmlFor="thumbnail">Select an Image to Post</label >
           <input
             id="thumbnail"
