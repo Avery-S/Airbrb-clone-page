@@ -221,19 +221,23 @@ export default function ResponsiveAppBar (props) {
               </Button>
             ))}
           </Box>
-          <SearchDrawer
-            {...props}
-            toggleDrawer={toggleDrawer}
-            searchDrawerShow={searchDrawerShow}
-            setSearchDrawerShow={setSearchDrawerShow}
-          />
-          <Box sx={{ flexGrow: 0.1, display: { md: 'flex' } }}>
-            <Tooltip title="Search">
-              <IconButton onClick={() => setSearchDrawerShow(true)} sx={{ p: 0, color: 'inherit', }} >
-                <SearchIcon fontSize='large' />
-              </IconButton>
-            </Tooltip>
-          </Box>
+          {(props.currentPage === 'landing' || props.currentPage === 'search') &&
+            <>
+              <SearchDrawer
+                {...props}
+                toggleDrawer={toggleDrawer}
+                searchDrawerShow={searchDrawerShow}
+                setSearchDrawerShow={setSearchDrawerShow}
+              />
+              <Box sx={{ flexGrow: 0.1, display: { md: 'flex' } }}>
+                <Tooltip title="Search">
+                  <IconButton onClick={() => setSearchDrawerShow(true)} sx={{ p: 0, color: 'inherit', }} >
+                    <SearchIcon fontSize='large' />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </>
+          }
           {/* User Menu */}
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">

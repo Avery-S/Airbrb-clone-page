@@ -21,7 +21,7 @@ export default function HostedListings (props) {
 
   // get all listings when first enter this page
   React.useEffect(() => {
-    props.setCurrentPage('hosted')
+    props.setCurrentPage('hosted');
     getHostedListings();
   }, []);
   // get hosted listings every 5 seconds
