@@ -1,12 +1,12 @@
 import React, { useState } from 'react'; // 修正了多余空格
 import { Modal, Button } from 'react-bootstrap';
 // import { useNavigate } from 'react-router-dom'; // 确保你已经导入useNavigate
-import { fileToDataUrl } from '../helper/fileToDataUrl.jsx';
 import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 
 // import checkToken from '../helper/checkToken';
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
+import { fileToDataUrl } from '../helper/helperFuncs.jsx';
 
 export default function CreateListingModal (props) {
   const initialMetadata = {

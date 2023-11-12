@@ -13,3 +13,7 @@ export function fileToDataUrl (file) {
   reader.readAsDataURL(file);
   return dataUrlPromise;
 }
+
+export function dateToString (date) {
+  return date.format('DD/MM/YYYY').toString()
+}
