@@ -49,7 +49,7 @@ export default function ListingCard (props) {
   // handle click on card
   const handleCardClick = () => {
     props.setCurrentPage('listing');
-    navigate(`/listings/${props.listingId}`, { props: { ...props } });
+    navigate(`/listings/${props.listingId}`);
   }
   // handle edit listing
   const handleEditListing = () => {
