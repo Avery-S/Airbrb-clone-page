@@ -46,26 +46,21 @@ export default function ListingCard (props) {
     setShowConfirmModal(true);
   }
 
-  const getUserRating = () => {
-    const reviews = props.reviews;
-    let userRating = 0;
-    const reviewLength = reviews.length;
-    for (const review of reviews) {
-      userRating += parseFloat(review.rating);
-    }
-    userRating /= reviewLength;
-    return [userRating, reviewLength]
+  // handle click on card
+  const handleCardClick = () => {
+    props.setCurrentPage('listing');
+    navigate(`/listings/${props.listingId}`, { props: { ...props } });
   }
-
   // handle edit listing
   const handleEditListing = () => {
     const listingId = props.listingId;
+    props.setCurrentPage('edit');
     navigate(`/edit-listing/${listingId}`, { state: { token: props.token } });
   }
 
   const [userRating, reviewLength] = getUserRating(props.reviews);
   const boxShadow = ifPublished && props.ifOwner
-    ? '0.5vw 0.5vw 0.5vw rgba(0, 128, 0, 0.5)'
+    ? '0.5vw 0.5vw 0.5vw rgba(0, 128, 0, 0.7)'
     : '0.1vw 0.1vw 0.1vw grey';
   const publishedIconColor = ifPublished && props.ifOwner
     ? green[700]
@@ -100,16 +95,25 @@ export default function ListingCard (props) {
         msg='Are you sure you want to delete this listing?'
         func={deleteListing}
       />
-      <Card sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifySelf: 'flex-start',
-        width: props.cardWidth,
-        minWidth: '200px',
-        margin: '0.5vw',
-        position: 'relative',
-        boxShadow: { boxShadow },
-      }}>
+      <Card
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifySelf: 'flex-start',
+          width: props.cardWidth,
+          minWidth: '200px',
+          margin: '0.5vw',
+          position: 'relative',
+          boxShadow: { boxShadow },
+          '&:hover': {
+            // Add your hover styles here
+            boxShadow: '0 4px 12px rgba(33, 150, 243, 0.3)', // Example: Change box shadow on hover
+            cursor: 'pointer', // Changes the cursor to indicate the card is clickable
+            // You can add more styles as needed
+          },
+        }}
+        onClick={handleCardClick}
+      >
         {
           props.ifOwner && props.currentPage === 'hosted'
             ? (
@@ -178,27 +182,6 @@ export default function ListingCard (props) {
                       fontSize='medium'
                     />
                   </IconButton >
-                  <Tooltip title="Edit" placement='right-start'>
-                    <IconButton
-                      aria-label="Edit Listing"
-                    >
-                      <EditOutlinedIcon
-                        sx={{ color: blue[900] }}
-                        fontSize='medium'
-                      />
-                    </IconButton >
-                  </Tooltip>
-                  <Tooltip title="Delete" placement='right-start'>
-                    <IconButton
-                      aria-label="Delete Listing"
-                      onClick={handleDeleteListing}
-                    >
-                      <DeleteForeverIcon
-                        sx={{ color: red[500] }}
-                        fontSize='medium'
-                      />
-                    </IconButton >
-                  </Tooltip>
                 </>
               )
             : (<></>)}
