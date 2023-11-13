@@ -4,6 +4,9 @@ import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import Grid from '@mui/material/Unstable_Grid2';
 import TextField from '@mui/material/TextField';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
 import CountrySelect from './CountrySelect.jsx';
@@ -18,6 +21,12 @@ export default function CreateListingModal (props) {
     numberOfBeds: 1,
     amenities: [],
     houseRules: '',
+    rooms: {
+      singleRoom: { beds: 1, roomNum: 0 },
+      twinRoom: { beds: 2, roomNum: 0 },
+      familyRoom: { beds: 3, roomNum: 0 },
+      quadRoom: { beds: 4, roomNum: 0 },
+    },
   };
 
   const initialAddress = {
@@ -123,6 +132,34 @@ export default function CreateListingModal (props) {
     setAddress({ ...address, country: newValue ? newValue.label : '' });
     setSelectedCountry(newValue);
   };
+
+  const updateRoomNumber = (roomType, change) => {
+    setMetadata(prevMetadata => {
+      // 获取当前房间数
+      const currentRoomNum = prevMetadata.rooms[roomType].roomNum;
+      // 计算新房间数，确保不会小于0
+      const newRoomNum = Math.max(currentRoomNum + change, 0);
+  
+      // 更新对应房间的数量
+      return {
+        ...prevMetadata,
+        rooms: {
+          ...prevMetadata.rooms,
+          [roomType]: {
+            ...prevMetadata.rooms[roomType],
+            roomNum: newRoomNum
+          }
+        }
+      };
+    });
+  };  
+
+  const roomTypes = [
+    { id: 'singleRoom', label: 'Single Room' },
+    { id: 'twinRoom', label: 'Twin Room' },
+    { id:'familyRoom', label:'Family Room' },
+    {id:'quadRoom', label:'Quad Room' },
+  ];
 
   return (
     <Modal
@@ -262,7 +299,7 @@ export default function CreateListingModal (props) {
             />
           </Grid>
 
-          <Grid item xs={10} md={7} lg={6}>
+          <Grid item xs={10} md={9} lg={8}>
               <TextField
                 fullWidth
                 id="numberOfBathrooms"
@@ -296,6 +333,43 @@ export default function CreateListingModal (props) {
                 }}
               />
             </Grid>
+            <Grid item xs={12} md={9} lg={8}>
+            <List sx={{ 
+            width: '80%',  
+            bgcolor: 'background.paper',
+            border: 1,
+            borderColor: 'primary.main',
+            borderRadius: '10px',
+            overflow: 'hidden'
+        }}>
+          {roomTypes.map((room) => (
+            <ListItem
+              key={room.id}
+              disableGutters
+              sx={{ borderBottom: 1, borderColor: 'divider', padding: '10px' }} // 在这里添加 padding
+            >
+              <ListItemText 
+                primary={room.label} 
+                secondary={`Beds: ${metadata.rooms[room.id].beds}`} 
+                secondaryTypographyProps={{ 
+                  style: { color: 'gray', fontSize: '0.875rem' }
+                }} 
+              />
+              <Grid container spacing={1} sx={{ width: 'auto', marginLeft: 'auto' }}> {/* 调整 Grid 容器的位置 */}
+                <Grid item>
+                  <Button onClick={() => updateRoomNumber(room.id, -1)}>-</Button>
+                </Grid>
+                <Grid item>
+                  <span>{metadata.rooms[room.id].roomNum}</span>
+                </Grid>
+                <Grid item>
+                  <Button onClick={() => updateRoomNumber(room.id, 1)}>+</Button>
+                </Grid>
+              </Grid>
+            </ListItem>
+          ))}
+        </List>
+            </Grid>
 
             <Grid item xs={12} md={9} lg={8}>
               <AmenitiesTags
@@ -315,6 +389,7 @@ export default function CreateListingModal (props) {
             </Grid>
             </Grid>
           </Grid>
+
         </Modal.Body>
 
         <Modal.Footer>

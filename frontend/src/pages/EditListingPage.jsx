@@ -4,6 +4,9 @@ import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { Button } from 'react-bootstrap';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 
 import { fileToDataUrl } from '../helper/helperFuncs.jsx';
 import { BACKEND_URL } from '../helper/getLinks';
@@ -21,6 +24,12 @@ export default function EditListingPage () {
     numberOfBeds: 1,
     amenities: [],
     houseRules: '',
+    rooms: {
+      singleRoom: { beds: 1, roomNum: 0 },
+      twinRoom: { beds: 2, roomNum: 0 },
+      familyRoom: { beds: 3, roomNum: 0 },
+      quadRoom: { beds: 4, roomNum: 0 },
+    },
   };
 
   const initialAddress = {
@@ -178,6 +187,31 @@ export default function EditListingPage () {
     navigate('/my-hosted-listings');
   }
 
+  const updateRoomNumber = (roomType, change) => {
+    setMetadata(prevMetadata => {
+      const currentRoomNum = prevMetadata.rooms[roomType].roomNum;
+      const newRoomNum = Math.max(currentRoomNum + change, 0);
+  
+      return {
+        ...prevMetadata,
+        rooms: {
+          ...prevMetadata.rooms,
+          [roomType]: {
+            ...prevMetadata.rooms[roomType],
+            roomNum: newRoomNum
+          }
+        }
+      };
+    });
+  };
+
+  const roomTypes = [
+    { id: 'singleRoom', label: 'Single Room' },
+    { id: 'twinRoom', label: 'Twin Room' },
+    { id:'familyRoom', label:'Family Room' },
+    {id:'quadRoom', label:'Quad Room' },
+  ];
+
   return (
     <>
     {showAlert && (
@@ -224,7 +258,7 @@ export default function EditListingPage () {
       </Box>
       </Box>
     </Grid>
-        <Grid item xs={12} lg={8} paddingTop={2}>
+        <Grid item xs={12} lg={8} paddingLeft={2}>
           <Grid item xs={8} md={4} lg={3} paddingTop={3} paddingBottom={2} paddingRight={1}>
              <TextField
             fullWidth
@@ -362,7 +396,43 @@ export default function EditListingPage () {
             }}
           />
         </Grid>
-
+        <Grid Grid item xs={11} md={8} lg={7} paddingTop={2} paddingBottom={2} paddingRight={1}>
+            <List sx={{ 
+            width: '80%',  
+            bgcolor: 'background.paper',
+            border: 1,
+            borderColor: 'primary.main',
+            borderRadius: '10px',
+            overflow: 'hidden'
+        }}>
+          {roomTypes.map((room) => (
+            <ListItem
+              key={room.id}
+              disableGutters
+              sx={{ borderBottom: 1, borderColor: 'divider', padding: '10px' }}
+            >
+              <ListItemText 
+                primary={room.label} 
+                secondary={`Beds: ${metadata.rooms[room.id].beds}`} 
+                secondaryTypographyProps={{ 
+                  style: { color: 'gray', fontSize: '0.875rem' }
+                }} 
+              />
+              <Grid container spacing={1} sx={{ width: 'auto', marginLeft: 'auto' }}> 
+                <Grid item>
+                  <Button onClick={() => updateRoomNumber(room.id, -1)}>-</Button>
+                </Grid>
+                <Grid item>
+                  <span>{metadata.rooms[room.id].roomNum}</span>
+                </Grid>
+                <Grid item>
+                  <Button onClick={() => updateRoomNumber(room.id, 1)}>+</Button>
+                </Grid>
+              </Grid>
+            </ListItem>
+          ))}
+        </List>
+            </Grid>
         <Grid item xs={11} md={8} lg={7} paddingTop={2} paddingBottom={2} paddingRight={1}>
           <AmenitiesTags
         selectedAmenities={metadata.amenities}
