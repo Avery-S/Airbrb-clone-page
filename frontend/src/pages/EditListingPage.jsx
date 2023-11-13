@@ -280,19 +280,18 @@ export default function EditListingPage () {
           </div>
       </Box>
       </Box>
-      {metadata.imageList && metadata.imageList.length > 0 && (
-      <Box padding={1}>
-        {metadata.imageList.map((imgUrl, index) => (
-          <Box key={index} display="flex" alignItems="center">
-            <img src={imgUrl} alt={`Thumbnail ${index}`} style={{ width: 100, height: 100 }} />
-            <IconButton onClick={() => handleRemoveImage(index)}>
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        ))}
+      <Box padding={1} sx={{ maxHeight: 300, overflowY: 'auto' }}>
+        {metadata.imageList && metadata.imageList.length > 0 && (
+          metadata.imageList.map((imgUrl, index) => (
+            <Box key={index} display="flex" alignItems="center" marginBottom={2}>
+              <img src={imgUrl} alt={`Thumbnail ${index}`} style={{ width: 100, height: 100 }} />
+              <IconButton onClick={() => handleRemoveImage(index)}>
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          ))
+        )}
       </Box>
-      )}
-
     </Grid>
         <Grid item xs={12} lg={8} paddingLeft={2}>
           <Grid item xs={8} md={4} lg={3} paddingTop={3} paddingBottom={2} paddingRight={1}>
