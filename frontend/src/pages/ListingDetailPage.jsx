@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom';
-import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button } from '@mui/material';
+import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button, Paper } from '@mui/material';
 
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
@@ -10,6 +10,8 @@ import { getUserRating } from '../helper/helperFuncs';
 
 export default function ListingDetailPage (props) {
   const [listingInfo, setListingInfo] = React.useState([]);
+  const [bookingInfo, setBookingInfo] = React.useState(null);
+  const [diffDate, setDiffDate] = React.useState(-1);
 
   console.log(props)
   const { listingId } = useParams();
@@ -17,6 +19,12 @@ export default function ListingDetailPage (props) {
 
   React.useEffect(() => {
     getListingInfo();
+    getBookings();
+    console.log(props.currentPage, props.searchDateRange.length)
+    if (props.currentPage === 'search' && props.searchDateRange.length === 2) {
+      setDiffDate(props.searchDateRange[1].diff(props.searchDateRange[0], 'day') - 1)
+    }
+    props.setCurrentPage('listing');
   }, []);
 
   const getListingInfo = async () => {
@@ -28,6 +36,23 @@ export default function ListingDetailPage (props) {
     } else {
       setListingInfo(data.listing);
       console.log(listingInfo);
+    }
+  }
+
+  const getBookings = async () => {
+    const response = await fetch(`${BACKEND_URL}/bookings`, fetchObject('GET', {}, true));
+    const data = await response.json();
+    if (data.error) {
+      props.setErrorModalMsg(data.error);
+      props.setErrorModalShow(true);
+    } else {
+      let bookings = data.bookings;
+      if (bookings) {
+        bookings = bookings.filter(booking => (
+          booking.listingId === listingId && booking.owner === localStorage.getItem('userEmail')
+        ))[0];
+        bookings && setBookingInfo(bookings);
+      }
     }
   }
 
@@ -70,13 +95,18 @@ export default function ListingDetailPage (props) {
             display: 'flex',
             flexDirection: 'column',
             justifySelf: 'flex-start',
-            flex: '0.7'
           }}>
             <Typography variant='h4'>{ listingInfo.title }</Typography>
             <Typography variant='h6' fontWeight={1}>
               { Object.values(listingInfo.address).join(', ') }
             </Typography>
-            <br />
+            {diffDate <= 0
+              ? (<Typography variant='h6' sx={{ textDecoration: 'underline' }}>
+                  ${parseFloat(listingInfo.price)}/night
+                </Typography>)
+              : (<Typography variant='h6' sx={{ textDecoration: 'underline' }}>
+                  ${diffDate * parseFloat(listingInfo.price)}/stay
+                </Typography>)}
             {reviewLength === 0
               ? (<Typography variant='subtitle2'> No Reviews </Typography>)
               : (<>
@@ -111,14 +141,31 @@ export default function ListingDetailPage (props) {
           </Box>
           <Box sx={{
             display: 'flex',
-            justifyContent: 'flex-end',
-            flex: '0.3',
+            flexDirection: 'column',
+            alignItems: 'flex-end',
           }}
           >
             <Button variant="contained" sx={{
               display: 'flex',
               height: 'min-content',
+              width: 'auto',
+              justifySelf: 'flex-start',
             }} >Book</Button>
+            {bookingInfo &&
+                <Paper
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                  <Typography>
+                    Booking Date: {Object.values(bookingInfo.dataRange).join(' - ')}
+                  </Typography>
+                  {bookingInfo.status === 'accepted'
+                    ? <Chip label="Accepted" color="success" />
+                    : <Chip label="Pending" color="warning" />}
+                </Paper>
+            }
           </Box>
         </Box>
       </Box>
