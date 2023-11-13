@@ -4,6 +4,9 @@ import { IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import Grid from '@mui/material/Unstable_Grid2';
 import TextField from '@mui/material/TextField';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
 import CountrySelect from './CountrySelect.jsx';
@@ -18,6 +21,13 @@ export default function CreateListingModal (props) {
     numberOfBeds: 1,
     amenities: [],
     houseRules: '',
+    rooms: {
+      singleRoom: { beds: 1, roomNum: 0 },
+      twinRoom: { beds: 2, roomNum: 0 },
+      familyRoom: { beds: 3, roomNum: 0 },
+      quadRoom: { beds: 4, roomNum: 0 },
+    },
+    imageList: [],
   };
 
   const initialAddress = {
@@ -36,10 +46,24 @@ export default function CreateListingModal (props) {
   // const navigate = useNavigate();
   const [uploadedImg, setUploadedImg] = useState('');
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [errorMessages, setErrorMessages] = useState({});
 
   // Modal close
   const handleClose = () => {
     props.onHide();
+  };
+
+  const validateInputs = () => {
+    const errors = {};
+    if (!title.trim()) errors.title = 'Title is required.';
+    if (!address.street.trim()) errors.street = 'Street is required.';
+    if (!address.city.trim()) errors.city = 'City is required.';
+    if (!address.state.trim()) errors.state = 'State is required.';
+    if (!address.postCode.trim()) errors.postCode = 'PostCode is required.';
+    if (!selectedCountry) errors.country = 'Country is required.';
+    if (!price.trim()) errors.price = 'Price is required.';
+    if (!metadata.propertyType) errors.propertyType = 'Property Type is required.';
+    return errors;
   };
 
   // submit create list
@@ -54,25 +78,35 @@ export default function CreateListingModal (props) {
       country: selectedCountry ? selectedCountry.label : '',
     };
     const trimmedPrice = price.trim();
-    const body = {
-      title: trimmedTitle,
-      address: trimmedAddress,
-      price: trimmedPrice,
-      thumbnail,
-      metadata
+    const errors = validateInputs();
+    if (Object.keys(errors).length === 0) {
+      const body = {
+        title: trimmedTitle,
+        address: trimmedAddress,
+        price: trimmedPrice,
+        thumbnail,
+        metadata
+      }
+      console.log(body);
+      props.createListing(body);
+      handleClose();
+    } else {
+      setErrorMessages(errors);
     }
-    console.log(body);
-    props.createListing(body);
-    handleClose();
   };
 
   const handleImageChange = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
+    const files = event.target.files;
+    if (files.length > 0) {
       try {
-        const dataUrl = await fileToDataUrl(file);
-        setUploadedImg(dataUrl);
-        setThumbnail(dataUrl);
+        const imageList = await Promise.all(
+          [...files].map(file => fileToDataUrl(file))
+        );
+        setMetadata(prevMetadata => ({
+          ...prevMetadata,
+          imageList: imageList
+        }));
+        setThumbnail(imageList[0]); // 将第一个图像设置为缩略图
       } catch (error) {
         console.error(error);
       }
@@ -104,13 +138,36 @@ export default function CreateListingModal (props) {
     setSelectedCountry(newValue);
   };
 
+  const updateRoomNumber = (roomType, change) => {
+    setMetadata(prevMetadata => {
+      const currentRoomNum = prevMetadata.rooms[roomType].roomNum;
+      const newRoomNum = Math.max(currentRoomNum + change, 0);
+      return {
+        ...prevMetadata,
+        rooms: {
+          ...prevMetadata.rooms,
+          [roomType]: {
+            ...prevMetadata.rooms[roomType],
+            roomNum: newRoomNum
+          }
+        }
+      };
+    });
+  };
+
+  const roomTypes = [
+    { id: 'singleRoom', label: 'Single Room' },
+    { id: 'twinRoom', label: 'Twin Room' },
+    { id: 'familyRoom', label: 'Family Room' },
+    { id: 'quadRoom', label: 'Quad Room' },
+  ];
+
   return (
     <Modal
       show={props.show}
       onHide={handleClose}
       size="lg"
     >
-
       <form onSubmit={handleSubmit}>
         <Modal.Header closeButton>
           <Modal.Title>Create New Listing</Modal.Title>
@@ -129,7 +186,13 @@ export default function CreateListingModal (props) {
           />
             <div>
               <img src={uploadedImg || DEFAULT_THUMBNAIL_URL} alt="Thumbnail" style={{ width: '85%', height: '85%' }} />
-              <input accept="image/*" id="icon-button-file" type="file" style={{ display: 'none' }} onChange={handleImageChange} />
+              <input
+              accept="image/*"
+              id="icon-button-file"
+              type="file"
+              style={{ display: 'none' }}
+              onChange={handleImageChange}
+              multiple/>
               <label htmlFor="icon-button-file">
                 <IconButton color="primary" aria-label="upload picture" component="span">
                   <PhotoCamera />
@@ -149,6 +212,8 @@ export default function CreateListingModal (props) {
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                error={!!errorMessages.title}
+                helperText={errorMessages.title || ''}
                 required
               />
             </Grid>
@@ -162,6 +227,8 @@ export default function CreateListingModal (props) {
                 type="text"
                 value={address.street}
                 onChange={(e) => setAddress({ ...address, street: e.target.value })}
+                error={!!errorMessages.street}
+                helperText={errorMessages.street || ''}
                 required
               />
             </Grid>
@@ -173,6 +240,8 @@ export default function CreateListingModal (props) {
                 type="text"
                 value={address.city}
                 onChange={(e) => setAddress({ ...address, city: e.target.value })}
+                error={!!errorMessages.city}
+                helperText={errorMessages.city || ''}
                 required
               />
             </Grid>
@@ -184,6 +253,8 @@ export default function CreateListingModal (props) {
                 type="text"
                 value={address.state}
                 onChange={(e) => setAddress({ ...address, state: e.target.value })}
+                error={!!errorMessages.state}
+                helperText={errorMessages.state || ''}
                 required
               />
             </Grid>
@@ -195,6 +266,8 @@ export default function CreateListingModal (props) {
                 type="text"
                 value={address.postCode}
                 onChange={(e) => setAddress({ ...address, postCode: e.target.value })}
+                error={!!errorMessages.postCode}
+                helperText={errorMessages.postCode || ''}
                 required
               />
             </Grid>
@@ -203,6 +276,9 @@ export default function CreateListingModal (props) {
               <CountrySelect
                 value={selectedCountry}
                 onChange={handleCountryChange}
+                error={!!errorMessages.country}
+                helperText={errorMessages.country || ''}
+                required
               />
             </Grid>
           </Grid>
@@ -215,6 +291,8 @@ export default function CreateListingModal (props) {
                 type="text"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
+                error={!!errorMessages.price}
+                helperText={errorMessages.price || ''}
                 required
               />
             </Grid>
@@ -223,10 +301,12 @@ export default function CreateListingModal (props) {
             <PropertyTypeComboBox
               value={metadata.propertyType}
               onChange={handleMetadataChange}
+              error={!!errorMessages.propertyType}
+              helperText={errorMessages.propertyType || ''}
             />
           </Grid>
 
-          <Grid item xs={10} md={7} lg={6}>
+          <Grid item xs={10} md={9} lg={8}>
               <TextField
                 fullWidth
                 id="numberOfBathrooms"
@@ -234,7 +314,6 @@ export default function CreateListingModal (props) {
                 type="number"
                 value={metadata.numberOfBathrooms}
                 onChange={handleMetadataChange}
-                required
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -261,7 +340,43 @@ export default function CreateListingModal (props) {
                 }}
               />
             </Grid>
-
+            <Grid item xs={12} md={9} lg={8}>
+            <List sx={{
+              width: '80%',
+              bgcolor: 'background.paper',
+              border: 1,
+              borderColor: 'primary.main',
+              borderRadius: '10px',
+              overflow: 'hidden'
+            }}>
+          {roomTypes.map((room) => (
+            <ListItem
+              key={room.id}
+              disableGutters
+              sx={{ borderBottom: 1, borderColor: 'divider', padding: '10px' }}
+            >
+              <ListItemText
+                primary={room.label}
+                secondary={`Beds: ${metadata.rooms[room.id].beds}`}
+                secondaryTypographyProps={{
+                  style: { color: 'gray', fontSize: '0.875rem' }
+                }}
+              />
+              <Grid container spacing={1} sx={{ width: 'auto', marginLeft: 'auto' }}>
+                <Grid item>
+                  <Button onClick={() => updateRoomNumber(room.id, -1)}>-</Button>
+                </Grid>
+                <Grid item>
+                  <span>{metadata.rooms[room.id].roomNum}</span>
+                </Grid>
+                <Grid item>
+                  <Button onClick={() => updateRoomNumber(room.id, 1)}>+</Button>
+                </Grid>
+              </Grid>
+            </ListItem>
+          ))}
+        </List>
+            </Grid>
             <Grid item xs={12} md={9} lg={8}>
               <AmenitiesTags
             selectedAmenities={metadata.amenities}
@@ -280,9 +395,7 @@ export default function CreateListingModal (props) {
             </Grid>
             </Grid>
           </Grid>
-
         </Modal.Body>
-
         <Modal.Footer>
           <Button onClick={handleSubmit}>Create Listing</Button>
           <Button onClick={handleClose}>Close</Button>
