@@ -28,18 +28,13 @@ export default function ListingCard (props) {
   const isMounted = React.useRef(false);
   // find the booking status
   React.useEffect(() => {
-    if (props.bookings) {
-      setBookingInfo(props.bookings.find(booking => booking.id === props.listingId));
+    if (props.bookings && props.bookings.length !== 0) {
+      console.log(props.bookings)
+      setBookingInfo(props.bookings.find(booking => booking.id === props.listingId && localStorage.getItem('userEmail') === booking.owner)[0]);
     }
     isMounted.current = true;
     return () => { isMounted.current = false; }
   }, [])
-
-  React.useEffect(() => {
-    if (props.bookings) {
-      setBookingInfo(props.bookings.find(booking => booking.id === props.listingId));
-    }
-  }, [props.bookings])
 
   // handle delete listing
   const handleDeleteListing = () => {
@@ -49,7 +44,6 @@ export default function ListingCard (props) {
   // handle click on card
   const handleCardClick = () => {
     if (props.currentPage !== 'hosted') {
-      props.setCurrentPage('listing');
       navigate(`/listings/${props.listingId}`);
     }
   }

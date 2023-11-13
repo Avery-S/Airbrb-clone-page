@@ -227,6 +227,7 @@ export default function ResponsiveAppBar (props) {
                 toggleDrawer={toggleDrawer}
                 searchDrawerShow={searchDrawerShow}
                 setSearchDrawerShow={setSearchDrawerShow}
+                setSearchDateRange={props.setSearchDateRange}
               />
               <Box sx={{ flexGrow: 0.1, display: { md: 'flex' } }}>
                 <Tooltip title="Search">
