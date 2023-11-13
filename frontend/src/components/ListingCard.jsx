@@ -48,8 +48,10 @@ export default function ListingCard (props) {
 
   // handle click on card
   const handleCardClick = () => {
-    props.setCurrentPage('listing');
-    navigate(`/listings/${props.listingId}`);
+    if (props.currentPage !== 'hosted') {
+      props.setCurrentPage('listing');
+      navigate(`/listings/${props.listingId}`);
+    }
   }
   // handle edit listing
   const handleEditListing = () => {
@@ -60,11 +62,20 @@ export default function ListingCard (props) {
 
   const [userRating, reviewLength] = getUserRating(props.reviews);
   const boxShadow = ifPublished && props.ifOwner
-    ? '0.5vw 0.5vw 0.5vw rgba(0, 128, 0, 0.7)'
+    ? '0.5vw 0.5vw 0.5vw rgba(0, 128, 0, 0.5)'
     : '0.1vw 0.1vw 0.1vw grey';
   const publishedIconColor = ifPublished && props.ifOwner
     ? green[700]
     : '';
+
+  const hover = props.currentPage !== 'hosted'
+    ? {
+        boxShadow: '0 4px 12px rgba(33, 150, 243, 0.3)',
+        cursor: 'pointer',
+      }
+    : {
+        boxShadow: '0 4px 12px rgba(33, 150, 243, 0.3)',
+      };
   // delete the listing API
   const deleteListing = async () => {
     const listingId = props.listingId;
@@ -105,12 +116,7 @@ export default function ListingCard (props) {
           margin: '0.5vw',
           position: 'relative',
           boxShadow: { boxShadow },
-          '&:hover': {
-            // Add your hover styles here
-            boxShadow: '0 4px 12px rgba(33, 150, 243, 0.3)', // Example: Change box shadow on hover
-            cursor: 'pointer', // Changes the cursor to indicate the card is clickable
-            // You can add more styles as needed
-          },
+          '&:hover': { ...hover },
         }}
         onClick={handleCardClick}
       >
