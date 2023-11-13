@@ -27,6 +27,7 @@ export default function CreateListingModal (props) {
       familyRoom: { beds: 3, roomNum: 0 },
       quadRoom: { beds: 4, roomNum: 0 },
     },
+    imageList: [],
   };
 
   const initialAddress = {
@@ -80,28 +81,32 @@ export default function CreateListingModal (props) {
     const errors = validateInputs();
     if (Object.keys(errors).length === 0) {
       const body = {
-      title: trimmedTitle,
-      address: trimmedAddress,
-      price: trimmedPrice,
-      thumbnail,
-      metadata
+        title: trimmedTitle,
+        address: trimmedAddress,
+        price: trimmedPrice,
+        thumbnail,
+        metadata
       }
       console.log(body);
       props.createListing(body);
       handleClose();
-    }
-    else {
+    } else {
       setErrorMessages(errors);
     }
   };
 
   const handleImageChange = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
+    const files = event.target.files;
+    if (files.length > 0) {
       try {
-        const dataUrl = await fileToDataUrl(file);
-        setUploadedImg(dataUrl);
-        setThumbnail(dataUrl);
+        const imageList = await Promise.all(
+          [...files].map(file => fileToDataUrl(file))
+        );
+        setMetadata(prevMetadata => ({
+          ...prevMetadata,
+          imageList: imageList
+        }));
+        setThumbnail(imageList[0]); // 将第一个图像设置为缩略图
       } catch (error) {
         console.error(error);
       }
@@ -135,12 +140,8 @@ export default function CreateListingModal (props) {
 
   const updateRoomNumber = (roomType, change) => {
     setMetadata(prevMetadata => {
-      // 获取当前房间数
       const currentRoomNum = prevMetadata.rooms[roomType].roomNum;
-      // 计算新房间数，确保不会小于0
       const newRoomNum = Math.max(currentRoomNum + change, 0);
-  
-      // 更新对应房间的数量
       return {
         ...prevMetadata,
         rooms: {
@@ -152,13 +153,13 @@ export default function CreateListingModal (props) {
         }
       };
     });
-  };  
+  };
 
   const roomTypes = [
     { id: 'singleRoom', label: 'Single Room' },
     { id: 'twinRoom', label: 'Twin Room' },
-    { id:'familyRoom', label:'Family Room' },
-    {id:'quadRoom', label:'Quad Room' },
+    { id: 'familyRoom', label: 'Family Room' },
+    { id: 'quadRoom', label: 'Quad Room' },
   ];
 
   return (
@@ -185,7 +186,13 @@ export default function CreateListingModal (props) {
           />
             <div>
               <img src={uploadedImg || DEFAULT_THUMBNAIL_URL} alt="Thumbnail" style={{ width: '85%', height: '85%' }} />
-              <input accept="image/*" id="icon-button-file" type="file" style={{ display: 'none' }} onChange={handleImageChange} />
+              <input
+              accept="image/*"
+              id="icon-button-file"
+              type="file"
+              style={{ display: 'none' }}
+              onChange={handleImageChange}
+              multiple/>
               <label htmlFor="icon-button-file">
                 <IconButton color="primary" aria-label="upload picture" component="span">
                   <PhotoCamera />
@@ -334,28 +341,28 @@ export default function CreateListingModal (props) {
               />
             </Grid>
             <Grid item xs={12} md={9} lg={8}>
-            <List sx={{ 
-            width: '80%',  
-            bgcolor: 'background.paper',
-            border: 1,
-            borderColor: 'primary.main',
-            borderRadius: '10px',
-            overflow: 'hidden'
-        }}>
+            <List sx={{
+              width: '80%',
+              bgcolor: 'background.paper',
+              border: 1,
+              borderColor: 'primary.main',
+              borderRadius: '10px',
+              overflow: 'hidden'
+            }}>
           {roomTypes.map((room) => (
             <ListItem
               key={room.id}
               disableGutters
-              sx={{ borderBottom: 1, borderColor: 'divider', padding: '10px' }} // 在这里添加 padding
+              sx={{ borderBottom: 1, borderColor: 'divider', padding: '10px' }}
             >
-              <ListItemText 
-                primary={room.label} 
-                secondary={`Beds: ${metadata.rooms[room.id].beds}`} 
-                secondaryTypographyProps={{ 
+              <ListItemText
+                primary={room.label}
+                secondary={`Beds: ${metadata.rooms[room.id].beds}`}
+                secondaryTypographyProps={{
                   style: { color: 'gray', fontSize: '0.875rem' }
-                }} 
+                }}
               />
-              <Grid container spacing={1} sx={{ width: 'auto', marginLeft: 'auto' }}> {/* 调整 Grid 容器的位置 */}
+              <Grid container spacing={1} sx={{ width: 'auto', marginLeft: 'auto' }}>
                 <Grid item>
                   <Button onClick={() => updateRoomNumber(room.id, -1)}>-</Button>
                 </Grid>
@@ -370,7 +377,6 @@ export default function CreateListingModal (props) {
           ))}
         </List>
             </Grid>
-
             <Grid item xs={12} md={9} lg={8}>
               <AmenitiesTags
             selectedAmenities={metadata.amenities}
@@ -389,9 +395,7 @@ export default function CreateListingModal (props) {
             </Grid>
             </Grid>
           </Grid>
-
         </Modal.Body>
-
         <Modal.Footer>
           <Button onClick={handleSubmit}>Create Listing</Button>
           <Button onClick={handleClose}>Close</Button>

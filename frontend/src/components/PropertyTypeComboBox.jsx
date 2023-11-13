@@ -13,11 +13,11 @@ export default function PropertyTypeComboBox ({ value, onChange, error, helperTe
       onChange={(event, newValue) => {
         onChange({ target: { id: 'propertyType', value: newValue?.label || '' } });
       }}
-      // sx={{ width: 300 }} 
-      renderInput={(params) => 
-      <TextField 
-        {...params} 
-        label="Property Type" 
+      // sx={{ width: 300 }}
+      renderInput={(params) =>
+      <TextField
+        {...params}
+        label="Property Type"
         error={error}
         helperText={helperText}
         required

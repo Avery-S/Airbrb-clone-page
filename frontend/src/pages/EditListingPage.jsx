@@ -7,6 +7,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import { fileToDataUrl } from '../helper/helperFuncs.jsx';
 import { BACKEND_URL } from '../helper/getLinks';
@@ -30,6 +31,7 @@ export default function EditListingPage () {
       familyRoom: { beds: 3, roomNum: 0 },
       quadRoom: { beds: 4, roomNum: 0 },
     },
+    imageList: [],
   };
 
   const initialAddress = {
@@ -132,26 +134,32 @@ export default function EditListingPage () {
     const errors = validateInputs();
     if (Object.keys(errors).length === 0) {
       const body = {
-      title: trimmedTitle,
-      address: trimmedAddress,
-      price: trimmedPrice,
-      thumbnail,
-      metadata
-    };
-    await updateListing(body);
-    }
-    else {
+        title: trimmedTitle,
+        address: trimmedAddress,
+        price: trimmedPrice,
+        thumbnail,
+        metadata
+      };
+      await updateListing(body);
+    } else {
       setErrorMessages(errors);
     }
   };
 
   const handleImageChange = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
+    const files = event.target.files;
+    if (files && files.length > 0) {
       try {
-        const dataUrl = await fileToDataUrl(file);
-        setUploadedImg(dataUrl);
-        setThumbnail(dataUrl);
+        const imageList = await Promise.all(
+          [...files].map(file => fileToDataUrl(file))
+        );
+        setMetadata(prevMetadata => ({
+          ...prevMetadata,
+          imageList: [...prevMetadata.imageList, ...imageList]
+        }));
+        if (imageList.length > 0) {
+          setThumbnail(imageList[0]);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -191,7 +199,7 @@ export default function EditListingPage () {
     setMetadata(prevMetadata => {
       const currentRoomNum = prevMetadata.rooms[roomType].roomNum;
       const newRoomNum = Math.max(currentRoomNum + change, 0);
-  
+
       return {
         ...prevMetadata,
         rooms: {
@@ -205,11 +213,20 @@ export default function EditListingPage () {
     });
   };
 
+  const handleRemoveImage = (index) => {
+    if (metadata.imageList && metadata.imageList.length > 0) {
+      setMetadata(prevMetadata => ({
+        ...prevMetadata,
+        imageList: prevMetadata.imageList.filter((_, i) => i !== index)
+      }));
+    }
+  };
+
   const roomTypes = [
     { id: 'singleRoom', label: 'Single Room' },
     { id: 'twinRoom', label: 'Twin Room' },
-    { id:'familyRoom', label:'Family Room' },
-    {id:'quadRoom', label:'Quad Room' },
+    { id: 'familyRoom', label: 'Family Room' },
+    { id: 'quadRoom', label: 'Quad Room' },
   ];
 
   return (
@@ -243,7 +260,13 @@ export default function EditListingPage () {
       <Box padding={1}>
           <div>
           <img src={uploadedImg || DEFAULT_THUMBNAIL_URL} alt="Thumbnail" style={{ width: '85%', height: '85%' }} />
-          <input accept="image/*" id="icon-button-file" type="file" style={{ display: 'none' }} onChange={handleImageChange} />
+          <input
+          accept="image/*"
+          id="icon-button-file"
+          type="file"
+          style={{ display: 'none' }}
+          onChange={handleImageChange}
+          multiple/>
           <label htmlFor="icon-button-file">
             <IconButton color="primary" aria-label="upload picture" component="span">
             <PhotoCamera />
@@ -257,6 +280,19 @@ export default function EditListingPage () {
           </div>
       </Box>
       </Box>
+      {metadata.imageList && metadata.imageList.length > 0 && (
+      <Box padding={1}>
+        {metadata.imageList.map((imgUrl, index) => (
+          <Box key={index} display="flex" alignItems="center">
+            <img src={imgUrl} alt={`Thumbnail ${index}`} style={{ width: 100, height: 100 }} />
+            <IconButton onClick={() => handleRemoveImage(index)}>
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        ))}
+      </Box>
+      )}
+
     </Grid>
         <Grid item xs={12} lg={8} paddingLeft={2}>
           <Grid item xs={8} md={4} lg={3} paddingTop={3} paddingBottom={2} paddingRight={1}>
@@ -397,28 +433,28 @@ export default function EditListingPage () {
           />
         </Grid>
         <Grid Grid item xs={11} md={8} lg={7} paddingTop={2} paddingBottom={2} paddingRight={1}>
-            <List sx={{ 
-            width: '80%',  
-            bgcolor: 'background.paper',
-            border: 1,
-            borderColor: 'primary.main',
-            borderRadius: '10px',
-            overflow: 'hidden'
-        }}>
+            <List sx={{
+              width: '80%',
+              bgcolor: 'background.paper',
+              border: 1,
+              borderColor: 'primary.main',
+              borderRadius: '10px',
+              overflow: 'hidden'
+            }}>
           {roomTypes.map((room) => (
             <ListItem
               key={room.id}
               disableGutters
               sx={{ borderBottom: 1, borderColor: 'divider', padding: '10px' }}
             >
-              <ListItemText 
-                primary={room.label} 
-                secondary={`Beds: ${metadata.rooms[room.id].beds}`} 
-                secondaryTypographyProps={{ 
+              <ListItemText
+                primary={room.label}
+                secondary={`Beds: ${metadata.rooms[room.id].beds}`}
+                secondaryTypographyProps={{
                   style: { color: 'gray', fontSize: '0.875rem' }
-                }} 
+                }}
               />
-              <Grid container spacing={1} sx={{ width: 'auto', marginLeft: 'auto' }}> 
+              <Grid container spacing={1} sx={{ width: 'auto', marginLeft: 'auto' }}>
                 <Grid item>
                   <Button onClick={() => updateRoomNumber(room.id, -1)}>-</Button>
                 </Grid>
