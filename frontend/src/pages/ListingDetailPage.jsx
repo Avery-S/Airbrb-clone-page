@@ -4,7 +4,7 @@ import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button
 
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
-import ImageListDisplay from '../components/ImageListDisplay';
+// import ImageListDisplay from '../components/ImageListDisplay';
 import { getUserRating } from '../helper/helperFuncs';
 // import BedListDisplay from '../components/BedListDisplay';
 
@@ -20,7 +20,6 @@ export default function ListingDetailPage (props) {
   React.useEffect(() => {
     getListingInfo();
     getBookings();
-    console.log(props.currentPage, props.searchDateRange.length)
     if (props.currentPage === 'search' && props.searchDateRange.length === 2) {
       setDiffDate(props.searchDateRange[1].diff(props.searchDateRange[0], 'day') - 1)
     }
@@ -82,7 +81,7 @@ export default function ListingDetailPage (props) {
         flexWrap: 'wrap',
         margin: '1vw',
       }}>
-        <ImageListDisplay />
+        {/* <ImageListDisplay images={listingInfo.metadata.imageList} /> */}
         {/* Content */}
         <Box sx={{
           display: 'flex',
