@@ -45,6 +45,20 @@ export default function EditListingPage () {
   const [alertContent, setAlertContent] = useState('');
   const [alertType, setAlertType] = useState('success');
   const [selectedCountry, setSelectedCountry] = useState(null);
+  const [errorMessages, setErrorMessages] = useState({});
+
+  const validateInputs = () => {
+    const errors = {};
+    if (!title.trim()) errors.title = 'Title is required.';
+    if (!address.street.trim()) errors.street = 'Street is required.';
+    if (!address.city.trim()) errors.city = 'City is required.';
+    if (!address.state.trim()) errors.state = 'State is required.';
+    if (!address.postCode.trim()) errors.postCode = 'PostCode is required.';
+    if (!selectedCountry) errors.country = 'Country is required.';
+    if (!price.trim()) errors.price = 'Price is required.';
+    if (!metadata.propertyType) errors.propertyType = 'Property Type is required.';
+    return errors;
+  };
 
   // get all listings API
   const getListing = async () => {
@@ -106,7 +120,9 @@ export default function EditListingPage () {
       country: address.country,
     };
     const trimmedPrice = price.trim();
-    const body = {
+    const errors = validateInputs();
+    if (Object.keys(errors).length === 0) {
+      const body = {
       title: trimmedTitle,
       address: trimmedAddress,
       price: trimmedPrice,
@@ -114,6 +130,10 @@ export default function EditListingPage () {
       metadata
     };
     await updateListing(body);
+    }
+    else {
+      setErrorMessages(errors);
+    }
   };
 
   const handleImageChange = async (event) => {
@@ -213,6 +233,8 @@ export default function EditListingPage () {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            error={!!errorMessages.title}
+            helperText={errorMessages.title || ''}
             required
           />
         </Grid>
@@ -226,6 +248,8 @@ export default function EditListingPage () {
             type="text"
             value={address.street}
             onChange={(e) => setAddress({ ...address, street: e.target.value })}
+            error={!!errorMessages.street}
+            helperText={errorMessages.street || ''}
             required
           />
         </Grid>
@@ -237,6 +261,8 @@ export default function EditListingPage () {
             type="text"
             value={address.city}
             onChange={(e) => setAddress({ ...address, city: e.target.value })}
+            error={!!errorMessages.city}
+            helperText={errorMessages.city || ''}
             required
           />
         </Grid>
@@ -248,6 +274,8 @@ export default function EditListingPage () {
             type="text"
             value={address.state}
             onChange={(e) => setAddress({ ...address, state: e.target.value })}
+            error={!!errorMessages.state}
+            helperText={errorMessages.state || ''}
             required
           />
         </Grid>
@@ -259,6 +287,8 @@ export default function EditListingPage () {
             type="text"
             value={address.postCode}
             onChange={(e) => setAddress({ ...address, postCode: e.target.value })}
+            error={!!errorMessages.postCode}
+            helperText={errorMessages.postCode || ''}
             required
           />
         </Grid>
@@ -267,6 +297,9 @@ export default function EditListingPage () {
           <CountrySelect
             value={selectedCountry}
             onChange={handleCountryChange}
+            error={!!errorMessages.country}
+            helperText={errorMessages.country || ''}
+            required
           />
         </Grid>
       </Grid>
@@ -279,6 +312,8 @@ export default function EditListingPage () {
             type="text"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
+            error={!!errorMessages.price}
+            helperText={errorMessages.price || ''}
             required
           />
         </Grid>
@@ -287,6 +322,8 @@ export default function EditListingPage () {
         <PropertyTypeComboBox
           value={metadata.propertyType}
           onChange={handleMetadataChange}
+          error={!!errorMessages.propertyType}
+          helperText={errorMessages.propertyType || ''}
         />
       </Grid>
 
