@@ -22,10 +22,13 @@ export function dateToString (date) {
 // get user ratings given the listing.reviews
 export function getUserRating (reviews) {
   let userRating = 0;
-  const reviewLength = reviews.length;
-  for (const review of reviews) {
-    userRating += parseFloat(review.rating);
+  let reviewLength = 0;
+  if (reviews) {
+    reviewLength = reviews.length;
+    for (const review of reviews) {
+      userRating += parseFloat(review.rating);
+    }
+    userRating /= reviewLength;
   }
-  userRating /= reviewLength;
   return [userRating, reviewLength]
 }
