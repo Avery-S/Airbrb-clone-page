@@ -11,7 +11,7 @@ import LeaveReview from '../components/LeaveReview';
 
 export default function ListingDetailPage (props) {
   const [listingInfo, setListingInfo] = React.useState([]);
-  const [bookingInfo, setBookingInfo] = React.useState(null);
+  const [bookingInfo, setBookingInfo] = React.useState();
   const [diffDate, setDiffDate] = React.useState(-1);
   const [rateValue, setRateValue] = React.useState(0);
   const [reviewValue, setReviewValue] = React.useState('');
