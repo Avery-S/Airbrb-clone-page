@@ -18,7 +18,7 @@ export default function ListingDetailPage (props) {
   const [reviewValue, setReviewValue] = React.useState('');
   const [showBookingModal, setShowBookingModal] = React.useState(false);
 
-  console.log(props)
+  console.log('props:', props)
   const { listingId } = useParams();
   console.log(listingId);
 
@@ -129,6 +129,7 @@ export default function ListingDetailPage (props) {
           availability={listingInfo.availability}
           token={props.token}
           listingId={listingId}
+          price={listingInfo.price}
           // props
         />
         <ImageListDisplay images={listingInfo.metadata.imageList} />

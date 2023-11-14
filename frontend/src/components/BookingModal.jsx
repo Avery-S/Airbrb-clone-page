@@ -1,5 +1,5 @@
-import React from 'react';
-import { Chip, Box, Button } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Chip, Box, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -16,36 +16,19 @@ import fetchObject from '../helper/fetchObject';
 export default function BookingModal (props) {
   const [startDate, setStartDate] = React.useState(dayjs());
   const [endDate, setEndDate] = React.useState(dayjs());
-  const [chipData, setChipData] = React.useState(props.availability || []);
+  // const [chipData, setChipData] = React.useState(props.availability || []);
   const ListItem = styled('li')(({ theme }) => ({
     margin: theme.spacing(0.5),
   }));
   const token = React.useState(props.token);
+  const [price] = React.useState(parseFloat(props.price) || 0);
+  const [totalPrice, setTotalPrice] = useState(0);
 
-  console.log('token:', token);
-
-  const handleDelete = (chipToDelete) => () => {
-    setChipData((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
-  };
-
-  // set chip data
-  const handdleSet = () => {
-    if (startDate.isAfter(endDate, 'date')) {
-      props.setErrorModalMsg('Invalid start / end date');
-      props.setErrorModalShow(true);
-    } else {
-      const newChipList = [...chipData];
-      const dateString = `${startDate.format('DD/MM/YYYY').toString()}-${endDate.format('DD/MM/YYYY').toString()}`;
-      newChipList.push({
-        label: dateString,
-        key: dateString,
-        startDate,
-        endDate,
-      });
-      setChipData(newChipList);
-    }
-    console.log('props:', props);
-  };
+  // console.log('price:', price);
+  useEffect(() => {
+    const nights = endDate.diff(startDate, 'day') + 1;
+    setTotalPrice(nights * price);
+  }, [startDate, endDate, props.price]);
 
   const handleConfirmBooking = async () => {
     const headers = {
@@ -59,7 +42,7 @@ export default function BookingModal (props) {
           startDate: startDate.format('DD/MM/YYYY'),
           endDate: endDate.format('DD/MM/YYYY'),
         },
-        totalPrice: 100
+        totalPrice: totalPrice
       }, true, headers));
     const data = await response.json();
     if (data.error) {
@@ -71,8 +54,6 @@ export default function BookingModal (props) {
   };
 
   const handleCancelBooking = async () => {
-    // 取消预订的逻辑
-    // 关闭modal
     props.onHide();
   };
 
@@ -154,7 +135,12 @@ export default function BookingModal (props) {
         </Box>
       </Modal.Body>
       <Modal.Footer>
-        <ReactBtn variant='primary' onClick={handleConfirmBooking}>Confirm Book</ReactBtn>
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography sx={{ marginRight: '1em' }}>
+            Total Price: ${totalPrice}
+          </Typography>
+          <ReactBtn variant='primary' onClick={handleConfirmBooking}>Confirm Book</ReactBtn>
+        </Box>
         <ReactBtn variant='outline-secondary' onClick={handleCancelBooking}>Cancel</ReactBtn>
       </Modal.Footer>
     </Modal>
