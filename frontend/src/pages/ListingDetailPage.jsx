@@ -7,11 +7,13 @@ import fetchObject from '../helper/fetchObject';
 import ImageListDisplay from '../components/ImageListDisplay';
 import { getUserRating } from '../helper/helperFuncs';
 import BedListDisplay from '../components/BedListDisplay';
+import BookingModal from '../components/BookingModal';
 
 export default function ListingDetailPage (props) {
   const [listingInfo, setListingInfo] = React.useState([]);
   const [bookingInfo, setBookingInfo] = React.useState(null);
   const [diffDate, setDiffDate] = React.useState(-1);
+  const [showBookingModal, setShowBookingModal] = React.useState(false);
 
   console.log(props)
   const { listingId } = useParams();
@@ -83,6 +85,14 @@ export default function ListingDetailPage (props) {
         flexWrap: 'wrap',
         margin: '1vw',
       }}>
+        <BookingModal
+          show={showBookingModal}
+          onHide={() => setShowBookingModal(false)}
+          availability={listingInfo.availability}
+          token={props.token}
+          listingId={listingId}
+          // props
+        />
         <ImageListDisplay images={listingInfo.metadata.imageList} />
         {/* Content */}
         <Box sx={{
@@ -158,7 +168,8 @@ export default function ListingDetailPage (props) {
               height: 'min-content',
               width: 'auto',
               justifySelf: 'flex-start',
-            }} >Book</Button>
+            }} onClick={() => setShowBookingModal(true)}
+            >Book</Button>
             {bookingInfo &&
                 <Paper
                   sx={{
