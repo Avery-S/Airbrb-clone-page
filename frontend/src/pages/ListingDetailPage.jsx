@@ -90,12 +90,13 @@ export default function ListingDetailPage (props) {
           flexDirection: 'row',
           flexWrap: 'wrap',
           margin: '2vw',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
         }}>
           <Box sx={{
             display: 'flex',
             flexDirection: 'column',
             justifySelf: 'flex-start',
+            flex: '0.8'
           }}>
             <Typography variant='h4'>{ listingInfo.title }</Typography>
             <Typography variant='h6' fontWeight={1}>
@@ -139,6 +140,12 @@ export default function ListingDetailPage (props) {
                 </Typography>
               ))}
             </Box>
+            <Divider>
+              <Chip label="RULES" />
+            </Divider>
+            {listingInfo.metadata.houseRules
+              ? <Typography variant='subtitle'>{ listingInfo.metadata.houseRules }</Typography>
+              : <Typography variant='subtitle'>No Rules</Typography>}
           </Box>
           <Box sx={{
             display: 'flex',

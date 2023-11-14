@@ -1,22 +1,36 @@
 import React from 'react';
-import { Grid, Box, Typography, Paper } from '@mui/material';
+import { Grid, Box, Typography, Paper, useTheme, useMediaQuery } from '@mui/material';
 import BedOutlinedIcon from '@mui/icons-material/BedOutlined';
 import { grey } from '@mui/material/colors';
 
 export default function BedListDisplay (props) {
-  // const theme = useTheme();
-  // const isLaptop = useMediaQuery(theme.breakpoints.up('md')); // Medium devices and up (laptops/desktops)
-  // const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md')); // Small to medium devices (tablets)
-  // const isPhone = useMediaQuery(theme.breakpoints.down('sm')); // Small devices (phones)
+  const theme = useTheme();
+  const isLaptop = useMediaQuery(theme.breakpoints.up('md')); // Medium devices and up (laptops/desktops)
+  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md')); // Small to medium devices (tablets)
+  const isPhone = useMediaQuery(theme.breakpoints.down('sm')); // Small devices (phones)
 
-  // let height;
-  // if (isLaptop) {
-  //   height = '11vw'; // Adjust as needed for laptops/desktops
-  // } else if (isTablet) {
-  //   height = '50vw'; // Adjust as needed for tablets
-  // } else if (isPhone) {
-  //   height = '60vw'; // Adjust as needed for phones
-  // }
+  let width;
+  if (isLaptop) {
+    width = '13vw'; // Adjust as needed for laptops/desktops
+  } else if (isTablet) {
+    width = '20vw'; // Adjust as needed for tablets
+  } else if (isPhone) {
+    width = '30vw'; // Adjust as needed for phones
+  }
+
+  const getBedroomName = (roomType) => {
+    switch (roomType) {
+      case 'singleRoom':
+        return 'Single Room';
+      case 'twinRoom':
+        return 'Twin Room';
+      case 'familyRoom':
+        return 'Family Room';
+      case 'quadRoom':
+        return 'Quad Room';
+    }
+    return roomType;
+  }
 
   const handleWheel = (e) => {
     const container = e.currentTarget;
@@ -33,20 +47,26 @@ export default function BedListDisplay (props) {
   } else {
     return (
       <Box onWheel={handleWheel} sx={{
-        overflowX: 'auto',
+        // overflowX: 'auto',
         display: 'flex',
         width: '100%',
         height: 'fit-content',
-        scrollBehavior: 'smooth',
-        WebkitOverflowScrolling: 'touch'
+        // scrollBehavior: 'smooth',
+        // WebkitOverflowScrolling: 'touch',
       }}>
-        <Grid container spacing={1} component="div" sx={{ flexWrap: 'nowrap' }}>
+        <Grid container spacing={1} component="div" sx={{
+          flexWrap: 'wrap',
+          justifyContent: 'space-evenly',
+          overflowX: 'auto',
+          scrollBehavior: 'smooth',
+          WebkitOverflowScrolling: 'touch',
+        }}>
           {Object.entries(props.bedrooms).map((bedroom, index) => (
-            <Grid item key={index}>
+            <Grid item key={index} width={width}>
               {bedroom.roomNum !== 0 && <Paper
                 alt={`Bedroom ${index}`}
                 sx={{
-                  width: 'max-content',
+                  width: 'auto',
                   height: 'max-content',
                   display: 'flex',
                   flexDirection: 'column',
@@ -57,7 +77,7 @@ export default function BedListDisplay (props) {
                 <BedOutlinedIcon />
                 <br />
                 <Typography variant='h7'>
-                  {bedroom[1].roomNum} {Object.keys(props.bedrooms)[index]}
+                  {bedroom[1].roomNum} {getBedroomName(Object.keys(props.bedrooms)[index])}
                 </Typography>
                 {/* <Typography variant='h7'>
                   No. of Room: {bedroom[1].roomNum}
