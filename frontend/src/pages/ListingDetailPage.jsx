@@ -1,18 +1,21 @@
 import React from 'react'
 import { useParams } from 'react-router-dom';
-import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button, Paper } from '@mui/material';
+import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button } from '@mui/material';
 
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import ImageListDisplay from '../components/ImageListDisplay';
 import { getUserRating } from '../helper/helperFuncs';
 import BedListDisplay from '../components/BedListDisplay';
+import LeaveReview from '../components/LeaveReview';
 import BookingModal from '../components/BookingModal';
 
 export default function ListingDetailPage (props) {
   const [listingInfo, setListingInfo] = React.useState([]);
   const [bookingInfo, setBookingInfo] = React.useState(null);
   const [diffDate, setDiffDate] = React.useState(-1);
+  const [rateValue, setRateValue] = React.useState(0);
+  const [reviewValue, setReviewValue] = React.useState('');
   const [showBookingModal, setShowBookingModal] = React.useState(false);
 
   console.log(props)
@@ -51,8 +54,43 @@ export default function ListingDetailPage (props) {
       if (bookings) {
         bookings = bookings.filter(booking => (
           booking.listingId === listingId && booking.owner === localStorage.getItem('userEmail')
-        ))[0];
+        ));
         bookings && setBookingInfo(bookings);
+      }
+    }
+  }
+  // Submit the review
+  const handleReviewSubmit = async () => {
+    if (rateValue === 0) {
+      if (reviewValue === '') {
+        props.setErrorModalMsg('Cannot leave an empty review');
+      } else {
+        props.setErrorModalMsg('Please rate first!');
+      }
+      props.setErrorModalShow(true);
+    } else {
+      if (bookingInfo) {
+        const acceptedBookingId = bookingInfo.filter(booking => booking.status === 'accepted')[0].id;
+        if (acceptedBookingId) {
+          const reponse = await fetch(`${BACKEND_URL}/listings/${listingId}/review/${acceptedBookingId}`, fetchObject(
+            'PUT', { review: { rating: rateValue, content: reviewValue } }, true
+          ));
+          const data = await reponse.json();
+          if (data.error) {
+            props.setErrorModalMsg(data.error);
+            props.setErrorModalShow(true);
+          } else {
+            setRateValue(0);
+            setReviewValue('');
+            getListingInfo();
+          }
+        } else {
+          props.setErrorModalMsg('You do not have an accepted booking yet');
+          props.setErrorModalShow(true);
+        }
+      } else {
+        props.setErrorModalMsg('You do not have an accepted booking yet');
+        props.setErrorModalShow(true);
       }
     }
   }
@@ -121,10 +159,10 @@ export default function ListingDetailPage (props) {
                 </Typography>)}
             {reviewLength === 0
               ? (<Typography variant='subtitle2'> No Reviews </Typography>)
-              : (<>
+              : (<Box>
                 <Rating name="user-rating" defaultValue={userRating} precision={0.1} readOnly />
                 <Typography variant='subtitle2'>{reviewLength} reviews</Typography>
-              </>)}
+              </Box>)}
             <Divider>
               <Chip label="ROOMS" />
             </Divider>
@@ -135,6 +173,7 @@ export default function ListingDetailPage (props) {
               No. of Baths: {listingInfo.metadata.numberOfBathrooms}
             </Typography>
             <BedListDisplay bedrooms={listingInfo.metadata.rooms} />
+            <br/>
             <Divider>
               <Chip label="AMENITIES" />
             </Divider>
@@ -156,6 +195,26 @@ export default function ListingDetailPage (props) {
             {listingInfo.metadata.houseRules
               ? <Typography variant='subtitle'>{ listingInfo.metadata.houseRules }</Typography>
               : <Typography variant='subtitle'>No Rules</Typography>}
+              <Divider>
+              <Chip label="REVIEWS" />
+            </Divider>
+            {!localStorage.getItem('token')
+              ? <Typography>Log in to leave a review</Typography>
+              : <LeaveReview
+                handleSubmit={handleReviewSubmit}
+                value={rateValue}
+                setValue={setRateValue}
+                textContent={reviewValue}
+                setTextContent={setReviewValue}
+              />}
+            {reviewLength === 0
+              ? (<Typography variant='subtitle2'> No Reviews </Typography>)
+              : (listingInfo.reviews.map((review, index) => (
+                <>
+                  <Rating name="user-rating" defaultValue={review.rating} precision={0.1} readOnly />
+                  <Typography variant='subtitle2'>{review.content}</Typography>
+               </>
+                )))}
           </Box>
           <Box sx={{
             display: 'flex',
@@ -170,21 +229,22 @@ export default function ListingDetailPage (props) {
               justifySelf: 'flex-start',
             }} onClick={() => setShowBookingModal(true)}
             >Book</Button>
-            {bookingInfo &&
+            {/* {bookingInfo &&
                 <Paper
                   sx={{
                     display: 'flex',
                     flexDirection: 'column',
                   }}
+                  key={index}
                 >
                   <Typography>
-                    Booking Date: {Object.values(bookingInfo.dataRange).join(' - ')}
+                    Booking Date: {Object.values(booking.dataRange).join(' - ')}
                   </Typography>
-                  {bookingInfo.status === 'accepted'
+                  {{booking.status === 'accepted'
                     ? <Chip label="Accepted" color="success" />
                     : <Chip label="Pending" color="warning" />}
-                </Paper>
-            }
+                </Paper>))
+            } */}
           </Box>
         </Box>
       </Box>

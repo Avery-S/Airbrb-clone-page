@@ -66,6 +66,7 @@ export default function BookingModal (props) {
       console.log(data.error);
     } else {
       console.log(data.bookingId);
+      props.onHide();
     }
   };
 
@@ -109,22 +110,14 @@ export default function BookingModal (props) {
             }}
             component="ul"
           >
-            {chipData.map((data) => {
-              return (
-                <ListItem key={data.key}>
-                  {
-                    !props.ifPublished
-                      ? (<Chip
-                        label={data.label}
-                        onDelete={data.label === 'React' ? undefined : handleDelete(data)}
-                      />)
-                      : (<Chip label={data.label} />)
-                  }
-                </ListItem>
-              );
-            })}
+            <ListItem>
+              <Chip label={`Start Date: ${startDate.format('DD/MM/YYYY')}`} />
+            </ListItem>
+            <ListItem>
+              <Chip label={`End Date: ${endDate.format('DD/MM/YYYY')}`} />
+            </ListItem>
           </Box>
-          { !props.ifPublished &&
+          {
             <Box sx={{
               display: 'flex',
               flexDirection: 'row',
@@ -156,27 +149,13 @@ export default function BookingModal (props) {
                   </DemoContainer>
                 </LocalizationProvider>
               </Box>
-              <Button variant="contained"
-                sx={{
-                  alignSelf: 'center',
-                  justifySelf: 'center',
-                  display: 'flex',
-                  flex: '0.5',
-                  padding: '1vw',
-                }}
-                onClick={handdleSet}
-              >Set</Button>
             </Box>
           }
         </Box>
       </Modal.Body>
       <Modal.Footer>
-        {
-          !props.ifPublished
-            ? <ReactBtn variant='primary' onClick={handleConfirmBooking}>Confirm Book</ReactBtn>
-            : <ReactBtn variant='primary' onClick={handleCancelBooking}>Cancel</ReactBtn>
-        }
-        <ReactBtn variant='outline-secondary' onClick={props.onHide}>Cancel</ReactBtn>
+        <ReactBtn variant='primary' onClick={handleConfirmBooking}>Confirm Book</ReactBtn>
+        <ReactBtn variant='outline-secondary' onClick={handleCancelBooking}>Cancel</ReactBtn>
       </Modal.Footer>
     </Modal>
   );
