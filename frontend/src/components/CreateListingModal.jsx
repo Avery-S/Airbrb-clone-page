@@ -106,7 +106,7 @@ export default function CreateListingModal (props) {
           ...prevMetadata,
           imageList: imageList
         }));
-        setThumbnail(imageList[0]); // 将第一个图像设置为缩略图
+        setThumbnail(imageList[0]);
       } catch (error) {
         console.error(error);
       }

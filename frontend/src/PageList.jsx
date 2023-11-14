@@ -22,6 +22,7 @@ export default function PageList () {
   const [currentPage, setCurrentPage] = React.useState('landing')
   const [publishedListings, setPublishedListings] = React.useState([]);
   const [resultListings, setResultListings] = React.useState([]);
+  const [searchDateRange, setSearchDateRange] = React.useState(null);
 
   const commonProps = { errorModalShow, setErrorModalShow, errorModalMsg, setErrorModalMsg, token, setToken, currentPage, setCurrentPage };
   const listingProps = { allListings, setAllListings, publishedListings, setPublishedListings, resultListings, setResultListings };
@@ -42,7 +43,7 @@ export default function PageList () {
       flexDirection: 'column'
     }}>
       {/* Header */}
-      <ResponsiveAppBar {...commonProps} {...listingProps} />
+      <ResponsiveAppBar {...commonProps} {...listingProps} setSearchDateRange={setSearchDateRange} />
       {/* Page */}
       <ErrorModal
         show={errorModalShow}
@@ -60,7 +61,7 @@ export default function PageList () {
           <Route path="/login" element={<Login {...commonProps} />}></Route>
           <Route path="/my-hosted-listings" element={<HostedListings {...commonProps} { ...listingProps } />}></Route>
           <Route path="/edit-listing/:listingId" element={<EditListingPage {...commonProps} />}> </Route>
-          <Route path="/listings/:listingId" element={<ListingDetailPage {...commonProps} />}> </Route>
+          <Route path="/listings/:listingId" element={<ListingDetailPage {...commonProps} searchDateRange={searchDateRange} />}> </Route>
           <Route path="/*" element={<LandingPage />}></Route>
         </Routes>
       </Box>

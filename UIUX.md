@@ -1,1 +1,2 @@
 - Hosted listing cards show green if published, otherwise grey for easy distinction
+- Image list is scrollable using mouse and touch
