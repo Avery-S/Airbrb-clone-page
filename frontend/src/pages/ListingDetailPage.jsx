@@ -54,6 +54,7 @@ export default function ListingDetailPage (props) {
           booking.listingId === listingId && booking.owner === localStorage.getItem('userEmail')
         ));
         bookings && setBookingInfo(bookings);
+        console.log(bookings);
       }
     }
   }
@@ -218,7 +219,7 @@ export default function ListingDetailPage (props) {
               width: 'auto',
               justifySelf: 'flex-start',
             }} >Book</Button>
-            {bookingInfo &&
+            {bookingInfo.length !== 0 &&
                 bookingInfo.map((booking, index) => (<Paper
                   sx={{
                     display: 'flex',
