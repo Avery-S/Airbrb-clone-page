@@ -173,7 +173,7 @@ When the app loads, regardless of whether a user is logged in or not, they can a
 	* Date range (two date fields) - only display bookings that are available for the entire date range as inputted by the user.
 	* Price (a minimum and maximum price, expressed either via text fields or a slider)
 	* Review ratings:
-		- Sort results from highest to lowest review rating **or** from lowest to highest review rating depending
+		- Sort results from highest to lowest review rating **or** from lowest to highest review rating
 		- If there is more than one listing with the same rating, their order does not matter
 * The search section must have an associated search button that will action the search to reload the results given the new filters.
 
