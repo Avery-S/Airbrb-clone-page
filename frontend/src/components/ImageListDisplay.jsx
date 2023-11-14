@@ -25,27 +25,31 @@ export default function ImageListDisplay (props) {
       behaviour: 'smooth' // Optional: adds smooth scrolling
     });
   };
-  return (
-    <Box onWheel={handleWheel} sx={{
-      overflowX: 'auto',
-      display: 'flex',
-      width: '100%',
-      height: { height },
-      scrollBehavior: 'smooth',
-      WebkitOverflowScrolling: 'touch'
-    }}>
-      <Grid container spacing={1} component="div" sx={{ flexWrap: 'nowrap' }}>
-        {props.images.map((image, index) => (
-          <Grid item key={index}>
-            <CardMedia
-              component="img"
-              image={image}
-              alt={`Image ${index}`}
-              sx={{ width: 'auto', height: '100%' }}
-            />
-          </Grid>
-        ))}
-      </Grid>
-    </Box>
-  );
+  if (!props.images) {
+    return <>Loading...</>
+  } else {
+    return (
+      <Box onWheel={handleWheel} sx={{
+        overflowX: 'auto',
+        display: 'flex',
+        width: '100%',
+        height: { height },
+        scrollBehavior: 'smooth',
+        WebkitOverflowScrolling: 'touch'
+      }}>
+        <Grid container spacing={1} component="div" sx={{ flexWrap: 'nowrap' }}>
+          {props.images.map((image, index) => (
+            <Grid item key={index}>
+              <CardMedia
+                component="img"
+                image={image}
+                alt={`Image ${index}`}
+                sx={{ width: 'auto', height: '100%' }}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    );
+  }
 }

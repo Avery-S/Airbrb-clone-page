@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
-export default function CountrySelect ({ value, onChange }) {
+export default function CountrySelect ({ value, onChange, error = false, helperText = '', required = false }) {
   return (
     <Autocomplete
       id="country-select-demo"
@@ -29,10 +29,13 @@ export default function CountrySelect ({ value, onChange }) {
         <TextField
           {...params}
           label="Choose a country"
+          error={error}
+          helperText={helperText}
           inputProps={{
             ...params.inputProps,
             autoComplete: 'new-password', // disable autocomplete and autofill
           }}
+          required={required}
         />
       )}
     />

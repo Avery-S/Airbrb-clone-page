@@ -4,9 +4,9 @@ import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button
 
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
-// import ImageListDisplay from '../components/ImageListDisplay';
+import ImageListDisplay from '../components/ImageListDisplay';
 import { getUserRating } from '../helper/helperFuncs';
-// import BedListDisplay from '../components/BedListDisplay';
+import BedListDisplay from '../components/BedListDisplay';
 
 export default function ListingDetailPage (props) {
   const [listingInfo, setListingInfo] = React.useState([]);
@@ -21,7 +21,7 @@ export default function ListingDetailPage (props) {
     getListingInfo();
     getBookings();
     if (props.currentPage === 'search' && props.searchDateRange.length === 2) {
-      setDiffDate(props.searchDateRange[1].diff(props.searchDateRange[0], 'day') - 1)
+      setDiffDate(props.searchDateRange[1].diff(props.searchDateRange[0], 'day'))
     }
     props.setCurrentPage('listing');
   }, []);
@@ -70,10 +70,12 @@ export default function ListingDetailPage (props) {
   } else if (isPhone) {
     amenityHeight = '30vw'; // Adjust as needed for phones
   }
-
+  console.log('listingInfo');
+  console.log(listingInfo);
   if (!listingInfo || listingInfo.length === 0) {
     return <>Loading...</>;
   } else {
+    console.log(listingInfo);
     return (
       <Box sx={{
         display: 'flex',
@@ -81,19 +83,20 @@ export default function ListingDetailPage (props) {
         flexWrap: 'wrap',
         margin: '1vw',
       }}>
-        {/* <ImageListDisplay images={listingInfo.metadata.imageList} /> */}
+        <ImageListDisplay images={listingInfo.metadata.imageList} />
         {/* Content */}
         <Box sx={{
           display: 'flex',
           flexDirection: 'row',
           flexWrap: 'wrap',
           margin: '2vw',
-          justifyContent: 'space-between'
+          justifyContent: 'space-between',
         }}>
           <Box sx={{
             display: 'flex',
             flexDirection: 'column',
             justifySelf: 'flex-start',
+            flex: '0.8'
           }}>
             <Typography variant='h4'>{ listingInfo.title }</Typography>
             <Typography variant='h6' fontWeight={1}>
@@ -121,7 +124,7 @@ export default function ListingDetailPage (props) {
             <Typography variant='subtitle2'>
               No. of Baths: {listingInfo.metadata.numberOfBathrooms}
             </Typography>
-            {/* <BedListDisplay bedrooms={listingInfo.metadata.rooms} /> */}
+            <BedListDisplay bedrooms={listingInfo.metadata.rooms} />
             <Divider>
               <Chip label="AMENITIES" />
             </Divider>
@@ -137,6 +140,12 @@ export default function ListingDetailPage (props) {
                 </Typography>
               ))}
             </Box>
+            <Divider>
+              <Chip label="RULES" />
+            </Divider>
+            {listingInfo.metadata.houseRules
+              ? <Typography variant='subtitle'>{ listingInfo.metadata.houseRules }</Typography>
+              : <Typography variant='subtitle'>No Rules</Typography>}
           </Box>
           <Box sx={{
             display: 'flex',
