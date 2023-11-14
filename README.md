@@ -13,6 +13,7 @@
 ## 0. Change Log
 
 31/10/23 - Removed leftovers from previous Assignment (removed "custom.js" and other minor details)
+04/11/23 - Clarified what the dashboard is for 2.2.2.
 
 ## 1. Before you start
 
@@ -116,7 +117,7 @@ For logged in users, they are able to create their own listings (as a host) that
 	- Number of bathrooms on the property
 	- Property bedrooms (e.g. each bedroom could include number of beds and their type)
 	- Property amenities
-* Using a button, a new listing on the server is created and visibly added to the dashboard once all of the required fields have been filled out correctly.
+* Using a button, a new listing on the server is created and visibly added to the dashboard (the Hosted Listings Screen) once all of the required fields have been filled out correctly.
 
 #### 2.2.3. Edit AirBrB Listing
 * A unique route must exist for this screen that is parameterised on the listing ID.
@@ -172,7 +173,7 @@ When the app loads, regardless of whether a user is logged in or not, they can a
 	* Date range (two date fields) - only display bookings that are available for the entire date range as inputted by the user.
 	* Price (a minimum and maximum price, expressed either via text fields or a slider)
 	* Review ratings:
-		- Sort results from highest to lowest review rating **or** from lowest to highest review rating depending
+		- Sort results from highest to lowest review rating **or** from lowest to highest review rating
 		- If there is more than one listing with the same rating, their order does not matter
 * The search section must have an associated search button that will action the search to reload the results given the new filters.
 
