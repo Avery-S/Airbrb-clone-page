@@ -11,7 +11,7 @@ import LeaveReview from '../components/LeaveReview';
 
 export default function ListingDetailPage (props) {
   const [listingInfo, setListingInfo] = React.useState([]);
-  const [bookingInfo, setBookingInfo] = React.useState(null);
+  const [bookingInfo, setBookingInfo] = React.useState([]);
   const [diffDate, setDiffDate] = React.useState(-1);
   const [rateValue, setRateValue] = React.useState(0);
   const [reviewValue, setReviewValue] = React.useState('');
@@ -109,8 +109,8 @@ export default function ListingDetailPage (props) {
   } else if (isPhone) {
     amenityHeight = '30vw'; // Adjust as needed for phones
   }
-  console.log('listingInfo');
-  console.log(listingInfo);
+  console.log('bookingInfo');
+  console.log(bookingInfo);
   if (!listingInfo || listingInfo.length === 0) {
     return <>Loading...</>;
   } else {
