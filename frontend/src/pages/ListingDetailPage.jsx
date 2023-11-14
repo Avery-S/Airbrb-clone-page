@@ -8,6 +8,7 @@ import ImageListDisplay from '../components/ImageListDisplay';
 import { getUserRating } from '../helper/helperFuncs';
 import BedListDisplay from '../components/BedListDisplay';
 import LeaveReview from '../components/LeaveReview';
+import BookingModal from '../components/BookingModal';
 
 export default function ListingDetailPage (props) {
   const [listingInfo, setListingInfo] = React.useState([]);
@@ -15,6 +16,7 @@ export default function ListingDetailPage (props) {
   const [diffDate, setDiffDate] = React.useState(-1);
   const [rateValue, setRateValue] = React.useState(0);
   const [reviewValue, setReviewValue] = React.useState('');
+  const [showBookingModal, setShowBookingModal] = React.useState(false);
 
   console.log(props)
   const { listingId } = useParams();
@@ -122,6 +124,14 @@ export default function ListingDetailPage (props) {
         flexWrap: 'wrap',
         margin: '1vw',
       }}>
+        <BookingModal
+          show={showBookingModal}
+          onHide={() => setShowBookingModal(false)}
+          availability={listingInfo.availability}
+          token={props.token}
+          listingId={listingId}
+          // props
+        />
         <ImageListDisplay images={listingInfo.metadata.imageList} />
         {/* Content */}
         <Box sx={{
@@ -218,9 +228,10 @@ export default function ListingDetailPage (props) {
               height: 'min-content',
               width: 'auto',
               justifySelf: 'flex-start',
-            }} >Book</Button>
-            {bookingInfo.length !== 0 &&
-                bookingInfo.map((booking, index) => (<Paper
+            }} onClick={() => setShowBookingModal(true)}
+            >Book</Button>
+            {bookingInfo &&
+                <Paper
                   sx={{
                     display: 'flex',
                     flexDirection: 'column',
