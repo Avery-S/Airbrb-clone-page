@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Chip, Box, Typography } from '@mui/material';
+import { Box, Typography, Snackbar } from '@mui/material';
 import dayjs from 'dayjs';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -8,7 +8,6 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Modal from 'react-bootstrap/Modal';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button as ReactBtn } from 'react-bootstrap';
-import { styled } from '@mui/material/styles';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 
@@ -16,19 +15,29 @@ import fetchObject from '../helper/fetchObject';
 export default function BookingModal (props) {
   const [startDate, setStartDate] = React.useState(dayjs());
   const [endDate, setEndDate] = React.useState(dayjs());
-  // const [chipData, setChipData] = React.useState(props.availability || []);
-  const ListItem = styled('li')(({ theme }) => ({
-    margin: theme.spacing(0.5),
-  }));
+  const availability = props.availability;
   const token = React.useState(props.token);
   const [price] = React.useState(parseFloat(props.price) || 0);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const nights = endDate.diff(startDate, 'day');
 
   // console.log('price:', price);
   useEffect(() => {
-    const nights = endDate.diff(startDate, 'day') + 1;
+    if (availability.length > 0) {
+      const firstAvailableRange = availability[0];
+      const initialStartDate = dayjs(firstAvailableRange.startDate);
+      const initialEndDate = dayjs(firstAvailableRange.endDate);
+      setStartDate(initialStartDate);
+      setEndDate(initialEndDate);
+    }
+  }, [availability]);
+
+  useEffect(() => {
+    // 计算总价格
     setTotalPrice(nights * price);
-  }, [startDate, endDate, props.price]);
+  }, [startDate, endDate, price]);
 
   const handleConfirmBooking = async () => {
     const headers = {
@@ -46,15 +55,65 @@ export default function BookingModal (props) {
       }, true, headers));
     const data = await response.json();
     if (data.error) {
-      console.log(data.error);
+      showSnackbar(data.error);
     } else {
       console.log(data.bookingId);
-      props.onHide();
+      showSnackbar('Booking request submitted successfully!');
+      setTimeout(() => props.onHide(), 1500);
+    }
+  };
+
+  const showSnackbar = (message) => {
+    setSnackbarMessage(message);
+    setSnackbarOpen(true);
+  };
+
+  const handleStartDateChange = (value) => {
+    const newStartDate = dayjs(value);
+    if (newStartDate.isAfter(endDate, 'day')) {
+      showSnackbar('Start date must be before end date');
+    } else if (!isDateInRangeValid(newStartDate, endDate)) {
+      showSnackbar('Selected date range contains invalid dates');
+    } else {
+      setStartDate(newStartDate);
+    }
+  };
+  const handleEndDateChange = (value) => {
+    const newEndDate = dayjs(value);
+    if (startDate.isAfter(newEndDate, 'day')) {
+      showSnackbar('End date must be after start date');
+    } else if (!isDateInRangeValid(startDate, newEndDate)) {
+      showSnackbar('Selected date range contains invalid dates');
+    } else {
+      setEndDate(newEndDate);
     }
   };
 
   const handleCancelBooking = async () => {
     props.onHide();
+  };
+
+  // check date in valid range
+  const isDateValid = (date) => {
+    const formattedDate = dayjs(date).format('YYYY-MM-DD');
+    return props.availability.some(range =>
+      dayjs(formattedDate).isBetween(dayjs(range.startDate).format('YYYY-MM-DD'),
+        dayjs(range.endDate).format('YYYY-MM-DD'),
+        null, '[]')
+    );
+  };
+
+  const isDateInRangeValid = (start, end) => {
+    let currentDay = dayjs(start);
+    const lastDay = dayjs(end);
+
+    while (currentDay.isBefore(lastDay, 'day') || currentDay.isSame(lastDay, 'day')) {
+      if (!isDateValid(currentDay.toDate())) {
+        return false;
+      }
+      currentDay = currentDay.add(1, 'day');
+    }
+    return true;
   };
 
   return (
@@ -65,6 +124,12 @@ export default function BookingModal (props) {
       aria-labelledby="contained-modal-title-vcenter"
       centered
     >
+      <Snackbar
+      open={snackbarOpen}
+      autoHideDuration={10000}
+      onClose={() => setSnackbarOpen(false)}
+      message={snackbarMessage}
+    />
       <Modal.Header closeButton>
         <Modal.Title id="contained-modal-title-vcenter">
           Set Booking
@@ -75,29 +140,6 @@ export default function BookingModal (props) {
           display: 'flex',
           flexDirection: 'column',
         }}>
-          {/* Display chip data */}
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'center',
-              justifySelf: 'center',
-              alignSelf: 'center',
-              flexWrap: 'wrap',
-              listStyle: 'none',
-              width: '100%',
-              minHeight: '5vh',
-              p: 0.5,
-              m: 0,
-            }}
-            component="ul"
-          >
-            <ListItem>
-              <Chip label={`Start Date: ${startDate.format('DD/MM/YYYY')}`} />
-            </ListItem>
-            <ListItem>
-              <Chip label={`End Date: ${endDate.format('DD/MM/YYYY')}`} />
-            </ListItem>
-          </Box>
           {
             <Box sx={{
               display: 'flex',
@@ -116,7 +158,8 @@ export default function BookingModal (props) {
                       <DatePicker
                         label="Start date picker"
                         value={startDate}
-                        onChange={(value) => setStartDate(value)}
+                        onChange={handleStartDateChange}
+                        shouldDisableDate={date => !isDateValid(date)}
                       />
                   </DemoContainer>
                 </LocalizationProvider>
@@ -125,7 +168,8 @@ export default function BookingModal (props) {
                       <DatePicker
                         label="End date picker"
                         value={endDate}
-                        onChange={(value) => setEndDate(value)}
+                        onChange={handleEndDateChange}
+                        shouldDisableDate={date => !isDateValid(date)}
                       />
                   </DemoContainer>
                 </LocalizationProvider>
@@ -135,14 +179,20 @@ export default function BookingModal (props) {
         </Box>
       </Modal.Body>
       <Modal.Footer>
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+        <Typography sx={{ fontSize: '0.875rem', color: 'gray', marginRight: '1em' }}>
+          {nights} nights x ${price} per night
+        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'flex-end', marginTop: '0.5em' }}>
           <Typography sx={{ marginRight: '1em' }}>
             Total Price: ${totalPrice}
           </Typography>
-          <ReactBtn variant='primary' onClick={handleConfirmBooking}>Confirm Book</ReactBtn>
         </Box>
-        <ReactBtn variant='outline-secondary' onClick={handleCancelBooking}>Cancel</ReactBtn>
-      </Modal.Footer>
+      </Box>
+      <ReactBtn variant='primary' onClick={handleConfirmBooking}>Confirm Book</ReactBtn>
+      <ReactBtn variant='outline-secondary' onClick={handleCancelBooking}>Cancel</ReactBtn>
+    </Modal.Footer>
+
     </Modal>
   );
 }

@@ -112,6 +112,7 @@ export default function ListingDetailPage (props) {
   }
   console.log('listingInfo');
   console.log(listingInfo);
+  console.log('props:', props);
   if (!listingInfo || listingInfo.length === 0) {
     return <>Loading...</>;
   } else {
@@ -130,7 +131,6 @@ export default function ListingDetailPage (props) {
           token={props.token}
           listingId={listingId}
           price={listingInfo.price}
-          // props
         />
         <ImageListDisplay images={listingInfo.metadata.imageList} />
         {/* Content */}
