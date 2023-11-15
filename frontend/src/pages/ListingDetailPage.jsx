@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom';
-import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button } from '@mui/material';
+import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button, Paper } from '@mui/material';
 
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
@@ -12,15 +12,13 @@ import BookingModal from '../components/BookingModal';
 
 export default function ListingDetailPage (props) {
   const [listingInfo, setListingInfo] = React.useState([]);
-  const [bookingInfo, setBookingInfo] = React.useState(null);
+  const [bookingInfo, setBookingInfo] = React.useState([]);
   const [diffDate, setDiffDate] = React.useState(-1);
   const [rateValue, setRateValue] = React.useState(0);
   const [reviewValue, setReviewValue] = React.useState('');
   const [showBookingModal, setShowBookingModal] = React.useState(false);
 
-  console.log('props:', props)
   const { listingId } = useParams();
-  console.log(listingId);
 
   React.useEffect(() => {
     getListingInfo();
@@ -39,7 +37,6 @@ export default function ListingDetailPage (props) {
       props.setErrorModalShow(true);
     } else {
       setListingInfo(data.listing);
-      console.log(listingInfo);
     }
   }
 
@@ -51,11 +48,15 @@ export default function ListingDetailPage (props) {
       props.setErrorModalShow(true);
     } else {
       let bookings = data.bookings;
+      console.log('listingDetailPage booking: ', bookings);
       if (bookings) {
         bookings = bookings.filter(booking => (
-          booking.listingId === listingId && booking.owner === localStorage.getItem('userEmail')
+          String(booking.listingId) === String(listingId) && booking.owner === localStorage.getItem('userEmail')
         ));
-        bookings && setBookingInfo(bookings);
+        if (bookings && bookings.length !== 0) {
+          setBookingInfo([...bookings]);
+          console.log('setBookingInfo: ', bookingInfo);
+        }
       }
     }
   }
@@ -110,13 +111,9 @@ export default function ListingDetailPage (props) {
   } else if (isPhone) {
     amenityHeight = '30vw'; // Adjust as needed for phones
   }
-  console.log('listingInfo');
-  console.log(listingInfo);
-  console.log('props:', props);
   if (!listingInfo || listingInfo.length === 0) {
     return <>Loading...</>;
   } else {
-    console.log(listingInfo);
     return (
       <Box sx={{
         display: 'flex',
@@ -196,7 +193,7 @@ export default function ListingDetailPage (props) {
             {listingInfo.metadata.houseRules
               ? <Typography variant='subtitle'>{ listingInfo.metadata.houseRules }</Typography>
               : <Typography variant='subtitle'>No Rules</Typography>}
-              <Divider>
+            <Divider>
               <Chip label="REVIEWS" />
             </Divider>
             {!localStorage.getItem('token')
@@ -223,14 +220,17 @@ export default function ListingDetailPage (props) {
             alignItems: 'flex-end',
           }}
           >
-            <Button variant="contained" sx={{
+            <Button variant="contained"
+            onClick={() => setShowBookingModal(true)}
+            sx={{
               display: 'flex',
               height: 'min-content',
               width: 'auto',
               justifySelf: 'flex-start',
-            }} onClick={() => setShowBookingModal(true)}
-            >Book</Button>
-            {/* {bookingInfo &&
+            }} >Book</Button>
+            <br/>
+            {bookingInfo && bookingInfo.length !== 0 &&
+                bookingInfo.map((booking, index) => (
                 <Paper
                   sx={{
                     display: 'flex',
@@ -239,13 +239,15 @@ export default function ListingDetailPage (props) {
                   key={index}
                 >
                   <Typography>
-                    Booking Date: {Object.values(booking.dataRange).join(' - ')}
+                    Booked Date: {Object.values(booking.dateRange).join(' - ')}
                   </Typography>
-                  {{booking.status === 'accepted'
-                    ? <Chip label="Accepted" color="success" />
-                    : <Chip label="Pending" color="warning" />}
+                  {booking.status === 'accepted'
+                    ? <Chip sx={{ width: 'max-content', alignSelf: 'flex-end' }} label="Accepted" color="success" />
+                    : booking.status === 'denied'
+                      ? <Chip sx={{ width: 'max-content', alignSelf: 'flex-end' }} label="Denied" color="error" />// Assuming you want a different label/color for non-accepted status
+                      : <Chip sx={{ width: 'max-content', alignSelf: 'flex-end' }} label="Pending" color="info" />}
                 </Paper>))
-            } */}
+            }
           </Box>
         </Box>
       </Box>
