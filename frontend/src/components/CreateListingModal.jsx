@@ -142,15 +142,19 @@ export default function CreateListingModal (props) {
     setMetadata(prevMetadata => {
       const currentRoomNum = prevMetadata.rooms[roomType].roomNum;
       const newRoomNum = Math.max(currentRoomNum + change, 0);
+      const updatedRooms = {
+        ...prevMetadata.rooms,
+        [roomType]: {
+          ...prevMetadata.rooms[roomType],
+          roomNum: newRoomNum
+        }
+      };
+      const totalBeds = Object.values(updatedRooms).reduce(
+        (sum, room) => sum + (room.beds * room.roomNum), 0);
       return {
         ...prevMetadata,
-        rooms: {
-          ...prevMetadata.rooms,
-          [roomType]: {
-            ...prevMetadata.rooms[roomType],
-            roomNum: newRoomNum
-          }
-        }
+        rooms: updatedRooms,
+        numberOfBeds: totalBeds
       };
     });
   };
