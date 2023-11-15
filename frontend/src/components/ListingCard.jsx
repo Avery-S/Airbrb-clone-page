@@ -29,8 +29,10 @@ export default function ListingCard (props) {
   // find the booking status
   React.useEffect(() => {
     if (props.bookings && props.bookings.length !== 0) {
-      console.log(props.bookings)
-      // setBookingInfo(props.bookings.find(booking => booking.id === props.listingId && localStorage.getItem('userEmail') === booking.owner)[0]);
+      const bookingList = props.bookings.find(booking => booking.listingId === String(props.listingId) && localStorage.getItem('userEmail') === booking.owner);
+      if (bookingList) {
+        setBookingInfo(bookingList);
+      }
     }
     isMounted.current = true;
     return () => { isMounted.current = false; }
@@ -135,11 +137,13 @@ export default function ListingCard (props) {
               </IconButton>
               )
             : (
-                bookingInfo
+                bookingInfo && bookingInfo.length !== 0
                   ? (
                       bookingInfo.status === 'accepted'
-                        ? <Chip label="Accepted" color="success" />
-                        : <Chip label="Pending" color="warning" /> // Assuming you want a different label/color for non-accepted status
+                        ? <Chip sx={{ position: 'absolute', right: '0.5vw' }} label="Accepted" color="success" />
+                        : bookingInfo.status === 'denied'
+                          ? <Chip sx={{ position: 'absolute', right: '0.5vw', top: '0.5vw' }} label="Denied" color="error" />// Assuming you want a different label/color for non-accepted status
+                          : <Chip sx={{ position: 'absolute', right: '0.5vw', top: '0.5vw' }} label="Pending" color="info" />
                     )
                   : null // Or any other fallback JSX for when bookingInfo is not available
               )
