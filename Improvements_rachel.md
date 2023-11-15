@@ -6,3 +6,4 @@
 - [ ] Real time rendering
 - [ ] Add instruction to publish btn
 - [ ] show loading when loading the pages
+- [ ] Number of beds, property bedroom (error: search, detailed listing)

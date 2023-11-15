@@ -28,18 +28,15 @@ export default function ListingCard (props) {
   const isMounted = React.useRef(false);
   // find the booking status
   React.useEffect(() => {
-    if (props.bookings) {
-      setBookingInfo(props.bookings.find(booking => booking.id === props.listingId));
+    if (props.bookings && props.bookings.length !== 0) {
+      const bookingList = props.bookings.find(booking => booking.listingId === String(props.listingId) && localStorage.getItem('userEmail') === booking.owner);
+      if (bookingList) {
+        setBookingInfo(bookingList);
+      }
     }
     isMounted.current = true;
     return () => { isMounted.current = false; }
   }, [])
-
-  React.useEffect(() => {
-    if (props.bookings) {
-      setBookingInfo(props.bookings.find(booking => booking.id === props.listingId));
-    }
-  }, [props.bookings])
 
   // handle delete listing
   const handleDeleteListing = () => {
@@ -48,8 +45,9 @@ export default function ListingCard (props) {
 
   // handle click on card
   const handleCardClick = () => {
-    props.setCurrentPage('listing');
-    navigate(`/listings/${props.listingId}`);
+    if (props.currentPage !== 'hosted') {
+      navigate(`/listings/${props.listingId}`);
+    }
   }
   // handle edit listing
   const handleEditListing = () => {
@@ -60,11 +58,20 @@ export default function ListingCard (props) {
 
   const [userRating, reviewLength] = getUserRating(props.reviews);
   const boxShadow = ifPublished && props.ifOwner
-    ? '0.5vw 0.5vw 0.5vw rgba(0, 128, 0, 0.7)'
+    ? '0.5vw 0.5vw 0.5vw rgba(0, 128, 0, 0.5)'
     : '0.1vw 0.1vw 0.1vw grey';
   const publishedIconColor = ifPublished && props.ifOwner
     ? green[700]
     : '';
+
+  const hover = props.currentPage !== 'hosted'
+    ? {
+        boxShadow: '0 4px 12px rgba(33, 150, 243, 0.3)',
+        cursor: 'pointer',
+      }
+    : {
+        boxShadow: '0 4px 12px rgba(33, 150, 243, 0.3)',
+      };
   // delete the listing API
   const deleteListing = async () => {
     const listingId = props.listingId;
@@ -105,12 +112,7 @@ export default function ListingCard (props) {
           margin: '0.5vw',
           position: 'relative',
           boxShadow: { boxShadow },
-          '&:hover': {
-            // Add your hover styles here
-            boxShadow: '0 4px 12px rgba(33, 150, 243, 0.3)', // Example: Change box shadow on hover
-            cursor: 'pointer', // Changes the cursor to indicate the card is clickable
-            // You can add more styles as needed
-          },
+          '&:hover': { ...hover },
         }}
         onClick={handleCardClick}
       >
@@ -135,11 +137,13 @@ export default function ListingCard (props) {
               </IconButton>
               )
             : (
-                bookingInfo
+                bookingInfo && bookingInfo.length !== 0
                   ? (
                       bookingInfo.status === 'accepted'
-                        ? <Chip label="Accepted" color="success" />
-                        : <Chip label="Pending" color="warning" /> // Assuming you want a different label/color for non-accepted status
+                        ? <Chip sx={{ position: 'absolute', right: '0.5vw' }} label="Accepted" color="success" />
+                        : bookingInfo.status === 'denied'
+                          ? <Chip sx={{ position: 'absolute', right: '0.5vw', top: '0.5vw' }} label="Denied" color="error" />// Assuming you want a different label/color for non-accepted status
+                          : <Chip sx={{ position: 'absolute', right: '0.5vw', top: '0.5vw' }} label="Pending" color="info" />
                     )
                   : null // Or any other fallback JSX for when bookingInfo is not available
               )

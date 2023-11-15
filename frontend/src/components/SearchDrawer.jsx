@@ -72,7 +72,11 @@ export default function SearchDrawer (props) {
         return;
       } else {
         newResultListings = filterListingsByDate(newResultListings, searchStartDate, searchEndDate);
+        props.setSearchDateRange([searchStartDate, searchEndDate]);
       }
+    }
+    if (!dateFilter) {
+      props.setSearchDateRange([]);
     }
     if (bedNumFilter) {
       newResultListings = newResultListings.filter(listing => {
