@@ -8,6 +8,7 @@ import ImageListDisplay from '../components/ImageListDisplay';
 import { getUserRating } from '../helper/helperFuncs';
 import BedListDisplay from '../components/BedListDisplay';
 import LeaveReview from '../components/LeaveReview';
+import BookingModal from '../components/BookingModal';
 
 export default function ListingDetailPage (props) {
   const [listingInfo, setListingInfo] = React.useState([]);
@@ -15,10 +16,9 @@ export default function ListingDetailPage (props) {
   const [diffDate, setDiffDate] = React.useState(-1);
   const [rateValue, setRateValue] = React.useState(0);
   const [reviewValue, setReviewValue] = React.useState('');
+  const [showBookingModal, setShowBookingModal] = React.useState(false);
 
-  console.log('props:', props)
   const { listingId } = useParams();
-  console.log(listingId);
 
   React.useEffect(() => {
     getListingInfo();
@@ -37,7 +37,6 @@ export default function ListingDetailPage (props) {
       props.setErrorModalShow(true);
     } else {
       setListingInfo(data.listing);
-      console.log(listingInfo);
     }
   }
 
@@ -49,12 +48,15 @@ export default function ListingDetailPage (props) {
       props.setErrorModalShow(true);
     } else {
       let bookings = data.bookings;
+      console.log('listingDetailPage booking: ', bookings);
       if (bookings) {
         bookings = bookings.filter(booking => (
-          booking.listingId === listingId && booking.owner === localStorage.getItem('userEmail')
+          String(booking.listingId) === String(listingId) && booking.owner === localStorage.getItem('userEmail')
         ));
-        bookings && setBookingInfo(bookings);
-        console.log(bookings);
+        if (bookings && bookings.length !== 0) {
+          setBookingInfo([...bookings]);
+          console.log('setBookingInfo: ', bookingInfo);
+        }
       }
     }
   }
@@ -109,12 +111,9 @@ export default function ListingDetailPage (props) {
   } else if (isPhone) {
     amenityHeight = '30vw'; // Adjust as needed for phones
   }
-  console.log('bookingInfo');
-  console.log(bookingInfo);
   if (!listingInfo || listingInfo.length === 0) {
     return <>Loading...</>;
   } else {
-    console.log(listingInfo);
     return (
       <Box sx={{
         display: 'flex',
@@ -221,14 +220,18 @@ export default function ListingDetailPage (props) {
             alignItems: 'flex-end',
           }}
           >
-            <Button variant="contained" sx={{
+            <Button variant="contained"
+            onClick={() => setShowBookingModal(true)}
+            sx={{
               display: 'flex',
               height: 'min-content',
               width: 'auto',
               justifySelf: 'flex-start',
             }} >Book</Button>
-            {bookingInfo.length !== 0 &&
-                bookingInfo.map((booking, index) => (<Paper
+            <br/>
+            {bookingInfo && bookingInfo.length !== 0 &&
+                bookingInfo.map((booking, index) => (
+                <Paper
                   sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -236,11 +239,13 @@ export default function ListingDetailPage (props) {
                   key={index}
                 >
                   <Typography>
-                    Booking Date: {Object.values(booking.dataRange).join(' - ')}
+                    Booked Date: {Object.values(booking.dateRange).join(' - ')}
                   </Typography>
                   {booking.status === 'accepted'
-                    ? <Chip label="Accepted" color="success" />
-                    : <Chip label="Pending" color="warning" />}
+                    ? <Chip sx={{ width: 'max-content', alignSelf: 'flex-end' }} label="Accepted" color="success" />
+                    : booking.status === 'denied'
+                      ? <Chip sx={{ width: 'max-content', alignSelf: 'flex-end' }} label="Denied" color="error" />// Assuming you want a different label/color for non-accepted status
+                      : <Chip sx={{ width: 'max-content', alignSelf: 'flex-end' }} label="Pending" color="info" />}
                 </Paper>))
             }
           </Box>
