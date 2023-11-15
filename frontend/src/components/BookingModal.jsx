@@ -35,7 +35,6 @@ export default function BookingModal (props) {
   }, [availability]);
 
   useEffect(() => {
-    // 计算总价格
     setTotalPrice(nights * price);
   }, [startDate, endDate, price]);
 
