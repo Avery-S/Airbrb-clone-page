@@ -16,7 +16,7 @@ export default function ListingDetailPage (props) {
   const [rateValue, setRateValue] = React.useState(0);
   const [reviewValue, setReviewValue] = React.useState('');
 
-  console.log(props)
+  console.log('props:', props)
   const { listingId } = useParams();
   console.log(listingId);
 
@@ -122,6 +122,14 @@ export default function ListingDetailPage (props) {
         flexWrap: 'wrap',
         margin: '1vw',
       }}>
+        <BookingModal
+          show={showBookingModal}
+          onHide={() => setShowBookingModal(false)}
+          availability={listingInfo.availability}
+          token={props.token}
+          listingId={listingId}
+          price={listingInfo.price}
+        />
         <ImageListDisplay images={listingInfo.metadata.imageList} />
         {/* Content */}
         <Box sx={{
