@@ -21,7 +21,7 @@ export default function BookingModal (props) {
   const [totalPrice, setTotalPrice] = useState(0);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const nights = endDate.diff(startDate, 'day');
+  const nights = endDate.diff(startDate, 'day') + 1;
 
   // console.log('price:', price);
   useEffect(() => {
@@ -59,7 +59,8 @@ export default function BookingModal (props) {
     } else {
       console.log(data.bookingId);
       showSnackbar('Booking request submitted successfully!');
-      setTimeout(() => props.onHide(), 1500);
+      props.getBookings();
+      setTimeout(() => props.onHide(), 1100);
     }
   };
 

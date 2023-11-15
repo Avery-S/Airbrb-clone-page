@@ -128,6 +128,7 @@ export default function ListingDetailPage (props) {
           token={props.token}
           listingId={listingId}
           price={listingInfo.price}
+          getBookings={getBookings}
         />
         <ImageListDisplay images={listingInfo.metadata.imageList} />
         {/* Content */}
