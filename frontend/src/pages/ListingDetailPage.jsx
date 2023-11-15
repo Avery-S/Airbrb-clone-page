@@ -1,6 +1,6 @@
 import React from 'react'
 import { useParams } from 'react-router-dom';
-import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button } from '@mui/material';
+import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button, Paper } from '@mui/material';
 
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
@@ -8,15 +8,13 @@ import ImageListDisplay from '../components/ImageListDisplay';
 import { getUserRating } from '../helper/helperFuncs';
 import BedListDisplay from '../components/BedListDisplay';
 import LeaveReview from '../components/LeaveReview';
-import BookingModal from '../components/BookingModal';
 
 export default function ListingDetailPage (props) {
   const [listingInfo, setListingInfo] = React.useState([]);
-  const [bookingInfo, setBookingInfo] = React.useState(null);
+  const [bookingInfo, setBookingInfo] = React.useState([]);
   const [diffDate, setDiffDate] = React.useState(-1);
   const [rateValue, setRateValue] = React.useState(0);
   const [reviewValue, setReviewValue] = React.useState('');
-  const [showBookingModal, setShowBookingModal] = React.useState(false);
 
   console.log('props:', props)
   const { listingId } = useParams();
@@ -56,6 +54,7 @@ export default function ListingDetailPage (props) {
           booking.listingId === listingId && booking.owner === localStorage.getItem('userEmail')
         ));
         bookings && setBookingInfo(bookings);
+        console.log(bookings);
       }
     }
   }
@@ -110,9 +109,8 @@ export default function ListingDetailPage (props) {
   } else if (isPhone) {
     amenityHeight = '30vw'; // Adjust as needed for phones
   }
-  console.log('listingInfo');
-  console.log(listingInfo);
-  console.log('props:', props);
+  console.log('bookingInfo');
+  console.log(bookingInfo);
   if (!listingInfo || listingInfo.length === 0) {
     return <>Loading...</>;
   } else {
@@ -196,7 +194,7 @@ export default function ListingDetailPage (props) {
             {listingInfo.metadata.houseRules
               ? <Typography variant='subtitle'>{ listingInfo.metadata.houseRules }</Typography>
               : <Typography variant='subtitle'>No Rules</Typography>}
-              <Divider>
+            <Divider>
               <Chip label="REVIEWS" />
             </Divider>
             {!localStorage.getItem('token')
@@ -228,10 +226,9 @@ export default function ListingDetailPage (props) {
               height: 'min-content',
               width: 'auto',
               justifySelf: 'flex-start',
-            }} onClick={() => setShowBookingModal(true)}
-            >Book</Button>
-            {/* {bookingInfo &&
-                <Paper
+            }} >Book</Button>
+            {bookingInfo.length !== 0 &&
+                bookingInfo.map((booking, index) => (<Paper
                   sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -241,11 +238,11 @@ export default function ListingDetailPage (props) {
                   <Typography>
                     Booking Date: {Object.values(booking.dataRange).join(' - ')}
                   </Typography>
-                  {{booking.status === 'accepted'
+                  {booking.status === 'accepted'
                     ? <Chip label="Accepted" color="success" />
                     : <Chip label="Pending" color="warning" />}
                 </Paper>))
-            } */}
+            }
           </Box>
         </Box>
       </Box>
