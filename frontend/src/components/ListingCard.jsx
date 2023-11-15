@@ -30,7 +30,7 @@ export default function ListingCard (props) {
   React.useEffect(() => {
     if (props.bookings && props.bookings.length !== 0) {
       console.log(props.bookings)
-      setBookingInfo(props.bookings.find(booking => booking.id === props.listingId && localStorage.getItem('userEmail') === booking.owner)[0]);
+      // setBookingInfo(props.bookings.find(booking => booking.id === props.listingId && localStorage.getItem('userEmail') === booking.owner)[0]);
     }
     isMounted.current = true;
     return () => { isMounted.current = false; }
