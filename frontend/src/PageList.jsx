@@ -13,6 +13,7 @@ import ErrorModal from './components/ErrorModal';
 import EditListingPage from './pages/EditListingPage'
 import ListingDetailPage from './pages/ListingDetailPage';
 import ManagePage from './pages/ManagePage';
+import ErrorPage from './pages/ErrorPage';
 
 // Main structure of the page: header, page, footer
 export default function PageList () {
@@ -64,7 +65,7 @@ export default function PageList () {
           <Route path="/edit-listing/:listingId" element={<EditListingPage {...commonProps} />}> </Route>
           <Route path="/listings/:listingId" element={<ListingDetailPage {...commonProps} searchDateRange={searchDateRange} />}> </Route>
           <Route path="/manage/:listingId" element={<ManagePage {...commonProps} />}> </Route>
-          <Route path="/*" element={<LandingPage />}></Route>
+          <Route path="*" element={<ErrorPage />}></Route>
         </Routes>
       </Box>
       {/* Footer */}

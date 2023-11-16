@@ -6,6 +6,7 @@ import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import ListingCardBox from '../components/ListingCardBox';
 import { getUserRating } from '../helper/helperFuncs';
+import { useNavigate } from 'react-router-dom';
 
 // User Hosted Listings Page
 export default function LandingPage (props) {
@@ -13,9 +14,11 @@ export default function LandingPage (props) {
   const [displayListings, setDisplayListings] = React.useState([...props.publishedListings]);
 
   checkToken(props.setToken);
+  const navigator = useNavigate();
 
   // get all listings when first enter this page
   React.useEffect(() => {
+    navigator('/');
     props.setCurrentPage('landing');
     fetchPublishedListings();
   }, []);
