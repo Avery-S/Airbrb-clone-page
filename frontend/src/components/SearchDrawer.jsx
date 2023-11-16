@@ -259,12 +259,13 @@ export default function SearchDrawer (props) {
         <Box sx={{
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'flex-end'
+          alignItems: 'flex-end',
+          justifyContent: 'flex-end'
         }}>
           <Button
             variant='outlined'
             onClick={() => props.setSearchDrawerShow(false)}
-          >Close</Button>
+          >Close</Button> &nbsp;
           <Button
            variant="contained"
             sx={{ display: 'flex', alignSelf: 'flex-end' }}

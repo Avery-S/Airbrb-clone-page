@@ -1,6 +1,7 @@
 import React from 'react'
-import { useParams } from 'react-router-dom';
-import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button, Paper } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button, Paper, IconButton } from '@mui/material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
@@ -28,6 +29,8 @@ export default function ListingDetailPage (props) {
     }
     props.setCurrentPage('listing');
   }, []);
+
+  const navigate = useNavigate();
 
   const getListingInfo = async () => {
     const response = await fetch(`${BACKEND_URL}/listings/${listingId}`, fetchObject('GET', {}, false));
@@ -119,6 +122,12 @@ export default function ListingDetailPage (props) {
         flexWrap: 'wrap',
         margin: '1vw',
       }}>
+        <IconButton onClick={() => navigate('/')} aria-label="back" sx={{
+          display: 'flex',
+          alignSelf: 'flex-start',
+        }}>
+          <ChevronLeftIcon />
+        </IconButton>
         <BookingModal
           show={showBookingModal}
           onHide={() => setShowBookingModal(false)}
