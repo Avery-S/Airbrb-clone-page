@@ -110,7 +110,6 @@ export default function HostedListings (props) {
         }
       }
       setHostedListings(userHostedListings);
-      console.log(`getHostedListings: ${userHostedListings}`);
     }
   }
 

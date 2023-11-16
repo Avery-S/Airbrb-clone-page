@@ -108,6 +108,7 @@ export default function LandingPage (props) {
   const fetchPublishedListings = async () => {
     const allListings = await getListings();
     const bookings = await getBookings();
+    setBookings(bookings);
     let newPublishedListings = [];
     const newBookings = [];
 
@@ -137,9 +138,7 @@ export default function LandingPage (props) {
         }
       }
       newPublishedListings = sortPublishedListings(newPublishedListings, newBookings);
-      setBookings(bookings);
       props.setPublishedListings(newPublishedListings);
-      console.log(`newBookings: ${newBookings}`);
     }
   }
 

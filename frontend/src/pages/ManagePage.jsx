@@ -22,10 +22,6 @@ export default function ManagePage (props) {
   const postedDate = dayjs(postedOn);
   const daysSincePosted = dayjs().diff(postedDate, 'day') + 1;
 
-  // console.log(token, postedOn);
-  // console.log('props:',props);
-  // console.log('listingId:',listingId);
-
   useEffect(() => {
     getBookings();
   }, []);

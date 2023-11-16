@@ -48,14 +48,12 @@ export default function ListingDetailPage (props) {
       props.setErrorModalShow(true);
     } else {
       let bookings = data.bookings;
-      console.log('listingDetailPage booking: ', bookings);
       if (bookings) {
         bookings = bookings.filter(booking => (
           String(booking.listingId) === String(listingId) && booking.owner === localStorage.getItem('userEmail')
         ));
         if (bookings && bookings.length !== 0) {
           setBookingInfo([...bookings]);
-          console.log('setBookingInfo: ', bookingInfo);
         }
       }
     }
@@ -73,7 +71,6 @@ export default function ListingDetailPage (props) {
       if (bookingInfo) {
         const acceptedBookingId = bookingInfo.filter(booking => booking.status === 'accepted')[0].id;
         if (acceptedBookingId) {
-          console.log('review: ', reviewValue)
           const reponse = await fetch(`${BACKEND_URL}/listings/${listingId}/review/${acceptedBookingId}`, fetchObject(
             'PUT', { review: { rating: rateValue, content: reviewValue } }, true
           ));
