@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import CountrySelect, { countries } from '../CountrySelect';
 
 describe('CountrySelect', () => {
-  test('it renders with null as value', () => {
+  it('it renders with null as value', () => {
     const onChangeMock = jest.fn();
 
     render(
@@ -14,7 +14,7 @@ describe('CountrySelect', () => {
     expect(screen.getByRole('combobox')).toBeInTheDocument();
   })
 
-  test('it renders and can change the selection', async () => {
+  it('it renders and can change the selection', async () => {
     const onChangeMock = jest.fn();
     const value = countries.find(country => country.code === 'AD');
 
@@ -42,7 +42,7 @@ describe('CountrySelect', () => {
     });
   });
 
-  test('dropdown opens and displays options on input', async () => {
+  it('dropdown opens and displays options on input', async () => {
     const onChangeMock = jest.fn();
     const value = countries.find(country => country.code === 'AD'); // Set initial value to Andorra for example
 

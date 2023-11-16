@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import RangeSlider from '../RangeSlider'; // Adjust the import path as necessary
 
 describe('RangeSlider', () => {
-  test('it renders and can change values', () => {
+  it('it renders and can change values', () => {
     const setValueMock = jest.fn();
     const rangeValue = [10, 20];
     const min = 0;

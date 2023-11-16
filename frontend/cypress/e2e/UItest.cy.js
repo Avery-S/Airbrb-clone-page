@@ -5,9 +5,9 @@ describe('Admin Happy Path Test', () => {
     cy.get('#register-name').type('tester');
     cy.get('#register-password').type('testing');
     cy.get('#register-password-confirm').type('testing');
-    
+
     cy.get('button').contains('Register').click();
 
-    cy.url().should('include', '/'); 
+    cy.url().should('include', '/');
   })
 })

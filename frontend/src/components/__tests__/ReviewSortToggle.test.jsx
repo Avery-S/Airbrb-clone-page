@@ -4,7 +4,7 @@ import '@testing-library/jest-dom';
 import ReviewSortToggle from '../ReviewSortToggle';
 
 describe('ReviewSortToggle', () => {
-  test('it renders and can change the sort order', () => {
+  it('it renders and can change the sort order', () => {
     const setReviewSortMock = jest.fn();
     const reviewSortValue = 'Alphabetical';
 
