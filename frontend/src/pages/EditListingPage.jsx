@@ -9,7 +9,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { fileToDataUrl } from '../helper/helperFuncs.jsx';
+import { fileToDataUrl, getBedroomNum } from '../helper/helperFuncs.jsx';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
@@ -143,6 +143,11 @@ export default function EditListingPage (props) {
         thumbnail: uploadedImg,
         metadata
       };
+      if (getBedroomNum(metadata.rooms) === 0) {
+        props.setErrorModalMsg('Please choose at least one bedroom!');
+        props.setErrorModalShow(true);
+        return;
+      }
       await updateListing(body);
     } else {
       setErrorMessages(errors);
