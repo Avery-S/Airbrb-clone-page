@@ -5,7 +5,7 @@ import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import ImageListDisplay from '../components/ImageListDisplay';
-import { getUserRating } from '../helper/helperFuncs';
+import { getBedroomNum, getUserRating } from '../helper/helperFuncs';
 import BedListDisplay from '../components/BedListDisplay';
 import LeaveReview from '../components/LeaveReview';
 import BookingModal from '../components/BookingModal';
@@ -164,7 +164,7 @@ export default function ListingDetailPage (props) {
               <Chip label="ROOMS" />
             </Divider>
             <Typography variant='subtitle2'>
-              No. of Beds: {listingInfo.metadata.numberOfBeds}
+              No. of Bedrooms: {getBedroomNum(listingInfo.metadata.rooms)}
             </Typography>
             <Typography variant='subtitle2'>
               No. of Baths: {listingInfo.metadata.numberOfBathrooms}

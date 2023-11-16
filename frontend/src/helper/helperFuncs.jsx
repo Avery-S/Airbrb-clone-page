@@ -32,3 +32,10 @@ export function getUserRating (reviews) {
   }
   return [userRating, reviewLength]
 }
+
+// Calculate the number of bedrooms given rooms list
+export function getBedroomNum (rooms) {
+  return Object.values(rooms).reduce((total, room) => {
+    return total + room.roomNum;
+  }, 0);
+}
