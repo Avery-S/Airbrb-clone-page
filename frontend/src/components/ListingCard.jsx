@@ -65,7 +65,7 @@ export default function ListingCard (props) {
       state: {
         token: props.token,
         postedOn: props.postedOn,
-        listingId: listingId,
+        listingId,
       }
     });
   }
@@ -278,7 +278,7 @@ export default function ListingCard (props) {
                 reviewLength === 0
                   ? (<Typography variant='subtitle2'> No Reviews </Typography>)
                   : (<>
-                      <Rating name="user-rating" defaultValue={userRating} precision={0.1} readOnly />
+                      <Rating name="user-rating" defaultValue={parseFloat(userRating)} precision={0.1} readOnly />
                     <Typography variant='subtitle2'>{ reviewLength } reviews</Typography>
                     </>)
               }

@@ -256,11 +256,21 @@ export default function SearchDrawer (props) {
         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
           <ReviewSortToggle setReviewSort={setReviewSort} reviewSort={reviewSort} />
         </Box>
-        <Button
-         variant="contained"
-          sx={{ display: 'flex', alignSelf: 'flex-end' }}
-         onClick={fetchSearchResult}
-       >Search</Button>
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'flex-end'
+        }}>
+          <Button
+            variant='outlined'
+            onClick={() => props.setSearchDrawerShow(false)}
+          >Close</Button>
+          <Button
+           variant="contained"
+            sx={{ display: 'flex', alignSelf: 'flex-end' }}
+           onClick={fetchSearchResult}
+         >Search</Button>
+        </Box>
       </Box>
     </Box>
   );
