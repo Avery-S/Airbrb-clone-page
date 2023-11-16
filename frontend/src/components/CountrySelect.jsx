@@ -3,12 +3,13 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
-export default function CountrySelect ({ value, onChange, error = false, helperText = '', required = false }) {
+export default function CountrySelect ({ disabled, value, onChange, error = false, helperText = '', required = false }) {
   return (
     <Autocomplete
       id="country-select-demo"
       sx={{ width: 200 }}
       options={countries}
+      disabled={disabled}
       autoHighlight
       value={value || null}
       onChange={onChange}
