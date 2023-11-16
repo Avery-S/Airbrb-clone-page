@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
-import styled from '@emotion/styled';
 
 import Register from './pages/Register';
 import LandingPage from './pages/LandingPage';
@@ -30,13 +29,6 @@ export default function PageList () {
   const listingProps = { allListings, setAllListings, publishedListings, setPublishedListings, resultListings, setResultListings };
 
   checkToken(setToken);
-
-  const StyledFooter = styled('div')({
-    // display: 'flex',
-    position: 'relative',
-    bottom: '0',
-    width: '100%',
-  });
 
   return (
     <Box sx={{
@@ -68,10 +60,6 @@ export default function PageList () {
           <Route path="*" element={<ErrorPage />}></Route>
         </Routes>
       </Box>
-      {/* Footer */}
-      <StyledFooter>
-        This is footer
-      </StyledFooter>
     </ Box>
   )
 }
