@@ -3,7 +3,7 @@ import { TextField, Grid, Box, IconButton } from '@mui/material';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import { Button } from 'react-bootstrap';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -246,7 +246,7 @@ export default function EditListingPage () {
     <Grid item xs={12} md={8} lg={4}> {/* image container */}
     <Box >
     <IconButton onClick={handleBack} aria-label="back">
-      <ArrowBackIcon />
+      <ChevronLeftIcon />
     </IconButton>
     <Box padding={1}>
       <label htmlFor="thumbnail">Select an Image to Post</label></Box>

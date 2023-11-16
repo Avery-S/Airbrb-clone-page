@@ -3,6 +3,7 @@ import Card from '@mui/material/Card';
 import { Box, CardMedia, IconButton, Typography, Chip, Tooltip } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
 import { red, blue, green } from '@mui/material/colors';
 import Rating from '@mui/material/Rating';
 import MapsHomeWorkOutlinedIcon from '@mui/icons-material/MapsHomeWorkOutlined';
@@ -54,6 +55,20 @@ export default function ListingCard (props) {
     const listingId = props.listingId;
     props.setCurrentPage('edit');
     navigate(`/edit-listing/${listingId}`, { state: { token: props.token } });
+  }
+
+  // Viewing booking requests and history
+  const handleManageListing = () => {
+    const listingId = props.listingId;
+    props.setCurrentPage('manage');
+    console.log('card props:', props);
+    navigate(`/manage/${listingId}`, {
+      state: {
+        token: props.token,
+        postedOn: props.postedOn,
+        listingId: listingId,
+      }
+    });
   }
 
   const [userRating, reviewLength] = getUserRating(props.reviews);
@@ -168,6 +183,15 @@ export default function ListingCard (props) {
           {props.ifOwner && props.currentPage === 'hosted'
             ? (
                 <>
+                <IconButton
+                    aria-label="Viewing booking requests and history"
+                    onClick={handleManageListing}
+                  >
+                    <FactCheckIcon
+                      sx={{ color: '#00f584' }}
+                      fontSize='medium'
+                    />
+                  </IconButton >
                   <IconButton
                     aria-label="Edit Listing"
                     onClick={handleEditListing}

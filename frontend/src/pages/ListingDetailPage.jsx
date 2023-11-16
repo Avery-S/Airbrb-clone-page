@@ -244,8 +244,8 @@ export default function ListingDetailPage (props) {
                   </Typography>
                   {booking.status === 'accepted'
                     ? <Chip sx={{ width: 'max-content', alignSelf: 'flex-end' }} label="Accepted" color="success" />
-                    : booking.status === 'denied'
-                      ? <Chip sx={{ width: 'max-content', alignSelf: 'flex-end' }} label="Denied" color="error" />// Assuming you want a different label/color for non-accepted status
+                    : booking.status === 'declined'
+                      ? <Chip sx={{ width: 'max-content', alignSelf: 'flex-end' }} label="Declined" color="error" />// Assuming you want a different label/color for non-accepted status
                       : <Chip sx={{ width: 'max-content', alignSelf: 'flex-end' }} label="Pending" color="info" />}
                 </Paper>))
             }
