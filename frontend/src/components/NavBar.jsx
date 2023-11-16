@@ -115,7 +115,7 @@ export default function ResponsiveAppBar (props) {
 
   React.useEffect(() => {
     if (props.token !== null && props.token !== '') {
-      setSettings(['Profile', 'Account', 'Dashboard', 'Logout']);
+      setSettings(['Logout']);
       setPages(['All Listings', 'My Hosted Listings']);
     } else {
       setSettings(['Login', 'Register']);
