@@ -94,7 +94,7 @@ export default function ManagePage (props) {
     try {
       const response = await fetch(`${BACKEND_URL}/bookings/accept/${bookingId}`, {
         method: 'PUT',
-        headers: headers,
+        headers,
       });
       const data = await response.json();
       if (response.ok) {
@@ -116,7 +116,7 @@ export default function ManagePage (props) {
     try {
       const response = await fetch(`${BACKEND_URL}/bookings/decline/${bookingId}`, {
         method: 'PUT',
-        headers: headers,
+        headers,
       });
       const data = await response.json();
       if (response.ok) {
