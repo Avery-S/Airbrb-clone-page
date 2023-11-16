@@ -20,7 +20,7 @@ export default function ManagePage (props) {
   const [totalBookedDays, setTotalBookedDays] = useState(0);
   const [totalProfit, setTotalProfit] = useState(0);
   const postedDate = dayjs(postedOn);
-  const daysSincePosted = dayjs().diff(postedDate, 'day'); // 待验证
+  const daysSincePosted = dayjs().diff(postedDate, 'day') + 1;
 
   // console.log(token, postedOn);
   // console.log('props:',props);
