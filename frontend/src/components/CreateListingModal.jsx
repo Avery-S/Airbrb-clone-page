@@ -104,7 +104,7 @@ export default function CreateListingModal (props) {
         );
         setMetadata(prevMetadata => ({
           ...prevMetadata,
-          imageList: imageList
+          imageList
         }));
         setThumbnail(imageList[0]);
       } catch (error) {

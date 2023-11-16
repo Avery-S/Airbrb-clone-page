@@ -120,6 +120,8 @@ export default function HostedListings (props) {
         show={showCreateModal}
         onHide={handleCloseCreateModal}
         createListing={createListing}
+        setErrorModalMsg={props.setErrorModalMsg}
+        setErrorModalShow={props.setErrorModalShow}
       />
       {
         hostedListings.length !== 0

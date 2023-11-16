@@ -197,7 +197,7 @@ export default function ListingDetailPage (props) {
             </Divider>
             {!localStorage.getItem('token')
               ? <Typography>Log in to leave a review</Typography>
-              : <LeaveReview
+              : listingInfo.owner !== localStorage.getItem('userEmail') && <LeaveReview
                 handleSubmit={handleReviewSubmit}
                 value={rateValue}
                 setValue={setRateValue}
