@@ -58,6 +58,9 @@
     "transform": {
       "^.+\\.[t|j]sx?$": "babel-jest"
     },
+    "moduleNameMapper": {
+      "\\.(css|scss)$": "identity-obj-proxy"
+    },
     "transformIgnorePatterns": [
       "node_modules/(?!axios)"
     ]
