@@ -73,6 +73,7 @@ export default function ListingDetailPage (props) {
       if (bookingInfo) {
         const acceptedBookingId = bookingInfo.filter(booking => booking.status === 'accepted')[0].id;
         if (acceptedBookingId) {
+          console.log('review: ', reviewValue)
           const reponse = await fetch(`${BACKEND_URL}/listings/${listingId}/review/${acceptedBookingId}`, fetchObject(
             'PUT', { review: { rating: rateValue, content: reviewValue } }, true
           ));
@@ -209,10 +210,10 @@ export default function ListingDetailPage (props) {
             {reviewLength === 0
               ? (<Typography variant='subtitle2'> No Reviews </Typography>)
               : (listingInfo.reviews.map((review, index) => (
-                <>
+                <Box key={ index }>
                   <Rating name="user-rating" defaultValue={review.rating} precision={0.1} readOnly />
                   <Typography variant='subtitle2'>{review.content}</Typography>
-               </>
+               </Box>
                 )))}
           </Box>
           <Box sx={{
