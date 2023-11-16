@@ -9,7 +9,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { fileToDataUrl } from '../helper/helperFuncs.jsx';
+import { fileToDataUrl, getBedroomNum } from '../helper/helperFuncs.jsx';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
@@ -18,7 +18,9 @@ import AmenitiesTags from '../components/AmenitiesTags.jsx';
 import PropertyTypeComboBox from '../components/PropertyTypeComboBox';
 import MessageAlert from '../components/MessageAlert';
 
-export default function EditListingPage () {
+// Page to edit the listing
+export default function EditListingPage (props) {
+  // set initial values
   const initialMetadata = {
     propertyType: '',
     numberOfBathrooms: 1,
@@ -58,6 +60,7 @@ export default function EditListingPage () {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [errorMessages, setErrorMessages] = useState({});
 
+  // set required error messages
   const validateInputs = () => {
     const errors = {};
     if (!title.trim()) errors.title = 'Title is required.';
@@ -78,7 +81,8 @@ export default function EditListingPage () {
     ));
     const data = await response.json();
     if (data.error) {
-      console.error('Error fetching listings:', data.error);
+      props.setErrorModalMsg(data.error);
+      props.setErrorModalShow(true)
     } else {
       const { address, metadata, price, title, thumbnail } = data.listing;
       setTitle(title);
@@ -90,10 +94,9 @@ export default function EditListingPage () {
       const fetchedCountry = countries.find(c => c.label === data.listing.address.country);
       setSelectedCountry(fetchedCountry);
       setMetadata(data.listing.metadata);
-      // console.log(metadata.propertyType);
     }
   };
-    // publish new list
+  // publish new list
   const updateListing = async (body) => {
     const headers = {
       'Content-Type': 'application/json',
@@ -104,7 +107,6 @@ export default function EditListingPage () {
     ));
     const listings = await response.json();
     if (listings.error) {
-      console.error('Error fetching listings:', listings.error);
       setAlertContent('Error updating listing: ' + listings.error);
       setAlertType('danger');
       setShowAlert(true);
@@ -120,6 +122,7 @@ export default function EditListingPage () {
     getListing();
   }, [listingId]);
 
+  // set data for submit button
   const handleSubmit = async (event) => {
     event.preventDefault();
     const trimmedTitle = title.trim();
@@ -137,20 +140,33 @@ export default function EditListingPage () {
         title: trimmedTitle,
         address: trimmedAddress,
         price: trimmedPrice,
-        thumbnail,
+        thumbnail: uploadedImg,
         metadata
       };
+      if (getBedroomNum(metadata.rooms) === 0) {
+        props.setErrorModalMsg('Please choose at least one bedroom!');
+        props.setErrorModalShow(true);
+        return;
+      }
       await updateListing(body);
     } else {
       setErrorMessages(errors);
     }
   };
 
+  // Update images when image is uploaded
   const handleImageChange = async (event) => {
     const files = event.target.files;
     if (files && files.length > 0) {
+      for (const file of files) {
+        if (!file.type.match('image/jpeg') && !file.type.match('image/png') && !file.type.match('image/jpg')) {
+          props.setErrorModalMsg(`Image type is not supported: ${file.type}`);
+          props.setErrorModalShow(true);
+          return
+        }
+      }
       try {
-        const imageList = await Promise.all(
+        let imageList = await Promise.all(
           [...files].map(file => fileToDataUrl(file))
         );
         setMetadata(prevMetadata => ({
@@ -158,17 +174,25 @@ export default function EditListingPage () {
           imageList: [...prevMetadata.imageList, ...imageList]
         }));
         if (imageList.length > 0) {
-          setThumbnail(imageList[0]);
+          if (imageList[0] === DEFAULT_THUMBNAIL_URL && imageList.length > 1) {
+            imageList = imageList.slice(1);
+          }
+          setUploadedImg(imageList[0]);
         }
       } catch (error) {
-        console.error(error);
+        props.setErrorModalMsg(error);
+        props.setErrorModalShow(true)
       }
     }
   };
 
+  // Clear the image lists and thumbnail for clear button
   const handleClearImage = () => {
-    setUploadedImg('');
-    setThumbnail(DEFAULT_THUMBNAIL_URL);
+    setUploadedImg(DEFAULT_THUMBNAIL_URL);
+    setMetadata(prevMetadata => ({
+      ...prevMetadata,
+      imageList: []
+    }));
   };
 
   const handleMetadataChange = (e) => {
@@ -195,6 +219,7 @@ export default function EditListingPage () {
     navigate('/my-hosted-listings');
   }
 
+  // Calculate and update the room numbers when bedroom is changed
   const updateRoomNumber = (roomType, change) => {
     setMetadata(prevMetadata => {
       const currentRoomNum = prevMetadata.rooms[roomType].roomNum;

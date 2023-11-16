@@ -30,14 +30,14 @@ export default function ListingCard (props) {
   // find the booking status
   React.useEffect(() => {
     if (props.bookings && props.bookings.length !== 0) {
-      const bookingList = props.bookings.find(booking => booking.listingId === String(props.listingId) && localStorage.getItem('userEmail') === booking.owner);
+      const bookingList = props.bookings.find(booking => String(booking.listingId) === String(props.listingId) && localStorage.getItem('userEmail') === booking.owner);
       if (bookingList) {
         setBookingInfo(bookingList);
       }
     }
     isMounted.current = true;
     return () => { isMounted.current = false; }
-  }, [])
+  }, [props.bookings])
 
   // handle delete listing
   const handleDeleteListing = () => {
@@ -61,12 +61,11 @@ export default function ListingCard (props) {
   const handleManageListing = () => {
     const listingId = props.listingId;
     props.setCurrentPage('manage');
-    console.log('card props:', props);
     navigate(`/manage/${listingId}`, {
       state: {
         token: props.token,
         postedOn: props.postedOn,
-        listingId: listingId,
+        listingId,
       }
     });
   }
@@ -279,7 +278,7 @@ export default function ListingCard (props) {
                 reviewLength === 0
                   ? (<Typography variant='subtitle2'> No Reviews </Typography>)
                   : (<>
-                      <Rating name="user-rating" defaultValue={userRating} precision={0.1} readOnly />
+                      <Rating name="user-rating" defaultValue={parseFloat(userRating)} precision={0.1} readOnly />
                     <Typography variant='subtitle2'>{ reviewLength } reviews</Typography>
                     </>)
               }

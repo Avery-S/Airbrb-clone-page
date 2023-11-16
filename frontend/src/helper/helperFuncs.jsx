@@ -23,12 +23,19 @@ export function dateToString (date) {
 export function getUserRating (reviews) {
   let userRating = 0;
   let reviewLength = 0;
-  if (reviews) {
+  if (reviews && reviews.length !== 0) {
     reviewLength = reviews.length;
     for (const review of reviews) {
       userRating += parseFloat(review.rating);
     }
     userRating /= reviewLength;
   }
-  return [userRating, reviewLength]
+  return [userRating.toFixed(1), reviewLength]
+}
+
+// Calculate the number of bedrooms given rooms list
+export function getBedroomNum (rooms) {
+  return Object.values(rooms).reduce((total, room) => {
+    return total + room.roomNum;
+  }, 0);
 }

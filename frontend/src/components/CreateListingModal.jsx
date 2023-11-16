@@ -1,24 +1,25 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import Grid from '@mui/material/Unstable_Grid2';
 import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
 import CountrySelect from './CountrySelect.jsx';
 import AmenitiesTags from './AmenitiesTags.jsx';
 import PropertyTypeComboBox from './PropertyTypeComboBox';
-import { fileToDataUrl } from '../helper/helperFuncs.jsx';
+import { fileToDataUrl, getBedroomNum } from '../helper/helperFuncs.jsx';
 
 export default function CreateListingModal (props) {
   const initialMetadata = {
     propertyType: '',
     numberOfBathrooms: 1,
-    numberOfBeds: 1,
+    numberOfBeds: 0,
     amenities: [],
     houseRules: '',
     rooms: {
@@ -87,7 +88,11 @@ export default function CreateListingModal (props) {
         thumbnail,
         metadata
       }
-      console.log(body);
+      if (getBedroomNum(metadata.rooms) === 0) {
+        props.setErrorModalMsg('Please choose at least one bedroom!');
+        props.setErrorModalShow(true);
+        return;
+      }
       props.createListing(body);
       handleClose();
     } else {
@@ -95,27 +100,54 @@ export default function CreateListingModal (props) {
     }
   };
 
+  // Update images when image is uploaded
   const handleImageChange = async (event) => {
     const files = event.target.files;
-    if (files.length > 0) {
+    if (files && files.length > 0) {
+      for (const file of files) {
+        if (!file.type.match('image/jpeg') && !file.type.match('image/png') && !file.type.match('image/jpg')) {
+          props.setErrorModalMsg(`Image type is not supported: ${file.type}`);
+          props.setErrorModalShow(true);
+          return
+        }
+      }
       try {
-        const imageList = await Promise.all(
+        let imageList = await Promise.all(
           [...files].map(file => fileToDataUrl(file))
         );
         setMetadata(prevMetadata => ({
           ...prevMetadata,
-          imageList: imageList
+          imageList: [...prevMetadata.imageList, ...imageList]
         }));
-        setThumbnail(imageList[0]);
+        if (imageList.length > 0) {
+          if (imageList[0] === DEFAULT_THUMBNAIL_URL && imageList.length > 1) {
+            imageList = imageList.slice(1);
+          }
+          setUploadedImg(imageList[0]);
+        }
       } catch (error) {
-        console.error(error);
+        props.setErrorModalMsg(error);
+        props.setErrorModalShow(true)
       }
     }
   };
 
+  const handleRemoveImage = (index) => {
+    if (metadata.imageList && metadata.imageList.length > 0) {
+      setMetadata(prevMetadata => ({
+        ...prevMetadata,
+        imageList: prevMetadata.imageList.filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  // Clear the image lists and thumbnail for clear button
   const handleClearImage = () => {
-    setUploadedImg('');
-    setThumbnail(DEFAULT_THUMBNAIL_URL);
+    setUploadedImg(DEFAULT_THUMBNAIL_URL);
+    setMetadata(prevMetadata => ({
+      ...prevMetadata,
+      imageList: []
+    }));
   };
 
   const handleMetadataChange = (e) => {
@@ -205,8 +237,20 @@ export default function CreateListingModal (props) {
               {uploadedImg && (
                 <Button variant="secondary" onClick={handleClearImage}>Clear Image</Button>
               )}
-          </div>
-            </Grid>
+            </div>
+            <Box padding={1} sx={{ maxHeight: 300, overflowY: 'auto' }}>
+              {metadata.imageList && metadata.imageList.length > 0 && (
+                metadata.imageList.map((imgUrl, index) => (
+                  <Box key={index} display="flex" alignItems="center" marginBottom={2}>
+                    <img src={imgUrl} alt={`Thumbnail ${index}`} style={{ width: 100, height: 100 }} />
+                    <IconButton onClick={() => handleRemoveImage(index)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                ))
+              )}
+            </Box>
+          </Grid>
             <Grid item xs={12} lg={8} container spacing={2}>
               <Grid item xs={9} md={7} lg={6}>
               <TextField

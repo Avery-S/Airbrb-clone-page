@@ -1,11 +1,12 @@
 import React from 'react'
-import { useParams } from 'react-router-dom';
-import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button, Paper } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button, Paper, IconButton } from '@mui/material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import ImageListDisplay from '../components/ImageListDisplay';
-import { getUserRating } from '../helper/helperFuncs';
+import { getBedroomNum, getUserRating } from '../helper/helperFuncs';
 import BedListDisplay from '../components/BedListDisplay';
 import LeaveReview from '../components/LeaveReview';
 import BookingModal from '../components/BookingModal';
@@ -29,6 +30,8 @@ export default function ListingDetailPage (props) {
     props.setCurrentPage('listing');
   }, []);
 
+  const navigate = useNavigate();
+
   const getListingInfo = async () => {
     const response = await fetch(`${BACKEND_URL}/listings/${listingId}`, fetchObject('GET', {}, false));
     const data = await response.json();
@@ -48,14 +51,12 @@ export default function ListingDetailPage (props) {
       props.setErrorModalShow(true);
     } else {
       let bookings = data.bookings;
-      console.log('listingDetailPage booking: ', bookings);
       if (bookings) {
         bookings = bookings.filter(booking => (
           String(booking.listingId) === String(listingId) && booking.owner === localStorage.getItem('userEmail')
         ));
         if (bookings && bookings.length !== 0) {
           setBookingInfo([...bookings]);
-          console.log('setBookingInfo: ', bookingInfo);
         }
       }
     }
@@ -121,6 +122,12 @@ export default function ListingDetailPage (props) {
         flexWrap: 'wrap',
         margin: '1vw',
       }}>
+        <IconButton onClick={() => navigate('/')} aria-label="back" sx={{
+          display: 'flex',
+          alignSelf: 'flex-start',
+        }}>
+          <ChevronLeftIcon />
+        </IconButton>
         <BookingModal
           show={showBookingModal}
           onHide={() => setShowBookingModal(false)}
@@ -166,7 +173,7 @@ export default function ListingDetailPage (props) {
               <Chip label="ROOMS" />
             </Divider>
             <Typography variant='subtitle2'>
-              No. of Beds: {listingInfo.metadata.numberOfBeds}
+              No. of Bedrooms: {getBedroomNum(listingInfo.metadata.rooms)}
             </Typography>
             <Typography variant='subtitle2'>
               No. of Baths: {listingInfo.metadata.numberOfBathrooms}
@@ -199,7 +206,7 @@ export default function ListingDetailPage (props) {
             </Divider>
             {!localStorage.getItem('token')
               ? <Typography>Log in to leave a review</Typography>
-              : <LeaveReview
+              : listingInfo.owner !== localStorage.getItem('userEmail') && <LeaveReview
                 handleSubmit={handleReviewSubmit}
                 value={rateValue}
                 setValue={setRateValue}
@@ -209,10 +216,10 @@ export default function ListingDetailPage (props) {
             {reviewLength === 0
               ? (<Typography variant='subtitle2'> No Reviews </Typography>)
               : (listingInfo.reviews.map((review, index) => (
-                <>
+                <Box key={ index }>
                   <Rating name="user-rating" defaultValue={review.rating} precision={0.1} readOnly />
                   <Typography variant='subtitle2'>{review.content}</Typography>
-               </>
+               </Box>
                 )))}
           </Box>
           <Box sx={{

@@ -14,6 +14,7 @@ import RangeSlider from './RangeSlider';
 import dayjs from 'dayjs';
 import { blue } from '@mui/material/colors';
 import ReviewSortToggle from './ReviewSortToggle';
+import { getBedroomNum, getUserRating } from '../helper/helperFuncs';
 
 export default function SearchDrawer (props) {
   const [searchTitle, setSearchTitle] = React.useState('');
@@ -61,8 +62,8 @@ export default function SearchDrawer (props) {
     }
     if (searchCity !== '') {
       newResultListings = newResultListings.filter(listing => listing.address.city.toLowerCase() === searchCity.toLowerCase().trim());
-      if (searchCountry !== '') {
-        newResultListings = newResultListings.filter(listing => listing.address.country === searchCountry);
+      if (searchCountry !== '' && searchCountry != null) {
+        newResultListings = newResultListings.filter(listing => listing.address.country === searchCountry.label);
       }
     }
     if (dateFilter) {
@@ -80,7 +81,7 @@ export default function SearchDrawer (props) {
     }
     if (bedNumFilter) {
       newResultListings = newResultListings.filter(listing => {
-        return parseInt(listing.metadata.numberOfBeds) >= searchBedNumRange[0] &&
+        return parseInt(getBedroomNum(listing.metadata.rooms)) >= searchBedNumRange[0] &&
           parseInt(listing.metadata.numberOfBeds) <= searchBedNumRange[1]
       })
     }
@@ -92,9 +93,9 @@ export default function SearchDrawer (props) {
     }
     if (reviewFilter) {
       newResultListings = newResultListings.filter(listing => {
-        return parseFloat(listing.userRating) >= searchReviewRatingRange[0] &&
-          parseInt(listing.userRating) <= searchReviewRatingRange[1]
-      })
+        return parseFloat(getUserRating(listing.reviews)[0]) >= searchReviewRatingRange[0] &&
+          parseInt(getUserRating(listing.reviews)[0]) <= searchReviewRatingRange[1]
+      });
     }
     switch (reviewSort) {
       case 'Alphabetical':
@@ -181,7 +182,7 @@ export default function SearchDrawer (props) {
               onChange={(event) => setbedNumFilter(event.target.checked)}
               inputProps={{ 'aria-label': 'controlled' }}
             />
-            <Typography color={blue[800]} variant='h7'>No. of Beds</Typography>
+            <Typography color={blue[800]} variant='h7'>No. of Bedrooms</Typography>
           </Box>
           {/* Date range filter */}
           <Box sx={{ display: 'flex', flexDirection: 'row', }}>
@@ -255,11 +256,22 @@ export default function SearchDrawer (props) {
         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
           <ReviewSortToggle setReviewSort={setReviewSort} reviewSort={reviewSort} />
         </Box>
-        <Button
-         variant="contained"
-          sx={{ display: 'flex', alignSelf: 'flex-end' }}
-         onClick={fetchSearchResult}
-       >Search</Button>
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'flex-end',
+          justifyContent: 'flex-end'
+        }}>
+          <Button
+            variant='outlined'
+            onClick={() => props.setSearchDrawerShow(false)}
+          >Close</Button> &nbsp;
+          <Button
+           variant="contained"
+            sx={{ display: 'flex', alignSelf: 'flex-end' }}
+           onClick={fetchSearchResult}
+         >Search</Button>
+        </Box>
       </Box>
     </Box>
   );

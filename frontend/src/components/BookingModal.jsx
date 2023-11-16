@@ -23,7 +23,6 @@ export default function BookingModal (props) {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const nights = endDate.diff(startDate, 'day') + 1;
 
-  // console.log('price:', price);
   useEffect(() => {
     if (availability.length > 0) {
       const firstAvailableRange = availability[0];
@@ -50,13 +49,12 @@ export default function BookingModal (props) {
           startDate: startDate.format('DD/MM/YYYY'),
           endDate: endDate.format('DD/MM/YYYY'),
         },
-        totalPrice: totalPrice
+        totalPrice
       }, true, headers));
     const data = await response.json();
     if (data.error) {
       showSnackbar(data.error);
     } else {
-      console.log(data.bookingId);
       showSnackbar('Booking request submitted successfully!');
       props.getBookings();
       setTimeout(() => props.onHide(), 1100);
