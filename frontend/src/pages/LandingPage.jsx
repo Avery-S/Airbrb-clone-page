@@ -110,10 +110,12 @@ export default function LandingPage (props) {
   // get the published listings
   const fetchPublishedListings = async () => {
     const allListings = await getListings();
-    const bookings = await getBookings();
-    setBookings(bookings);
-    let newPublishedListings = [];
+    if (localStorage.getItem('token')) {
+      const bookings = await getBookings();
+      setBookings(bookings);
+    }
     const newBookings = [];
+    let newPublishedListings = [];
 
     if (!allListings || !bookings) {
       props.setErrorModalMsg(allListings.error || bookings.error);

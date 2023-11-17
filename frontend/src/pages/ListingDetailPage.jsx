@@ -23,7 +23,7 @@ export default function ListingDetailPage (props) {
 
   React.useEffect(() => {
     getListingInfo();
-    getBookings();
+    localStorage.getItem('token') && getBookings();
     if (props.currentPage === 'search' && props.searchDateRange.length === 2) {
       setDiffDate(props.searchDateRange[1].diff(props.searchDateRange[0], 'day'))
     }
@@ -205,7 +205,7 @@ export default function ListingDetailPage (props) {
               <Chip label="REVIEWS" />
             </Divider>
             {!localStorage.getItem('token')
-              ? <Typography>Log in to leave a review</Typography>
+              ? <Typography fontWeight='bold'>Log in to leave a review</Typography>
               : listingInfo.owner !== localStorage.getItem('userEmail') && <LeaveReview
                 handleSubmit={handleReviewSubmit}
                 value={rateValue}
@@ -230,12 +230,14 @@ export default function ListingDetailPage (props) {
           >
             <Button variant="contained"
             onClick={() => setShowBookingModal(true)}
+            disabled={!localStorage.getItem('token')}
             sx={{
               display: 'flex',
               height: 'min-content',
               width: 'auto',
               justifySelf: 'flex-start',
             }} >Book</Button>
+            {!localStorage.getItem('token') && <Typography fontWeight='bold'>Log in to book</Typography>}
             <br/>
             {bookingInfo && bookingInfo.length !== 0 &&
                 bookingInfo.map((booking, index) => (
