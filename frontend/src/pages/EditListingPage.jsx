@@ -51,7 +51,7 @@ export default function EditListingPage (props) {
   const [title, setTitle] = useState('');
   const [address, setAddress] = useState(initialAddress); // address structure
   const [price, setPrice] = useState('');
-  const [thumbnail, setThumbnail] = useState(DEFAULT_THUMBNAIL_URL);
+  // const [thumbnail, setThumbnail] = useState(DEFAULT_THUMBNAIL_URL);
   const [metadata, setMetadata] = useState(initialMetadata);
   const [uploadedImg, setUploadedImg] = useState('');
   const [showAlert, setShowAlert] = useState(false);
@@ -74,6 +74,12 @@ export default function EditListingPage (props) {
     return errors;
   };
 
+  React.useEffect(() => {
+    if (metadata.imageList.length !== 0) {
+      setUploadedImg(metadata.imageList[0]);
+    }
+  }, [metadata]);
+
   // get all listings API
   const getListing = async () => {
     const response = await fetch(`${BACKEND_URL}/listings/${listingId}`, fetchObject(
@@ -89,7 +95,6 @@ export default function EditListingPage (props) {
       setPrice(price);
       setAddress(address);
       setMetadata(metadata);
-      setThumbnail(thumbnail);
       setUploadedImg(thumbnail);
       const fetchedCountry = countries.find(c => c.label === data.listing.address.country);
       setSelectedCountry(fetchedCountry);
@@ -279,8 +284,7 @@ export default function EditListingPage (props) {
         <input
         id="thumbnail"
         type="text"
-        value={thumbnail}
-        onChange={(e) => setThumbnail(e.target.value)}
+        value={uploadedImg}
         required
         style={{ display: 'none' }}
       />

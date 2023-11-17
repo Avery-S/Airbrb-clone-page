@@ -182,15 +182,18 @@ export default function ListingCard (props) {
           {props.ifOwner && props.currentPage === 'hosted'
             ? (
                 <>
-                <IconButton
-                    aria-label="Viewing booking requests and history"
-                    onClick={handleManageListing}
-                  >
-                    <FactCheckIcon
-                      sx={{ color: '#00f584' }}
-                      fontSize='medium'
-                    />
-                  </IconButton >
+                <Tooltip title='Manage Bookings'>
+                  <IconButton
+                      aria-label="Viewing booking requests and history"
+                      onClick={handleManageListing}
+                    >
+                      <FactCheckIcon
+                        sx={{ color: '#00f584' }}
+                        fontSize='medium'
+                      />
+                    </IconButton >
+                </Tooltip>
+                <Tooltip title="Edit Listing">
                   <IconButton
                     aria-label="Edit Listing"
                     onClick={handleEditListing}
@@ -200,6 +203,8 @@ export default function ListingCard (props) {
                       fontSize='medium'
                     />
                   </IconButton >
+                </Tooltip>
+                <Tooltip title='Delete Listing'>
                   <IconButton
                     aria-label="Delete Listing"
                     onClick={handleDeleteListing}
@@ -209,6 +214,7 @@ export default function ListingCard (props) {
                       fontSize='medium'
                     />
                   </IconButton >
+                </Tooltip>
                 </>
               )
             : (<></>)}

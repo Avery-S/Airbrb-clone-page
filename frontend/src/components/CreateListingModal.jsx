@@ -42,7 +42,7 @@ export default function CreateListingModal (props) {
   const [title, setTitle] = useState('');
   const [address, setAddress] = useState(initialAddress); // address structure
   const [price, setPrice] = useState('');
-  const [thumbnail, setThumbnail] = useState(DEFAULT_THUMBNAIL_URL);
+  // const [thumbnail, setThumbnail] = useState(DEFAULT_THUMBNAIL_URL);
   const [metadata, setMetadata] = useState(initialMetadata);
   // const navigate = useNavigate();
   const [uploadedImg, setUploadedImg] = useState('');
@@ -53,6 +53,12 @@ export default function CreateListingModal (props) {
   const handleClose = () => {
     props.onHide();
   };
+
+  React.useEffect(() => {
+    if (metadata.imageList.length !== 0) {
+      setUploadedImg(metadata.imageList[0]);
+    }
+  }, [metadata]);
 
   const validateInputs = () => {
     const errors = {};
@@ -85,7 +91,7 @@ export default function CreateListingModal (props) {
         title: trimmedTitle,
         address: trimmedAddress,
         price: trimmedPrice,
-        thumbnail,
+        thumbnail: uploadedImg,
         metadata
       }
       if (getBedroomNum(metadata.rooms) === 0) {
@@ -215,8 +221,8 @@ export default function CreateListingModal (props) {
           <input
             id="thumbnail"
             type="text"
-            value={thumbnail}
-            onChange={(e) => setThumbnail(e.target.value)}
+            value={uploadedImg}
+            // onChange={(e) => console.log(e.target.value)}
             required
             style={{ display: 'none' }}
           />

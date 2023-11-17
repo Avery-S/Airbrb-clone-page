@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Typography, Rating, Divider, Chip, useTheme, useMediaQuery, Button, Paper, IconButton } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 
-import { BACKEND_URL } from '../helper/getLinks';
+import { BACKEND_URL, DEFAULT_THUMBNAIL_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import ImageListDisplay from '../components/ImageListDisplay';
 import { getBedroomNum, getUserRating } from '../helper/helperFuncs';
@@ -137,7 +137,7 @@ export default function ListingDetailPage (props) {
           price={listingInfo.price}
           getBookings={getBookings}
         />
-        <ImageListDisplay images={listingInfo.metadata.imageList} />
+        <ImageListDisplay images={listingInfo.metadata.imageList.length === 0 ? [DEFAULT_THUMBNAIL_URL] : listingInfo.metadata.imageList} />
         {/* Content */}
         <Box sx={{
           display: 'flex',
