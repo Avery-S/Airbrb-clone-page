@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Card from '@mui/material/Card';
-import { Box, CardMedia, IconButton, Typography, Chip, Tooltip } from '@mui/material';
+import { Box, CardMedia, IconButton, Typography, Chip, Tooltip, styled } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
@@ -18,6 +18,12 @@ import fetchObject from '../helper/fetchObject';
 import AvailabilityModal from './AvailabilityModal';
 import { getUserRating } from '../helper/helperFuncs';
 
+const StyledIframe = styled('iframe')({
+  height: '100%',
+  aspectRatio: 1,
+  objectFit: 'cover'
+});
+
 export default function ListingCard (props) {
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
   const navigate = useNavigate();
@@ -30,14 +36,14 @@ export default function ListingCard (props) {
   // find the booking status
   React.useEffect(() => {
     if (props.bookings && props.bookings.length !== 0) {
-      const bookingList = props.bookings.find(booking => booking.listingId === String(props.listingId) && localStorage.getItem('userEmail') === booking.owner);
+      const bookingList = props.bookings.find(booking => String(booking.listingId) === String(props.listingId) && localStorage.getItem('userEmail') === booking.owner);
       if (bookingList) {
         setBookingInfo(bookingList);
       }
     }
     isMounted.current = true;
     return () => { isMounted.current = false; }
-  }, [])
+  }, [props.bookings])
 
   // handle delete listing
   const handleDeleteListing = () => {
@@ -61,12 +67,11 @@ export default function ListingCard (props) {
   const handleManageListing = () => {
     const listingId = props.listingId;
     props.setCurrentPage('manage');
-    console.log('card props:', props);
     navigate(`/manage/${listingId}`, {
       state: {
         token: props.token,
         postedOn: props.postedOn,
-        listingId: listingId,
+        listingId,
       }
     });
   }
@@ -184,15 +189,18 @@ export default function ListingCard (props) {
           {props.ifOwner && props.currentPage === 'hosted'
             ? (
                 <>
-                <IconButton
-                    aria-label="Viewing booking requests and history"
-                    onClick={handleManageListing}
-                  >
-                    <FactCheckIcon
-                      sx={{ color: '#00f584' }}
-                      fontSize='medium'
-                    />
-                  </IconButton >
+                <Tooltip title='Manage Bookings'>
+                  <IconButton
+                      aria-label="Viewing booking requests and history"
+                      onClick={handleManageListing}
+                    >
+                      <FactCheckIcon
+                        sx={{ color: '#00f584' }}
+                        fontSize='medium'
+                      />
+                    </IconButton >
+                </Tooltip>
+                <Tooltip title="Edit Listing">
                   <IconButton
                     aria-label="Edit Listing"
                     onClick={handleEditListing}
@@ -202,6 +210,8 @@ export default function ListingCard (props) {
                       fontSize='medium'
                     />
                   </IconButton >
+                </Tooltip>
+                <Tooltip title='Delete Listing'>
                   <IconButton
                     aria-label="Delete Listing"
                     onClick={handleDeleteListing}
@@ -211,11 +221,12 @@ export default function ListingCard (props) {
                       fontSize='medium'
                     />
                   </IconButton >
+                </Tooltip>
                 </>
               )
             : (<></>)}
         </Box>
-         <CardMedia
+        {/* {<CardMedia
           component="img"
           image={props.thumbnail}
           alt="Thumbnail"
@@ -224,7 +235,25 @@ export default function ListingCard (props) {
             aspectRatio: 1,
             objectFit: 'cover'
           }}
-        />
+        />} */}
+        { props.metadata.videoLink !== '' && props.metadata.videoLink !== undefined
+          ? <StyledIframe
+          src={props.metadata.videoLink}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></StyledIframe>
+          : <CardMedia
+          component="img"
+          image={props.thumbnail}
+          alt="Thumbnail"
+          sx={{
+            height: '100%',
+            aspectRatio: 1,
+            objectFit: 'cover'
+          }}
+        />}
         <Box sx={{
           width: '100%',
           height: '100%',
@@ -280,7 +309,7 @@ export default function ListingCard (props) {
                 reviewLength === 0
                   ? (<Typography variant='subtitle2'> No Reviews </Typography>)
                   : (<>
-                      <Rating name="user-rating" defaultValue={userRating} precision={0.1} readOnly />
+                      <Rating name="user-rating" defaultValue={parseFloat(userRating)} precision={0.1} readOnly />
                     <Typography variant='subtitle2'>{ reviewLength } reviews</Typography>
                     </>)
               }

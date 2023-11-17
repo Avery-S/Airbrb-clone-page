@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Box } from '@mui/material';
-import styled from '@emotion/styled';
 
 import Register from './pages/Register';
 import LandingPage from './pages/LandingPage';
@@ -13,6 +12,7 @@ import ErrorModal from './components/ErrorModal';
 import EditListingPage from './pages/EditListingPage'
 import ListingDetailPage from './pages/ListingDetailPage';
 import ManagePage from './pages/ManagePage';
+import ErrorPage from './pages/ErrorPage';
 
 // Main structure of the page: header, page, footer
 export default function PageList () {
@@ -29,13 +29,6 @@ export default function PageList () {
   const listingProps = { allListings, setAllListings, publishedListings, setPublishedListings, resultListings, setResultListings };
 
   checkToken(setToken);
-
-  const StyledFooter = styled('div')({
-    // display: 'flex',
-    position: 'relative',
-    bottom: '0',
-    width: '100%',
-  });
 
   return (
     <Box sx={{
@@ -64,13 +57,9 @@ export default function PageList () {
           <Route path="/edit-listing/:listingId" element={<EditListingPage {...commonProps} />}> </Route>
           <Route path="/listings/:listingId" element={<ListingDetailPage {...commonProps} searchDateRange={searchDateRange} />}> </Route>
           <Route path="/manage/:listingId" element={<ManagePage {...commonProps} />}> </Route>
-          <Route path="/*" element={<LandingPage />}></Route>
+          <Route path="*" element={<ErrorPage />}></Route>
         </Routes>
       </Box>
-      {/* Footer */}
-      <StyledFooter>
-        This is footer
-      </StyledFooter>
     </ Box>
   )
 }

@@ -110,7 +110,6 @@ export default function HostedListings (props) {
         }
       }
       setHostedListings(userHostedListings);
-      console.log(`getHostedListings: ${userHostedListings}`);
     }
   }
 
@@ -121,6 +120,8 @@ export default function HostedListings (props) {
         show={showCreateModal}
         onHide={handleCloseCreateModal}
         createListing={createListing}
+        setErrorModalMsg={props.setErrorModalMsg}
+        setErrorModalShow={props.setErrorModalShow}
       />
       {
         hostedListings.length !== 0

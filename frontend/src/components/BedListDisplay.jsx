@@ -41,7 +41,6 @@ export default function BedListDisplay (props) {
       behaviour: 'smooth' // Optional: adds smooth scrolling
     });
   };
-  console.log(Object.keys(props.bedrooms));
   if (!props.bedrooms) {
     return <>Loading...</>
   } else {

@@ -22,10 +22,6 @@ export default function ManagePage (props) {
   const postedDate = dayjs(postedOn);
   const daysSincePosted = dayjs().diff(postedDate, 'day') + 1;
 
-  // console.log(token, postedOn);
-  // console.log('props:',props);
-  // console.log('listingId:',listingId);
-
   useEffect(() => {
     getBookings();
   }, []);
@@ -98,7 +94,7 @@ export default function ManagePage (props) {
     try {
       const response = await fetch(`${BACKEND_URL}/bookings/accept/${bookingId}`, {
         method: 'PUT',
-        headers: headers,
+        headers,
       });
       const data = await response.json();
       if (response.ok) {
@@ -120,7 +116,7 @@ export default function ManagePage (props) {
     try {
       const response = await fetch(`${BACKEND_URL}/bookings/decline/${bookingId}`, {
         method: 'PUT',
-        headers: headers,
+        headers,
       });
       const data = await response.json();
       if (response.ok) {

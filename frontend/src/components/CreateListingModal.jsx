@@ -1,24 +1,26 @@
 import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { IconButton } from '@mui/material';
+import { Box, IconButton } from '@mui/material';
 import PhotoCamera from '@mui/icons-material/PhotoCamera';
 import Grid from '@mui/material/Unstable_Grid2';
 import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
-import CountrySelect from './CountrySelect.jsx';
+import CountrySelect, { countries } from './CountrySelect.jsx';
 import AmenitiesTags from './AmenitiesTags.jsx';
 import PropertyTypeComboBox from './PropertyTypeComboBox';
-import { fileToDataUrl } from '../helper/helperFuncs.jsx';
+import { fileToDataUrl, getBedroomNum } from '../helper/helperFuncs.jsx';
+import JsonUploadButton from './JsonUploadBtn.jsx';
 
 export default function CreateListingModal (props) {
   const initialMetadata = {
     propertyType: '',
     numberOfBathrooms: 1,
-    numberOfBeds: 1,
+    numberOfBeds: 0,
     amenities: [],
     houseRules: '',
     rooms: {
@@ -28,6 +30,7 @@ export default function CreateListingModal (props) {
       quadRoom: { beds: 4, roomNum: 0 },
     },
     imageList: [],
+    videoLink: ''
   };
 
   const initialAddress = {
@@ -41,17 +44,51 @@ export default function CreateListingModal (props) {
   const [title, setTitle] = useState('');
   const [address, setAddress] = useState(initialAddress); // address structure
   const [price, setPrice] = useState('');
-  const [thumbnail, setThumbnail] = useState(DEFAULT_THUMBNAIL_URL);
   const [metadata, setMetadata] = useState(initialMetadata);
-  // const navigate = useNavigate();
   const [uploadedImg, setUploadedImg] = useState('');
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [errorMessages, setErrorMessages] = useState({});
+  const [uploadedData, setUploadedData] = useState({});
+  const [videoLink, setVideoLink] = useState('');
 
   // Modal close
   const handleClose = () => {
     props.onHide();
   };
+
+  React.useEffect(() => {
+    if (metadata.imageList.length !== 0) {
+      setUploadedImg(metadata.imageList[0]);
+    }
+  }, [metadata]);
+
+  React.useEffect(() => {
+    if (uploadedData && Object.entries(uploadedData).length !== 0) {
+      try {
+        setTitle(uploadedData.title);
+        let countryObject = countries.filter(country => country.label === uploadedData.address.country);
+        if (countryObject) {
+          countryObject = countryObject[0];
+          setSelectedCountry(countryObject);
+        } else {
+          setSelectedCountry('');
+        }
+        setAddress({
+          street: uploadedData.address.street,
+          city: uploadedData.address.city,
+          state: uploadedData.address.state,
+          postCode: uploadedData.address.postCode,
+          country: selectedCountry ? selectedCountry.label : ''
+        });
+        setPrice(uploadedData.price);
+        setUploadedImg(uploadedData.thumbnail);
+        setMetadata(uploadedData.metadata);
+      } catch {
+        props.setErrorModalMsg('Invalid JSON format');
+        props.setErrorModalShow(true)
+      }
+    }
+  }, [uploadedData]);
 
   const validateInputs = () => {
     const errors = {};
@@ -60,9 +97,13 @@ export default function CreateListingModal (props) {
     if (!address.city.trim()) errors.city = 'City is required.';
     if (!address.state.trim()) errors.state = 'State is required.';
     if (!address.postCode.trim()) errors.postCode = 'PostCode is required.';
+    if (isNaN(Number(String(address.postCode).trim()))) errors.postCode = 'PostCode must be a number.';
     if (!selectedCountry) errors.country = 'Country is required.';
-    if (!price.trim()) errors.price = 'Price is required.';
+    if (!String(price).trim()) errors.price = 'Price is required.';
+    if (isNaN(Number(String(price).trim()))) errors.price = 'Price must be a number.';
     if (!metadata.propertyType) errors.propertyType = 'Property Type is required.';
+    const regex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    if (videoLink !== '' && !regex.test(videoLink)) errors.videoLink = 'Youtube video link is invalid'
     return errors;
   };
 
@@ -77,17 +118,29 @@ export default function CreateListingModal (props) {
       postCode: address.postCode.trim(),
       country: selectedCountry ? selectedCountry.label : '',
     };
-    const trimmedPrice = price.trim();
+    const trimmedPrice = String(price).trim();
     const errors = validateInputs();
+    setMetadata(prevMetadata => ({
+      ...prevMetadata,
+      videoLink
+    }));
+    const updatedMetadata = {
+      ...metadata,
+      videoLink
+    };
     if (Object.keys(errors).length === 0) {
       const body = {
         title: trimmedTitle,
         address: trimmedAddress,
         price: trimmedPrice,
-        thumbnail,
-        metadata
+        thumbnail: uploadedImg || DEFAULT_THUMBNAIL_URL,
+        metadata: updatedMetadata
       }
-      console.log(body);
+      if (getBedroomNum(metadata.rooms) === 0) {
+        props.setErrorModalMsg('Please choose at least one bedroom!');
+        props.setErrorModalShow(true);
+        return;
+      }
       props.createListing(body);
       handleClose();
     } else {
@@ -95,27 +148,84 @@ export default function CreateListingModal (props) {
     }
   };
 
+  // Update images when image is uploaded
   const handleImageChange = async (event) => {
     const files = event.target.files;
-    if (files.length > 0) {
+    if (files && files.length > 0) {
+      for (const file of files) {
+        if (!file.type.match('image.*')) {
+          props.setErrorModalMsg('Please select an image file.');
+          props.setErrorModalShow(true);
+          return;
+        }
+        if (!file.type.match('image/jpeg') && !file.type.match('image/png') && !file.type.match('image/jpg')) {
+          props.setErrorModalMsg(`Image type is not supported: ${file.type}`);
+          props.setErrorModalShow(true);
+          return
+        }
+      }
       try {
-        const imageList = await Promise.all(
+        let imageList = await Promise.all(
           [...files].map(file => fileToDataUrl(file))
         );
         setMetadata(prevMetadata => ({
           ...prevMetadata,
-          imageList: imageList
+          imageList: [...prevMetadata.imageList, ...imageList]
         }));
-        setThumbnail(imageList[0]);
+        if (imageList.length > 0) {
+          if (imageList[0] === DEFAULT_THUMBNAIL_URL && imageList.length > 1) {
+            imageList = imageList.slice(1);
+          }
+          setUploadedImg(imageList[0]);
+        }
       } catch (error) {
-        console.error(error);
+        props.setErrorModalMsg(error);
+        props.setErrorModalShow(true)
       }
     }
   };
 
+  const handleRemoveImage = (index) => {
+    if (metadata.imageList && metadata.imageList.length > 0) {
+      setMetadata(prevMetadata => ({
+        ...prevMetadata,
+        imageList: prevMetadata.imageList.filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  // set the uploaded json data
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (!file.name.endsWith('.json')) {
+        props.setErrorModalMsg('Please upload JSON file');
+        props.setErrorModalShow(true);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        try {
+          const data = JSON.parse(text);
+          setUploadedData(data);
+          console.log('uploaded data: ', uploadedData);
+        } catch (error) {
+          props.setErrorModalMsg(error);
+          props.setErrorModalShow(true)
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  // Clear the image lists and thumbnail for clear button
   const handleClearImage = () => {
-    setUploadedImg('');
-    setThumbnail(DEFAULT_THUMBNAIL_URL);
+    setUploadedImg(DEFAULT_THUMBNAIL_URL);
+    setMetadata(prevMetadata => ({
+      ...prevMetadata,
+      imageList: []
+    }));
   };
 
   const handleMetadataChange = (e) => {
@@ -177,14 +287,15 @@ export default function CreateListingModal (props) {
           <Modal.Title>Create New Listing</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+        <JsonUploadButton handleFileChange={handleFileChange} />
         <Grid container spacing={2}>
         <Grid xs={12} md={8} lg={4}> {/* image container */}
           <label htmlFor="thumbnail">Select an Image to Post</label >
           <input
             id="thumbnail"
             type="text"
-            value={thumbnail}
-            onChange={(e) => setThumbnail(e.target.value)}
+            value={uploadedImg}
+            // onChange={(e) => console.log(e.target.value)}
             required
             style={{ display: 'none' }}
           />
@@ -205,8 +316,31 @@ export default function CreateListingModal (props) {
               {uploadedImg && (
                 <Button variant="secondary" onClick={handleClearImage}>Clear Image</Button>
               )}
-          </div>
-            </Grid>
+            </div>
+            <Box padding={1} sx={{ maxHeight: 300, overflowY: 'auto' }}>
+              {metadata.imageList && metadata.imageList.length > 0 && (
+                metadata.imageList.map((imgUrl, index) => (
+                  <Box key={index} display="flex" alignItems="center" marginBottom={2}>
+                    <img src={imgUrl} alt={`Thumbnail ${index}`} style={{ width: 100, height: 100 }} />
+                    <IconButton onClick={() => handleRemoveImage(index)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                ))
+              )}
+            </Box>
+            <br />
+            <TextField
+              fullWidth
+              id="video-link"
+              label="Video link"
+              type="text"
+              value={videoLink}
+              onChange={(e) => setVideoLink(e.target.value)}
+              error={!!errorMessages.videoLink}
+              helperText={errorMessages.videoLink || ''}
+            />
+          </Grid>
             <Grid item xs={12} lg={8} container spacing={2}>
               <Grid item xs={9} md={7} lg={6}>
               <TextField

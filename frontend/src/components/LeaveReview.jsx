@@ -52,7 +52,8 @@ export default function LeaveReview (props) {
         fullWidth
         label="Leave a review here"
         id="fullWidth"
-        onChange={props.setTextContent}
+        onChange={(event) => props.setTextContent(event.target.value)}
+        value={props.textContent}
         multiline
         rows={2}
       />

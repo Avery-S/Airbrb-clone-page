@@ -23,12 +23,34 @@ export function dateToString (date) {
 export function getUserRating (reviews) {
   let userRating = 0;
   let reviewLength = 0;
-  if (reviews) {
+  if (reviews && reviews.length !== 0) {
     reviewLength = reviews.length;
     for (const review of reviews) {
       userRating += parseFloat(review.rating);
     }
     userRating /= reviewLength;
   }
-  return [userRating, reviewLength]
+  return [userRating.toFixed(1), reviewLength]
+}
+
+// Calculate the number of bedrooms given rooms list
+export function getBedroomNum (rooms) {
+  return Object.values(rooms).reduce((total, room) => {
+    return total + room.roomNum;
+  }, 0);
+}
+
+export function getEmbedeYoutubeUrl (url) {
+  let id = '';
+
+  // For standard YouTube links
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+
+  if (match && match[2].length === 11) {
+    id = match[2];
+  }
+
+  const youtubeEmbedUrl = `https://www.youtube.com/embed/${id}`;
+  return youtubeEmbedUrl;
 }

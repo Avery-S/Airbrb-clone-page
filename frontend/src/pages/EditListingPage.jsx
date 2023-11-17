@@ -9,7 +9,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { fileToDataUrl } from '../helper/helperFuncs.jsx';
+import { fileToDataUrl, getBedroomNum } from '../helper/helperFuncs.jsx';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
@@ -18,7 +18,9 @@ import AmenitiesTags from '../components/AmenitiesTags.jsx';
 import PropertyTypeComboBox from '../components/PropertyTypeComboBox';
 import MessageAlert from '../components/MessageAlert';
 
-export default function EditListingPage () {
+// Page to edit the listing
+export default function EditListingPage (props) {
+  // set initial values
   const initialMetadata = {
     propertyType: '',
     numberOfBathrooms: 1,
@@ -32,6 +34,7 @@ export default function EditListingPage () {
       quadRoom: { beds: 4, roomNum: 0 },
     },
     imageList: [],
+    videoLink: '',
   };
 
   const initialAddress = {
@@ -49,7 +52,7 @@ export default function EditListingPage () {
   const [title, setTitle] = useState('');
   const [address, setAddress] = useState(initialAddress); // address structure
   const [price, setPrice] = useState('');
-  const [thumbnail, setThumbnail] = useState(DEFAULT_THUMBNAIL_URL);
+  // const [thumbnail, setThumbnail] = useState(DEFAULT_THUMBNAIL_URL);
   const [metadata, setMetadata] = useState(initialMetadata);
   const [uploadedImg, setUploadedImg] = useState('');
   const [showAlert, setShowAlert] = useState(false);
@@ -57,7 +60,9 @@ export default function EditListingPage () {
   const [alertType, setAlertType] = useState('success');
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [errorMessages, setErrorMessages] = useState({});
+  const [videoLink, setVideoLink] = useState('');
 
+  // set required error messages
   const validateInputs = () => {
     const errors = {};
     if (!title.trim()) errors.title = 'Title is required.';
@@ -68,8 +73,16 @@ export default function EditListingPage () {
     if (!selectedCountry) errors.country = 'Country is required.';
     if (!price.trim()) errors.price = 'Price is required.';
     if (!metadata.propertyType) errors.propertyType = 'Property Type is required.';
+    const regex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    if (videoLink !== '' && !regex.test(videoLink)) errors.videoLink = 'Youtube video link is invalid'
     return errors;
   };
+
+  React.useEffect(() => {
+    if (metadata.imageList.length !== 0) {
+      setUploadedImg(metadata.imageList[0]);
+    }
+  }, [metadata]);
 
   // get all listings API
   const getListing = async () => {
@@ -78,22 +91,28 @@ export default function EditListingPage () {
     ));
     const data = await response.json();
     if (data.error) {
-      console.error('Error fetching listings:', data.error);
+      props.setErrorModalMsg(data.error);
+      props.setErrorModalShow(true)
     } else {
       const { address, metadata, price, title, thumbnail } = data.listing;
       setTitle(title);
       setPrice(price);
       setAddress(address);
       setMetadata(metadata);
-      setThumbnail(thumbnail);
       setUploadedImg(thumbnail);
       const fetchedCountry = countries.find(c => c.label === data.listing.address.country);
       setSelectedCountry(fetchedCountry);
       setMetadata(data.listing.metadata);
-      // console.log(metadata.propertyType);
+      setVideoLink(data.listing.metadata.videoLink);
+      console.log('lsiitng: ', data.listing)
     }
   };
-    // publish new list
+
+  const handleVideoChange = (e) => {
+    setVideoLink(e.target.value);
+    console.log('updated: ', e.target.value);
+  }
+  // publish new list
   const updateListing = async (body) => {
     const headers = {
       'Content-Type': 'application/json',
@@ -104,7 +123,6 @@ export default function EditListingPage () {
     ));
     const listings = await response.json();
     if (listings.error) {
-      console.error('Error fetching listings:', listings.error);
       setAlertContent('Error updating listing: ' + listings.error);
       setAlertType('danger');
       setShowAlert(true);
@@ -120,6 +138,7 @@ export default function EditListingPage () {
     getListing();
   }, [listingId]);
 
+  // set data for submit button
   const handleSubmit = async (event) => {
     event.preventDefault();
     const trimmedTitle = title.trim();
@@ -132,25 +151,48 @@ export default function EditListingPage () {
     };
     const trimmedPrice = price.trim();
     const errors = validateInputs();
+    console.log('videoLInk: ', videoLink);
+    setMetadata(prevMetadata => ({
+      ...prevMetadata,
+      videoLink
+    }));
+    const updatedMetadata = {
+      ...metadata,
+      videoLink
+    };
+    console.log('setmetadata: ', metadata);
     if (Object.keys(errors).length === 0) {
       const body = {
         title: trimmedTitle,
         address: trimmedAddress,
         price: trimmedPrice,
-        thumbnail,
-        metadata
+        thumbnail: uploadedImg,
+        metadata: updatedMetadata,
       };
+      if (getBedroomNum(metadata.rooms) === 0) {
+        props.setErrorModalMsg('Please choose at least one bedroom!');
+        props.setErrorModalShow(true);
+        return;
+      }
       await updateListing(body);
     } else {
       setErrorMessages(errors);
     }
   };
 
+  // Update images when image is uploaded
   const handleImageChange = async (event) => {
     const files = event.target.files;
     if (files && files.length > 0) {
+      for (const file of files) {
+        if (!file.type.match('image/jpeg') && !file.type.match('image/png') && !file.type.match('image/jpg')) {
+          props.setErrorModalMsg(`Image type is not supported: ${file.type}`);
+          props.setErrorModalShow(true);
+          return
+        }
+      }
       try {
-        const imageList = await Promise.all(
+        let imageList = await Promise.all(
           [...files].map(file => fileToDataUrl(file))
         );
         setMetadata(prevMetadata => ({
@@ -158,17 +200,25 @@ export default function EditListingPage () {
           imageList: [...prevMetadata.imageList, ...imageList]
         }));
         if (imageList.length > 0) {
-          setThumbnail(imageList[0]);
+          if (imageList[0] === DEFAULT_THUMBNAIL_URL && imageList.length > 1) {
+            imageList = imageList.slice(1);
+          }
+          setUploadedImg(imageList[0]);
         }
       } catch (error) {
-        console.error(error);
+        props.setErrorModalMsg(error);
+        props.setErrorModalShow(true)
       }
     }
   };
 
+  // Clear the image lists and thumbnail for clear button
   const handleClearImage = () => {
-    setUploadedImg('');
-    setThumbnail(DEFAULT_THUMBNAIL_URL);
+    setUploadedImg(DEFAULT_THUMBNAIL_URL);
+    setMetadata(prevMetadata => ({
+      ...prevMetadata,
+      imageList: []
+    }));
   };
 
   const handleMetadataChange = (e) => {
@@ -195,6 +245,7 @@ export default function EditListingPage () {
     navigate('/my-hosted-listings');
   }
 
+  // Calculate and update the room numbers when bedroom is changed
   const updateRoomNumber = (roomType, change) => {
     setMetadata(prevMetadata => {
       const currentRoomNum = prevMetadata.rooms[roomType].roomNum;
@@ -254,8 +305,7 @@ export default function EditListingPage () {
         <input
         id="thumbnail"
         type="text"
-        value={thumbnail}
-        onChange={(e) => setThumbnail(e.target.value)}
+        value={uploadedImg}
         required
         style={{ display: 'none' }}
       />
@@ -295,6 +345,17 @@ export default function EditListingPage () {
           ))
         )}
       </Box>
+      <br />
+      <TextField
+        fullWidth
+        id="video-link"
+        label="Video link"
+        type="text"
+        value={videoLink}
+        onChange={handleVideoChange}
+        error={!!errorMessages.videoLink}
+        helperText={errorMessages.videoLink || ''}
+      />
     </Grid>
         <Grid item xs={12} lg={8} paddingLeft={2}>
           <Grid item xs={8} md={4} lg={3} paddingTop={3} paddingBottom={2} paddingRight={1}>
