@@ -1,0 +1,41 @@
+{
+    "title": "image test",
+    "address": {
+      "street": "UNSW Terraces, 17 High Street",
+      "city": "KENSINGTON",
+      "state": "New South Wales",
+      "postCode": "sdsfd",
+      "country": "United Arab Emirates"
+    },
+    "price": 200,
+    "thumbnail": "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",
+    "metadata": {
+      "propertyType": "Villa",
+      "numberOfBathrooms": 1,
+      "numberOfBeds": "sdfsdf",
+      "amenities": [
+        "Brunch"
+      ],
+      "houseRules": "Keep quiet",
+      "rooms": {
+        "singleRoom": {
+          "beds": 1,
+          "roomNum": 0
+        },
+        "twinRoom": {
+          "beds": 2,
+          "roomNum": 1
+        },
+        "familyRoom": {
+          "beds": 3,
+          "roomNum": 0
+        },
+        "quadRoom": {
+          "beds": 4,
+          "roomNum": 0
+        }
+      },
+      "imageList": []
+    },
+    "postedOn": null
+}

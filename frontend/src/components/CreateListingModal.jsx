@@ -10,10 +10,11 @@ import ListItemText from '@mui/material/ListItemText';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import { DEFAULT_THUMBNAIL_URL } from '../helper/getLinks.jsx';
-import CountrySelect from './CountrySelect.jsx';
+import CountrySelect, { countries } from './CountrySelect.jsx';
 import AmenitiesTags from './AmenitiesTags.jsx';
 import PropertyTypeComboBox from './PropertyTypeComboBox';
 import { fileToDataUrl, getBedroomNum } from '../helper/helperFuncs.jsx';
+import JsonUploadButton from './JsonUploadBtn.jsx';
 
 export default function CreateListingModal (props) {
   const initialMetadata = {
@@ -42,12 +43,11 @@ export default function CreateListingModal (props) {
   const [title, setTitle] = useState('');
   const [address, setAddress] = useState(initialAddress); // address structure
   const [price, setPrice] = useState('');
-  // const [thumbnail, setThumbnail] = useState(DEFAULT_THUMBNAIL_URL);
   const [metadata, setMetadata] = useState(initialMetadata);
-  // const navigate = useNavigate();
   const [uploadedImg, setUploadedImg] = useState('');
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [errorMessages, setErrorMessages] = useState({});
+  const [uploadedData, setUploadedData] = useState({});
 
   // Modal close
   const handleClose = () => {
@@ -60,6 +60,31 @@ export default function CreateListingModal (props) {
     }
   }, [metadata]);
 
+  React.useEffect(() => {
+    if (uploadedData && Object.entries(uploadedData).length !== 0) {
+      console.log('Newly uploaded data: ', uploadedData);
+      setTitle(uploadedData.title);
+      let countryObject = countries.filter(country => country.label === uploadedData.address.country);
+      if (countryObject) {
+        countryObject = countryObject[0];
+        setSelectedCountry(countryObject);
+      } else {
+        setSelectedCountry('');
+      }
+      setAddress({
+        street: uploadedData.address.street,
+        city: uploadedData.address.city,
+        state: uploadedData.address.state,
+        postCode: uploadedData.address.postCode,
+        country: selectedCountry ? selectedCountry.label : ''
+      });
+      setPrice(uploadedData.price);
+      setUploadedImg(uploadedData.thumbnail);
+      setMetadata(uploadedData.metadata);
+      console.log(address);
+    }
+  }, [uploadedData]);
+
   const validateInputs = () => {
     const errors = {};
     if (!title.trim()) errors.title = 'Title is required.';
@@ -67,8 +92,10 @@ export default function CreateListingModal (props) {
     if (!address.city.trim()) errors.city = 'City is required.';
     if (!address.state.trim()) errors.state = 'State is required.';
     if (!address.postCode.trim()) errors.postCode = 'PostCode is required.';
+    if (isNaN(Number(String(address.postCode).trim()))) errors.postCode = 'PostCode must be a number.';
     if (!selectedCountry) errors.country = 'Country is required.';
-    if (!price.trim()) errors.price = 'Price is required.';
+    if (!String(price).trim()) errors.price = 'Price is required.';
+    if (isNaN(Number(String(price).trim()))) errors.price = 'Price must be a number.';
     if (!metadata.propertyType) errors.propertyType = 'Property Type is required.';
     return errors;
   };
@@ -84,7 +111,7 @@ export default function CreateListingModal (props) {
       postCode: address.postCode.trim(),
       country: selectedCountry ? selectedCountry.label : '',
     };
-    const trimmedPrice = price.trim();
+    const trimmedPrice = String(price).trim();
     const errors = validateInputs();
     if (Object.keys(errors).length === 0) {
       const body = {
@@ -111,6 +138,11 @@ export default function CreateListingModal (props) {
     const files = event.target.files;
     if (files && files.length > 0) {
       for (const file of files) {
+        if (!file.type.match('image.*')) {
+          props.setErrorModalMsg('Please select an image file.');
+          props.setErrorModalShow(true);
+          return;
+        }
         if (!file.type.match('image/jpeg') && !file.type.match('image/png') && !file.type.match('image/jpg')) {
           props.setErrorModalMsg(`Image type is not supported: ${file.type}`);
           props.setErrorModalShow(true);
@@ -144,6 +176,26 @@ export default function CreateListingModal (props) {
         ...prevMetadata,
         imageList: prevMetadata.imageList.filter((_, i) => i !== index)
       }));
+    }
+  };
+
+  // set the uploaded json data
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        try {
+          const data = JSON.parse(text);
+          setUploadedData(data);
+          console.log('uploaded data: ', uploadedData);
+        } catch (error) {
+          props.setErrorModalMsg(error);
+          props.setErrorModalShow(true)
+        }
+      };
+      reader.readAsText(file);
     }
   };
 
@@ -215,13 +267,14 @@ export default function CreateListingModal (props) {
           <Modal.Title>Create New Listing</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+        <JsonUploadButton handleFileChange={handleFileChange} />
         <Grid container spacing={2}>
         <Grid xs={12} md={8} lg={4}> {/* image container */}
           <label htmlFor="thumbnail">Select an Image to Post</label >
           <input
             id="thumbnail"
             type="text"
-            value={uploadedImg}
+            defaultValue={uploadedImg}
             // onChange={(e) => console.log(e.target.value)}
             required
             style={{ display: 'none' }}
