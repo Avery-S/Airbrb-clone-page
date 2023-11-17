@@ -62,26 +62,29 @@ export default function CreateListingModal (props) {
 
   React.useEffect(() => {
     if (uploadedData && Object.entries(uploadedData).length !== 0) {
-      console.log('Newly uploaded data: ', uploadedData);
-      setTitle(uploadedData.title);
-      let countryObject = countries.filter(country => country.label === uploadedData.address.country);
-      if (countryObject) {
-        countryObject = countryObject[0];
-        setSelectedCountry(countryObject);
-      } else {
-        setSelectedCountry('');
+      try {
+        setTitle(uploadedData.title);
+        let countryObject = countries.filter(country => country.label === uploadedData.address.country);
+        if (countryObject) {
+          countryObject = countryObject[0];
+          setSelectedCountry(countryObject);
+        } else {
+          setSelectedCountry('');
+        }
+        setAddress({
+          street: uploadedData.address.street,
+          city: uploadedData.address.city,
+          state: uploadedData.address.state,
+          postCode: uploadedData.address.postCode,
+          country: selectedCountry ? selectedCountry.label : ''
+        });
+        setPrice(uploadedData.price);
+        setUploadedImg(uploadedData.thumbnail);
+        setMetadata(uploadedData.metadata);
+      } catch {
+        props.setErrorModalMsg('Invalid JSON format');
+        props.setErrorModalShow(true)
       }
-      setAddress({
-        street: uploadedData.address.street,
-        city: uploadedData.address.city,
-        state: uploadedData.address.state,
-        postCode: uploadedData.address.postCode,
-        country: selectedCountry ? selectedCountry.label : ''
-      });
-      setPrice(uploadedData.price);
-      setUploadedImg(uploadedData.thumbnail);
-      setMetadata(uploadedData.metadata);
-      console.log(address);
     }
   }, [uploadedData]);
 
@@ -183,6 +186,11 @@ export default function CreateListingModal (props) {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
+      if (!file.name.endsWith('.json')) {
+        props.setErrorModalMsg('Please upload JSON file');
+        props.setErrorModalShow(true);
+        return;
+      }
       const reader = new FileReader();
       reader.onload = (e) => {
         const text = e.target.result;
