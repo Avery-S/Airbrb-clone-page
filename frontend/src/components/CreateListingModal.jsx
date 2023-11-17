@@ -83,6 +83,7 @@ export default function CreateListingModal (props) {
         setPrice(uploadedData.price);
         setUploadedImg(uploadedData.thumbnail);
         setMetadata(uploadedData.metadata);
+        setVideoLink(uploadedData.metadata.videoLink);
       } catch {
         props.setErrorModalMsg('Invalid JSON format');
         props.setErrorModalShow(true)
