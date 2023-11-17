@@ -52,7 +52,6 @@ export default function EditListingPage (props) {
   const [title, setTitle] = useState('');
   const [address, setAddress] = useState(initialAddress); // address structure
   const [price, setPrice] = useState('');
-  // const [thumbnail, setThumbnail] = useState(DEFAULT_THUMBNAIL_URL);
   const [metadata, setMetadata] = useState(initialMetadata);
   const [uploadedImg, setUploadedImg] = useState('');
   const [showAlert, setShowAlert] = useState(false);
@@ -291,8 +290,9 @@ export default function EditListingPage (props) {
         msgContent={alertContent}
       />
     )}
+    {/* Edit listing form */}
     <form onSubmit={handleSubmit}>
-      <Box>
+    <Box>
     <Grid container spacing={2}>
     <Grid item xs={12} md={8} lg={4}> {/* image container */}
     <Box >

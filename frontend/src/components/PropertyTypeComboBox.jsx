@@ -2,6 +2,7 @@ import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
 
+// Propertype combobox component to choose property types
 export default function PropertyTypeComboBox ({ value, onChange, error, helperText }) {
   const selectedValue = value ? propertyType.find(option => option.label === value) : null;
   return (

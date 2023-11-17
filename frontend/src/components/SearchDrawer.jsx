@@ -16,6 +16,7 @@ import { blue } from '@mui/material/colors';
 import ReviewSortToggle from './ReviewSortToggle';
 import { getBedroomNum, getUserRating } from '../helper/helperFuncs';
 
+// Search drawer component
 export default function SearchDrawer (props) {
   const [searchTitle, setSearchTitle] = React.useState('');
   const [searchCity, setSearchCity] = React.useState('');

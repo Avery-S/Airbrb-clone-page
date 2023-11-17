@@ -5,7 +5,6 @@ import Stack from '@mui/material/Stack';
 
 export default function AmenitiesTags ({ selectedAmenities, onChange }) {
   return (
-    // spacing={3} sx={{ width: 300 }}
     <Stack >
       <Autocomplete
         multiple

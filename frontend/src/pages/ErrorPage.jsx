@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// The page to show route error and redirect to all listing page
 const ErrorPage = () => {
   const navigate = useNavigate();
 
@@ -15,7 +16,6 @@ const ErrorPage = () => {
     <div>
       <h1>404: Page Not Found</h1>
       <p>Redirecting to listings...</p>
-      {/* Optionally, you can add a button for immediate redirection */}
       <button onClick={() => navigate('/listings')}>Go to Listings</button>
     </div>
   );

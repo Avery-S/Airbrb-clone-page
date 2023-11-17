@@ -1,6 +1,7 @@
 import React from 'react';
 import Button from '@mui/material/Button';
 
+// Upload json file button
 export default function JsonUploadButton (props) {
   return (
     <div>

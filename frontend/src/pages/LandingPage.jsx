@@ -33,19 +33,6 @@ export default function LandingPage (props) {
         break;
     }
   }, [props.currentPage, props.publishedListings, props.resultListings])
-  // get hosted listings every 5 seconds
-  // React.useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     getHostedListings(getListings);
-  //   }, 5000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
-  // get the listing info based on the listing id
-  // React.useEffect(() => {
-  //   setPublishedListings(sortPublishedListings());
-  // }, [publishedListings, bookings]);
 
   const getListingInfo = async (listingId) => {
     const response = await fetch(`${BACKEND_URL}/listings/${listingId}`, fetchObject(

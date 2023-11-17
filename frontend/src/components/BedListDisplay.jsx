@@ -46,12 +46,9 @@ export default function BedListDisplay (props) {
   } else {
     return (
       <Box onWheel={handleWheel} sx={{
-        // overflowX: 'auto',
         display: 'flex',
         width: '100%',
         height: 'fit-content',
-        // scrollBehavior: 'smooth',
-        // WebkitOverflowScrolling: 'touch',
       }}>
         <Grid container spacing={1} component="div" sx={{
           flexWrap: 'wrap',
@@ -78,9 +75,6 @@ export default function BedListDisplay (props) {
                 <Typography variant='h7'>
                   {bedroom[1].roomNum} {getBedroomName(Object.keys(props.bedrooms)[index])}
                 </Typography>
-                {/* <Typography variant='h7'>
-                  No. of Room: {bedroom[1].roomNum}
-                </Typography> */}
                 <Typography variant='h7'>
                   {bedroom[1].beds} bed
                 </Typography>

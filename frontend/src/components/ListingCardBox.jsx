@@ -3,8 +3,6 @@ import { useTheme } from '@mui/material/styles';
 import { useMediaQuery, Box } from '@mui/material';
 import ListingCard from './ListingCard';
 
-/* <ListingCardBox>{HostedListingData.map((hostedListing) => <ListingCard />)}</ListingCardBox> */
-
 // Box takes in a list of listings and display using ListingCard
 export default function ListingCardBox (props) {
   // set gap and card width based on screen size

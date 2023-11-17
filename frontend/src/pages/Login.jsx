@@ -79,6 +79,7 @@ export default function Login (props) {
         value={email}
         onChange={e => setEmail(e.target.value)}
       />
+      {/* Login form */}
       <FormControl variant="outlined" sx={{ m: 1, width: '25ch' }}>
         <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
         <OutlinedInput

@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 
+// Manage bookings page to allow users to view and accept/decline bookings
 export default function ManagePage (props) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,6 +31,7 @@ export default function ManagePage (props) {
     navigate('/my-hosted-listings');
   }
 
+  // Get booking information
   const getBookings = async () => {
     const response = await fetch(`${BACKEND_URL}/bookings`, fetchObject('GET', {}, true));
     const data = await response.json();
@@ -38,14 +40,11 @@ export default function ManagePage (props) {
       props.setErrorModalShow(true);
     } else {
       let bookings = data.bookings;
-      // console.log('listingDetailPage booking: ', bookings);
       if (bookings) {
         bookings = bookings.filter(booking => (
           String(booking.listingId) === String(listingId)));
         if (bookings && bookings.length !== 0) {
           setBookingInfo([...bookings]);
-          // console.log('setBookingInfo: ', bookingInfo);
-          // console.log('postedDate:', postedDate);
         }
       }
     }
@@ -53,7 +52,6 @@ export default function ManagePage (props) {
   useEffect(() => {
     console.log(bookingInfo);
     if (bookingInfo && bookingInfo.length > 0) {
-      // console.log('booking info in user effect:',bookingInfo)
       const newTotalBookedDays = calculateTotalBookedDays(bookingInfo);
       const newTotalProfit = calculateTotalProfit(bookingInfo);
       setTotalBookedDays(newTotalBookedDays);
@@ -129,12 +127,12 @@ export default function ManagePage (props) {
       console.error('Network or other error:', error);
     }
   };
-
+  // Format and check the dates
   const formatAndValidateDate = (dateStr) => {
     const formattedDate = dayjs(dateStr, 'DD/MM/YYYY');
     return formattedDate.isValid() ? formattedDate : null;
   };
-
+  // Display booking information cards
   const renderCards = bookingInfo.map((booking) => {
     const startDate = formatAndValidateDate(booking.dateRange.startDate);
     const endDate = formatAndValidateDate(booking.dateRange.endDate);

@@ -17,6 +17,7 @@ const labels = {
   5: 'Excellent+',
 };
 
+// Review component to rate and write review
 export default function LeaveReview (props) {
   const [hover, setHover] = React.useState(-1);
 

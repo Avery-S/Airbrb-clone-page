@@ -296,7 +296,6 @@ export default function CreateListingModal (props) {
             id="thumbnail"
             type="text"
             value={uploadedImg}
-            // onChange={(e) => console.log(e.target.value)}
             required
             style={{ display: 'none' }}
           />

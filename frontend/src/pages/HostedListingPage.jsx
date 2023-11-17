@@ -24,14 +24,6 @@ export default function HostedListings (props) {
     props.setCurrentPage('hosted');
     getHostedListings();
   }, []);
-  // get hosted listings every 5 seconds
-  // React.useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     getHostedListings(getListings);
-  //   }, 5000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
 
   const handleShowCreateModal = () => setShowCreateModal(true);
   const handleCloseCreateModal = () => setShowCreateModal(false)

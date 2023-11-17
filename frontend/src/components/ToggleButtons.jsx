@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Box } from '@mui/material';
 
+// Toggle button to manage bookings
 function ToggleButtons ({ onAccept, onDecline, status }) {
   const [selectedButton, setSelectedButton] = useState(null);
 

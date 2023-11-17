@@ -9,8 +9,6 @@ import Rating from '@mui/material/Rating';
 import MapsHomeWorkOutlinedIcon from '@mui/icons-material/MapsHomeWorkOutlined';
 import { useNavigate } from 'react-router-dom';
 import PublishedWithChangesIcon from '@mui/icons-material/PublishedWithChanges';
-// import BedOutlinedIcon from '@mui/icons-material/BedOutlined';
-// import BathtubOutlinedIcon from '@mui/icons-material/BathtubOutlined';
 
 import ConfirmModal from './ConfirmModal';
 import { BACKEND_URL } from '../helper/getLinks';
@@ -24,6 +22,7 @@ const StyledIframe = styled('iframe')({
   objectFit: 'cover'
 });
 
+// Listing card component
 export default function ListingCard (props) {
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
   const navigate = useNavigate();
@@ -163,10 +162,10 @@ export default function ListingCard (props) {
                       bookingInfo.status === 'accepted'
                         ? <Chip sx={{ position: 'absolute', right: '0.5vw' }} label="Accepted" color="success" />
                         : bookingInfo.status === 'denied'
-                          ? <Chip sx={{ position: 'absolute', right: '0.5vw', top: '0.5vw' }} label="Denied" color="error" />// Assuming you want a different label/color for non-accepted status
+                          ? <Chip sx={{ position: 'absolute', right: '0.5vw', top: '0.5vw' }} label="Denied" color="error" />
                           : <Chip sx={{ position: 'absolute', right: '0.5vw', top: '0.5vw' }} label="Pending" color="info" />
                     )
-                  : null // Or any other fallback JSX for when bookingInfo is not available
+                  : null
               )
         }
         <AvailabilityModal
@@ -226,16 +225,6 @@ export default function ListingCard (props) {
               )
             : (<></>)}
         </Box>
-        {/* {<CardMedia
-          component="img"
-          image={props.thumbnail}
-          alt="Thumbnail"
-          sx={{
-            height: '100%',
-            aspectRatio: 1,
-            objectFit: 'cover'
-          }}
-        />} */}
         { props.metadata.videoLink !== '' && props.metadata.videoLink !== undefined
           ? <StyledIframe
           src={props.metadata.videoLink}
@@ -297,9 +286,6 @@ export default function ListingCard (props) {
               }}>
                 ${props.price}&nbsp;/ night
               </Typography>
-              {/* <Typography variant='subtitle2' color='grey'sx={{ display: 'inline', textDecoration: 'none' }}>
-                (per night)
-              </Typography> */}
             </Box>
             <Box sx={{
               display: 'flex',
