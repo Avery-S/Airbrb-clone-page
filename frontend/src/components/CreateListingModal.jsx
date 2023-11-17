@@ -489,6 +489,7 @@ export default function CreateListingModal (props) {
             }}>
           {roomTypes.map((room) => (
             <ListItem
+              id={room.id}
               key={room.id}
               disableGutters
               sx={{ borderBottom: 1, borderColor: 'divider', padding: '10px' }}
@@ -502,13 +503,13 @@ export default function CreateListingModal (props) {
               />
               <Grid container spacing={1} sx={{ width: 'auto', marginLeft: 'auto' }}>
                 <Grid item>
-                  <Button onClick={() => updateRoomNumber(room.id, -1)}>-</Button>
+                  <Button id={`decrease-${room.id}`} onClick={() => updateRoomNumber(room.id, -1)}>-</Button>
                 </Grid>
                 <Grid item>
                   <span>{metadata.rooms[room.id].roomNum}</span>
                 </Grid>
                 <Grid item>
-                  <Button onClick={() => updateRoomNumber(room.id, 1)}>+</Button>
+                  <Button id={`increase-${room.id}`} onClick={() => updateRoomNumber(room.id, 1)}>+</Button>
                 </Grid>
               </Grid>
             </ListItem>
