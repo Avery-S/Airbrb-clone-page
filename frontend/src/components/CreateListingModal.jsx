@@ -30,6 +30,7 @@ export default function CreateListingModal (props) {
       quadRoom: { beds: 4, roomNum: 0 },
     },
     imageList: [],
+    videoLink: ''
   };
 
   const initialAddress = {
@@ -48,6 +49,7 @@ export default function CreateListingModal (props) {
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [errorMessages, setErrorMessages] = useState({});
   const [uploadedData, setUploadedData] = useState({});
+  const [videoLink, setVideoLink] = useState('');
 
   // Modal close
   const handleClose = () => {
@@ -100,6 +102,8 @@ export default function CreateListingModal (props) {
     if (!String(price).trim()) errors.price = 'Price is required.';
     if (isNaN(Number(String(price).trim()))) errors.price = 'Price must be a number.';
     if (!metadata.propertyType) errors.propertyType = 'Property Type is required.';
+    const regex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    if (videoLink !== '' && !regex.test(videoLink)) errors.videoLink = 'Youtube video link is invalid'
     return errors;
   };
 
@@ -116,13 +120,21 @@ export default function CreateListingModal (props) {
     };
     const trimmedPrice = String(price).trim();
     const errors = validateInputs();
+    setMetadata(prevMetadata => ({
+      ...prevMetadata,
+      videoLink
+    }));
+    const updatedMetadata = {
+      ...metadata,
+      videoLink
+    };
     if (Object.keys(errors).length === 0) {
       const body = {
         title: trimmedTitle,
         address: trimmedAddress,
         price: trimmedPrice,
-        thumbnail: uploadedImg,
-        metadata
+        thumbnail: uploadedImg || DEFAULT_THUMBNAIL_URL,
+        metadata: updatedMetadata
       }
       if (getBedroomNum(metadata.rooms) === 0) {
         props.setErrorModalMsg('Please choose at least one bedroom!');
@@ -282,7 +294,7 @@ export default function CreateListingModal (props) {
           <input
             id="thumbnail"
             type="text"
-            defaultValue={uploadedImg}
+            value={uploadedImg}
             // onChange={(e) => console.log(e.target.value)}
             required
             style={{ display: 'none' }}
@@ -317,6 +329,17 @@ export default function CreateListingModal (props) {
                 ))
               )}
             </Box>
+            <br />
+            <TextField
+              fullWidth
+              id="video-link"
+              label="Video link"
+              type="text"
+              value={videoLink}
+              onChange={(e) => setVideoLink(e.target.value)}
+              error={!!errorMessages.videoLink}
+              helperText={errorMessages.videoLink || ''}
+            />
           </Grid>
             <Grid item xs={12} lg={8} container spacing={2}>
               <Grid item xs={9} md={7} lg={6}>

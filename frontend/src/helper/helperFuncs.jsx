@@ -39,3 +39,18 @@ export function getBedroomNum (rooms) {
     return total + room.roomNum;
   }, 0);
 }
+
+export function getEmbedeYoutubeUrl (url) {
+  let id = '';
+
+  // For standard YouTube links
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+
+  if (match && match[2].length === 11) {
+    id = match[2];
+  }
+
+  const youtubeEmbedUrl = `https://www.youtube.com/embed/${id}`;
+  return youtubeEmbedUrl;
+}

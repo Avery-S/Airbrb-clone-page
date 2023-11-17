@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Card from '@mui/material/Card';
-import { Box, CardMedia, IconButton, Typography, Chip, Tooltip } from '@mui/material';
+import { Box, CardMedia, IconButton, Typography, Chip, Tooltip, styled } from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
@@ -17,6 +17,12 @@ import { BACKEND_URL } from '../helper/getLinks';
 import fetchObject from '../helper/fetchObject';
 import AvailabilityModal from './AvailabilityModal';
 import { getUserRating } from '../helper/helperFuncs';
+
+const StyledIframe = styled('iframe')({
+  height: '100%',
+  aspectRatio: 1,
+  objectFit: 'cover'
+});
 
 export default function ListingCard (props) {
   const [showConfirmModal, setShowConfirmModal] = React.useState(false);
@@ -219,7 +225,7 @@ export default function ListingCard (props) {
               )
             : (<></>)}
         </Box>
-         <CardMedia
+        {/* {<CardMedia
           component="img"
           image={props.thumbnail}
           alt="Thumbnail"
@@ -228,7 +234,25 @@ export default function ListingCard (props) {
             aspectRatio: 1,
             objectFit: 'cover'
           }}
-        />
+        />} */}
+        { props.metadata.videoLink !== '' && props.metadata.videoLink !== undefined
+          ? <StyledIframe
+          src={props.metadata.videoLink}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></StyledIframe>
+          : <CardMedia
+          component="img"
+          image={props.thumbnail}
+          alt="Thumbnail"
+          sx={{
+            height: '100%',
+            aspectRatio: 1,
+            objectFit: 'cover'
+          }}
+        />}
         <Box sx={{
           width: '100%',
           height: '100%',

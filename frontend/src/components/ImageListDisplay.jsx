@@ -15,7 +15,6 @@ export default function ImageListDisplay (props) {
   } else if (isPhone) {
     height = '60vw'; // Adjust as needed for phones
   }
-
   const handleWheel = (e) => {
     const container = e.currentTarget;
     const containerScrollPosition = container.scrollLeft;
@@ -37,7 +36,18 @@ export default function ImageListDisplay (props) {
         scrollBehavior: 'smooth',
         WebkitOverflowScrolling: 'touch'
       }}>
-        <Grid container spacing={1} component="div" sx={{ flexWrap: 'nowrap' }}>
+        <Grid container spacing={1} component="div" sx={{ flexWrap: 'nowrap', display: 'flex', flexDirection: 'row' }}>
+          {props.videoLink && (
+            <iframe
+              width="100%"
+              height="315" // Adjust height as needed
+              src={props.videoLink}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          )}
           {props.images.map((image, index) => (
             <Grid item key={index}>
               <CardMedia

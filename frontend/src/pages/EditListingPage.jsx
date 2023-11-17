@@ -34,6 +34,7 @@ export default function EditListingPage (props) {
       quadRoom: { beds: 4, roomNum: 0 },
     },
     imageList: [],
+    videoLink: '',
   };
 
   const initialAddress = {
@@ -59,6 +60,7 @@ export default function EditListingPage (props) {
   const [alertType, setAlertType] = useState('success');
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [errorMessages, setErrorMessages] = useState({});
+  const [videoLink, setVideoLink] = useState('');
 
   // set required error messages
   const validateInputs = () => {
@@ -71,6 +73,8 @@ export default function EditListingPage (props) {
     if (!selectedCountry) errors.country = 'Country is required.';
     if (!price.trim()) errors.price = 'Price is required.';
     if (!metadata.propertyType) errors.propertyType = 'Property Type is required.';
+    const regex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    if (videoLink !== '' && !regex.test(videoLink)) errors.videoLink = 'Youtube video link is invalid'
     return errors;
   };
 
@@ -99,8 +103,15 @@ export default function EditListingPage (props) {
       const fetchedCountry = countries.find(c => c.label === data.listing.address.country);
       setSelectedCountry(fetchedCountry);
       setMetadata(data.listing.metadata);
+      setVideoLink(data.listing.metadata.videoLink);
+      console.log('lsiitng: ', data.listing)
     }
   };
+
+  const handleVideoChange = (e) => {
+    setVideoLink(e.target.value);
+    console.log('updated: ', e.target.value);
+  }
   // publish new list
   const updateListing = async (body) => {
     const headers = {
@@ -140,13 +151,23 @@ export default function EditListingPage (props) {
     };
     const trimmedPrice = price.trim();
     const errors = validateInputs();
+    console.log('videoLInk: ', videoLink);
+    setMetadata(prevMetadata => ({
+      ...prevMetadata,
+      videoLink
+    }));
+    const updatedMetadata = {
+      ...metadata,
+      videoLink
+    };
+    console.log('setmetadata: ', metadata);
     if (Object.keys(errors).length === 0) {
       const body = {
         title: trimmedTitle,
         address: trimmedAddress,
         price: trimmedPrice,
         thumbnail: uploadedImg,
-        metadata
+        metadata: updatedMetadata,
       };
       if (getBedroomNum(metadata.rooms) === 0) {
         props.setErrorModalMsg('Please choose at least one bedroom!');
@@ -324,6 +345,17 @@ export default function EditListingPage (props) {
           ))
         )}
       </Box>
+      <br />
+      <TextField
+        fullWidth
+        id="video-link"
+        label="Video link"
+        type="text"
+        value={videoLink}
+        onChange={handleVideoChange}
+        error={!!errorMessages.videoLink}
+        helperText={errorMessages.videoLink || ''}
+      />
     </Grid>
         <Grid item xs={12} lg={8} paddingLeft={2}>
           <Grid item xs={8} md={4} lg={3} paddingTop={3} paddingBottom={2} paddingRight={1}>
