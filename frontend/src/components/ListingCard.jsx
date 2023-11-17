@@ -145,6 +145,7 @@ export default function ListingCard (props) {
               >
                 <Tooltip title={ !ifPublished ? 'Publish' : 'Unpublish' } placement='right-start'>
                   <PublishedWithChangesIcon
+                  id='published-btn'
                     fontSize='medium'
                     sx={{ color: publishedIconColor }}
                   />
