@@ -117,7 +117,7 @@ describe('Admin Happy Path Test', () => {
     cy.get('.MuiCardMedia-img').should('have.attr', 'src').and('include', 'data:image/jpeg;base64');
   })
 
-  it('Updates the thumbnail and title of the listing successfully.cy', () => {
+  it('Publish a listing successfully.cy', () => {
     cy.visit('http://localhost:3000/login')
     cy.get('#login-email').type('testing1@gmail.com');
     cy.get('#login-password').type('testing');
