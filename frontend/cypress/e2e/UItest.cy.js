@@ -11,23 +11,27 @@
 // 7. Logs out of the application successfully
 // 8. Logs back into the application successfully
 
-
 // (If working in a pair) also required to write a test for another path through the program, describing the steps and the rationale behind this choice in TESTING.md
 
 // (If working solo) include a short rationale of the testing you have undertaken within TESTING.md
 import 'cypress-file-upload';
 
 describe('Admin Happy Path Test', () => {
-  it('Registers successfully.cy', () => {
+  it('Registers successfully.cy and logout', () => {
     cy.visit('http://localhost:3000/register')
     cy.get('#register-email').type('testing1@gmail.com');
     cy.get('#register-name').type('tester1');
     cy.get('#register-password').type('testing');
     cy.get('#register-password-confirm').type('testing');
-    
+
     cy.get('button').contains('Register').click();
 
-    cy.url().should('include', '/'); 
+    cy.url().should('include', '/');
+
+    cy.get('.MuiAvatar-root').click();
+
+    cy.contains('.MuiMenuItem-root', 'Logout').click();
+    cy.contains('You have successfully logout out!').should('be.visible');
   })
 
   it('Creates a new listing successfully.cy', () => {
@@ -45,9 +49,9 @@ describe('Admin Happy Path Test', () => {
 
       // modal inputs check ...
       cy.get('#title').should('be.visible');
+      cy.get('#title').type('Test Hotel 3');
       cy.get('#street').should('be.visible');
       // make inputs
-      cy.get('#title').type('Test Hotel 3');
       cy.get('#street').type('test 2 street');
       cy.get('#city').type('test 2 city');
       cy.get('#state').type('test 2 state');
@@ -261,7 +265,7 @@ describe('Admin Happy Path Test', () => {
       cy.get('[data-testid="CalendarIcon"]').first().click();
       cy.get('button[type="button"][role="gridcell"][data-timestamp="1700658000000"]').click({ force: true });
       cy.get('[data-testid="CalendarIcon"]').eq(1).click();
-      cy.get('button[type="button"][role="gridcell"][data-timestamp="1701176400000"]').eq(1).click({ force: true });
+      cy.get('button[type="button"][role="gridcell"][data-timestamp="1701176400000"]').click({ force: true });
       cy.contains('Set Booking').click();
       cy.contains('button', 'Confirm Book').click();
       cy.contains('Booking request submitted successfully!').should('be.visible');

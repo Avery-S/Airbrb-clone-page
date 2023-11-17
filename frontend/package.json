@@ -24,7 +24,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
-    "coverage": "npm run test -- --watchAll=false --coverage"
+    "coverage": "npm run test -- --watchAll=false --coverage",
+    "cypress": "cypress open"
   },
   "eslintConfig": {
     "extends": [
